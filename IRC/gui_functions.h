@@ -1,3 +1,13 @@
+/*
+* gui_functions.h
+*
+* This file contains some gui functions for irc client.
+*
+* Copyright(C) 2009-2010, Diogo Reis <diogoandre12@gmail.com>
+*
+* This code is licenced under the GPL version 2. For details see COPYING.txt file.
+*/
+
 void init_menu_bar(HWND hWnd){
    SHACTIVATEINFO s_sai;
    SHMENUBARINFO mbi;

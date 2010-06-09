@@ -1,3 +1,13 @@
+/*
+* ircprotocol.h
+*
+* This file contains an ircprotocol lib implementation.
+*
+* Copyright(C) 2009-2010, Diogo Reis <diogoandre12@gmail.com>
+*
+* This code is licenced under the GPL version 2. For details see COPYING.txt file.
+*/
+
 #define RECV_PRIVMSG 50
 #define RECV_NICK 51
 #define RECV_JOIN 52

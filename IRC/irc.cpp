@@ -1,3 +1,13 @@
+/*
+* irc.cpp
+*
+* This file contains an irc client gui implementation with ircprotocol lib.
+*
+* Copyright(C) 2009-2010, Diogo Reis <diogoandre12@gmail.com>
+*
+* This code is licenced under the GPL version 2. For details see COPYING.txt file.
+*/
+
 #include <aygshell.h>
 #pragma comment(lib, "aygshell.lib") 
 #include <commctrl.h>

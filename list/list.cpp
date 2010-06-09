@@ -1,9 +1,19 @@
+/*
+* list.c
+*
+* This file contains an list implementation.
+*
+* Copyright(C) 2009-2010, Diogo Reis <diogoandre12@gmail.com>
+*
+* This code is licenced under the GPL version 2. For details see COPYING.txt file.
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "list.h"
 
 int grow_shrink(list_t *list, int new_size){
-   char *new_list = (char*)malloc(new_size*sizeof(char*));
+   char *new_list = (char*)malloc(new_size*sizeof(void*));
    if(new_list==NULL){
       return -1;
    }
@@ -27,7 +37,7 @@ __declspec(dllexport) int list_init(list_t *list, int data_size){
 
 __declspec(dllexport) void list_destroy(list_t *list){
    int i;
-   void *element;
+   char *element;
    for(i=0;i<list->size;i++){
       memcpy(&element,(list->list)+(i*sizeof(char*)),sizeof(char*));
       free(element);
@@ -55,8 +65,8 @@ __declspec(dllexport) void *list_add_index(list_t *list, int index, void *data){
       return NULL;
    }
    memcpy(element,data,list->data_size);
-   memcpy((list->list)+((index+1)*sizeof(char*)),(list->list)+(index*sizeof(char*)),(list->size-index)*sizeof(char*));
-   memcpy((list->list)+(index*sizeof(char*)),&element,sizeof(char*));
+   memcpy((list->list)+((index+1)*sizeof(void*)),(list->list)+(index*sizeof(void*)),(list->size-index)*sizeof(void*));
+   memcpy((list->list)+(index*sizeof(void*)),&element,sizeof(void*));
    list->size++;
    return element;
 }
@@ -64,9 +74,9 @@ __declspec(dllexport) void *list_add_index(list_t *list, int index, void *data){
 __declspec(dllexport) int list_get(list_t *list, void *data){
    int result = -1;
    int i;
-   void *element;
+   char *element;
    for(i=0;i<list->size;i++){
-      memcpy(&element,(list->list)+(i*sizeof(char*)),sizeof(char*));
+      memcpy(&element,(list->list)+(i*sizeof(void*)),sizeof(void*));
       if(memcmp(element,data,list->data_size)==0){
          result = i;
          i = list->size;
@@ -79,8 +89,8 @@ __declspec(dllexport) void *list_get_index(list_t *list, int index, void *d_data
    if(index <0 || index>=list->size){
       return NULL;
    }
-   void *element;
-   memcpy(&element,(list->list)+(index*sizeof(char*)),sizeof(char*));
+   char *element;
+   memcpy(&element,(list->list)+(index*sizeof(void*)),sizeof(void*));
    if(d_data!=NULL && s_data>=list->data_size){
       memcpy(d_data,element,list->data_size);
    }
@@ -125,7 +135,7 @@ __declspec(dllexport) int list_array_data(list_t *list, void **datas){
    }
    *datas = temp;
    int i;
-   void *element;
+   char *element;
    for(i=0;i<list->size;i++){
       memcpy(&element,(list->list)+(i*sizeof(char*)),sizeof(char*));
       memcpy(temp,element,list->data_size);
@@ -135,12 +145,12 @@ __declspec(dllexport) int list_array_data(list_t *list, void **datas){
 }
 
 __declspec(dllexport) int list_array_references(list_t *list, void **references){
-   void *temp = (void*)malloc(list->size*sizeof(void*));
+   char *temp = (char*)malloc(list->size*sizeof(char*));
    if(temp == NULL){
       return -1;
    }
    *references = temp;
-   memcpy(temp,list->list,list->size*sizeof(void*));
+   memcpy(temp,list->list,list->size*sizeof(char*));
    return list->size;
 }
 

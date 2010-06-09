@@ -1,3 +1,13 @@
+/*
+* network.c
+*
+* This file contains an network lib implementation. (Windows only)
+*
+* Copyright(C) 2009-2010, Diogo Reis <diogoandre12@gmail.com>
+*
+* This code is licenced under the GPL version 2. For details see COPYING.txt file.
+*/
+
 #define _WIN32_WINNT 0x9999
 
 #include <stdio.h>
@@ -208,7 +218,7 @@ __declspec(dllexport) int getbytes_tcp(network_t *network, data_t *recv_data, in
       return -1;
 }
 
-__declspec(dllexport) int new_data_t(data_t *data, char *bytes, int size){
+__declspec(dllexport) int new_data_t(data_t *data, void *bytes, int size){
    data->data = (char*)malloc(size);
    if(data->data == NULL){
       return -1;

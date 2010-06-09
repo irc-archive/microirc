@@ -1,3 +1,13 @@
+/*
+* tab_manager.h
+*
+* This file contains an implementation of a tab manager to use on irc client.
+*
+* Copyright(C) 2009-2010, Diogo Reis <diogoandre12@gmail.com>
+*
+* This code is licenced under the GPL version 2. For details see COPYING.txt file.
+*/
+
 #define TAB_LITTLE_BUFFER 256
 
 enum TAB_TYPE{STATUS,CHAT};

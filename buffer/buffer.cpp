@@ -1,3 +1,13 @@
+/*
+* buffer.c
+*
+* This file contains an buffer implementation.
+*
+* Copyright(C) 2009-2010, Diogo Reis <diogoandre12@gmail.com>
+*
+* This code is licenced under the GPL version 2. For details see COPYING.txt file.
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "buffer.h"

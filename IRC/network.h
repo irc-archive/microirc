@@ -1,3 +1,13 @@
+/*
+* network.h
+*
+* This file contains an network lib implementation. (Windows only)
+*
+* Copyright(C) 2009-2010, Diogo Reis <diogoandre12@gmail.com>
+*
+* This code is licenced under the GPL version 2. For details see COPYING.txt file.
+*/
+
 #ifndef NETWORK_T
 #define NETWORK_T
 
@@ -9,7 +19,7 @@ typedef struct network_t{
 
 typedef struct data_t{
    unsigned int size;
-	void *data;
+	char *data;
 }data_t;
 
 __declspec(dllexport) int bind_tcp(network_t*, char*, char*);
