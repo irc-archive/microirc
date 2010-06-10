@@ -24,11 +24,6 @@
 #define WM_CONNECTING WM_USER+15
 #define WM_RECONNECTING WM_USER+16
 
-#define ICON TEXT("IRC.ico")
-#define TEXT_TITLE TEXT("IRC v1.0")
-#define TEXT_WINDOW_CLASS TEXT("irc application")
-#define TEXT_CANNOT_CONNECT TEXT("Cannot connect to the server.")
-
 #define BUTTON_CONNECT 200
 #define BUTTON_SEND 201
 #define TEXT_SEND 202

@@ -1,10 +1,13 @@
 #include "resource.h"
 #include "afxres.h"
 
-STRINGTABLE  
+IDI_ICON
+   ICON  "microirc.ico"
+
+STRINGTABLE
 BEGIN
-   IDC_NEWONE   "NEWONE"
-   IDS_APP_TITLE    "newone"
+   IDC_NEWONE   "IRC"
+   IDS_APP_TITLE    "irc"
    IDS_OK	"OK"
    IDS_HELP	"HELP"
 END

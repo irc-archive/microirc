@@ -4,6 +4,7 @@
 * This file contains an ircprotocol lib implementation.
 *
 * Copyright(C) 2009-2010, Diogo Reis <diogoandre12@gmail.com>
+* Copyright(C) 2009-2010, José Pedroso <josedpedroso@gmail.com>
 *
 * This code is licenced under the GPL version 2. For details see COPYING.txt file.
 */
@@ -84,6 +85,15 @@ void get_nick_user_host(char *str, char **d_tokens, int *s_tokens){
    }else{
       (*s_tokens)--;
    }
+}
+
+int verify_buffer(char **messages, int size){
+   for(size--;size>=0;size--){
+      if(messages[size]==NULL){
+         return -1;
+      }
+   }
+   return 0;
 }
 
 __declspec(dllexport) int irc_init_from_ini(irc_t *irc, char *filepath){
@@ -350,7 +360,7 @@ __declspec(dllexport) int irc_send_message(irc_t *irc, int opcode, char **messag
    switch(opcode){
       case SEND_PRIVMSG:{//destination message
          if(size!=2 || messages[0]==NULL || messages[1]==NULL){
-            return 0;
+            return -1;
          }
          EnterCriticalSection(&irc->send_buffer_critical_section);
          sprintf(irc->send_buffer,"PRIVMSG %s :%s",messages[0],messages[1]);
@@ -358,7 +368,7 @@ __declspec(dllexport) int irc_send_message(irc_t *irc, int opcode, char **messag
       }
       case SEND_CTCP:{
          if(size!=2 || messages[0]==NULL || messages[1]==NULL){
-            return 0;
+            return -1;
          }
          EnterCriticalSection(&irc->send_buffer_critical_section);
          sprintf(irc->send_buffer,"PRIVMSG %s :%s",messages[0],messages[1]);
@@ -366,15 +376,15 @@ __declspec(dllexport) int irc_send_message(irc_t *irc, int opcode, char **messag
       }
       case SEND_JOIN:{//channel
          if(size!=1 || messages[0]==NULL){
-            return 0;
+            return -1;
          }
          EnterCriticalSection(&irc->send_buffer_critical_section);
          sprintf(irc->send_buffer,"JOIN :%s",messages[0]);
          break;
       }
       case SEND_PART:{//channel
-         if((size!=1 && size!=2) || messages[0]==NULL || messages[1]==NULL){
-            return 0;
+         if((size<1 || size>2) && verify_buffer(messages,size)!=0){
+            return -1;
          }
          EnterCriticalSection(&irc->send_buffer_critical_section);
          if(size==1){
@@ -386,15 +396,18 @@ __declspec(dllexport) int irc_send_message(irc_t *irc, int opcode, char **messag
       }
       case SEND_KICK:{//channel user message
          if(size!=3 || messages[0]==NULL || messages[1]==NULL || messages[2]==NULL){
-            return 0;
+            return -1;
          }
          EnterCriticalSection(&irc->send_buffer_critical_section);
          sprintf(irc->send_buffer,"KICK %s %s :%s",messages[0],messages[1],messages[2]);
          break;
       }
       case SEND_QUIT:{//message
+         if((size<0 || size>1) && verify_buffer(messages,size)!=0){
+            return -1;
+         }
          EnterCriticalSection(&irc->send_buffer_critical_section);
-         if(size==0 || messages[0]==NULL){
+         if(size==0){
             sprintf(irc->send_buffer,"QUIT :+q");
          }else{
             sprintf(irc->send_buffer,"QUIT :%s",messages[0]);
@@ -403,15 +416,18 @@ __declspec(dllexport) int irc_send_message(irc_t *irc, int opcode, char **messag
       }
       case SEND_PONG:{//ping
          if(size!=1 || messages[0]==NULL){
-            return 0;
+            return -1;
          }
          EnterCriticalSection(&irc->send_buffer_critical_section);
          sprintf(irc->send_buffer,"PONG %s",messages[0]);
          break;
       }
       case SEND_NICK:{//nick or null
+         if((size<0 || size>1) && verify_buffer(messages,size)!=0){
+            return -1;
+         }
          EnterCriticalSection(&irc->send_buffer_critical_section);
-         if(size==0 || messages[0]==NULL){
+         if(size==0){
             srand(GetTickCount());
             sprintf(irc->send_buffer, "NICK nick_em_uso%d", rand()%1000);
          }else{
@@ -421,7 +437,7 @@ __declspec(dllexport) int irc_send_message(irc_t *irc, int opcode, char **messag
       }
       case SEND_USER:{//user and user
          if(size!=2 || messages[0]==NULL || messages[1]==NULL){
-            return 0;
+            return -1;
          }
          EnterCriticalSection(&irc->send_buffer_critical_section);
          sprintf(irc->send_buffer,"USER %s 8 * :%s",messages[0],messages[1]);
@@ -429,15 +445,14 @@ __declspec(dllexport) int irc_send_message(irc_t *irc, int opcode, char **messag
       }
       case SEND_RAW:{
          if(size!=1 || messages[0]==NULL){
-            return 0;
+            return -1;
          }
          EnterCriticalSection(&irc->send_buffer_critical_section);
          sprintf(irc->send_buffer,"%s",messages[0]);
          break;
       }
       default:{
-         return 0;
-         break;
+         return -1;
       }
    }
    int send_result = sendtext_tcp(&irc->network,&irc->recv_buffer_stream,irc->send_buffer,strlen(irc->send_buffer)+irc->recv_buffer_stream.s_split);

@@ -13,11 +13,11 @@
 #include "list.h"
 
 int grow_shrink(list_t *list, int new_size){
-   char *new_list = (char*)malloc(new_size*sizeof(void*));
+   char *new_list = (char*)malloc(new_size*sizeof(char*));
    if(new_list==NULL){
       return -1;
    }
-   memcpy(new_list,list->list,list->size*sizeof(void*));
+   memcpy(new_list,list->list,list->size*sizeof(char*));
    free(list->list);
    list->list=new_list;
    return 0;
@@ -60,13 +60,13 @@ __declspec(dllexport) void *list_add_index(list_t *list, int index, void *data){
       }
       list->current_size = list->current_size*2;
    }
-   void *element = (void*)malloc(list->data_size);
+   char *element = (char*)malloc(list->data_size);
    if(element==NULL){
       return NULL;
    }
    memcpy(element,data,list->data_size);
-   memcpy((list->list)+((index+1)*sizeof(void*)),(list->list)+(index*sizeof(void*)),(list->size-index)*sizeof(void*));
-   memcpy((list->list)+(index*sizeof(void*)),&element,sizeof(void*));
+   memcpy((list->list)+((index+1)*sizeof(char*)),(list->list)+(index*sizeof(char*)),(list->size-index)*sizeof(char*));
+   memcpy((list->list)+(index*sizeof(char*)),&element,sizeof(char*));
    list->size++;
    return element;
 }
@@ -76,7 +76,7 @@ __declspec(dllexport) int list_get(list_t *list, void *data){
    int i;
    char *element;
    for(i=0;i<list->size;i++){
-      memcpy(&element,(list->list)+(i*sizeof(void*)),sizeof(void*));
+      memcpy(&element,(list->list)+(i*sizeof(char*)),sizeof(char*));
       if(memcmp(element,data,list->data_size)==0){
          result = i;
          i = list->size;
@@ -90,7 +90,7 @@ __declspec(dllexport) void *list_get_index(list_t *list, int index, void *d_data
       return NULL;
    }
    char *element;
-   memcpy(&element,(list->list)+(index*sizeof(void*)),sizeof(void*));
+   memcpy(&element,(list->list)+(index*sizeof(char*)),sizeof(char*));
    if(d_data!=NULL && s_data>=list->data_size){
       memcpy(d_data,element,list->data_size);
    }
@@ -109,7 +109,7 @@ __declspec(dllexport) int list_remove(list_t *list, void *data){
 }
 
 __declspec(dllexport) int list_remove_index(list_t *list, int index, void *d_data, int s_data){
-   void *element = list_get_index(list,index,d_data,s_data);
+   char *element = (char*)list_get_index(list,index,d_data,s_data);
    if(element == NULL){
       return -1;
    }

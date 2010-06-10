@@ -4,6 +4,7 @@
 * This file contains an irc client gui implementation with ircprotocol lib.
 *
 * Copyright(C) 2009-2010, Diogo Reis <diogoandre12@gmail.com>
+* Copyright(C) 2010-2010, Josó Diogo Reis <diogoandre12@gmail.com>
 *
 * This code is licenced under the GPL version 2. For details see COPYING.txt file.
 */
@@ -48,6 +49,8 @@ HCURSOR hOldCursor;
 #include "tab_manager.h"
 #include "gui_functions.h"
 
+HANDLE thread;
+
 HANDLE open_handle;
 volatile int open_state;
 
@@ -66,12 +69,12 @@ wchar_t wtextprocess[IRC_SIZE_MEDIUM];
 char ttextprocess[IRC_SIZE_MEDIUM];
 wchar_t wwritebuffer[IRC_SIZE_MEDIUM];
 
-//MessageBox(NULL,TEXT("LOL"),NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+//MessageBox(NULL,L"LOL",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow){
    MSG msg;
    hInstance_Main = hInstance;
    SHInitExtraControls();
-   HWND hWnd_Main = FindWindow(TEXT_WINDOW_CLASS, TEXT_TITLE);   
+   HWND hWnd_Main = FindWindow(L"irc application", L"IRC v1.0");   
    if(hWnd_Main){
       SetForegroundWindow((HWND)((ULONG) hWnd_Main | 0x00000001));
       return 0;
@@ -82,15 +85,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
    wc.cbClsExtra = 0;
    wc.cbWndExtra = 0;
    wc.hInstance = hInstance;
-   wc.hIcon = LoadIcon(hInstance, ICON);
+   wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON));
    wc.hCursor = 0;
    wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
    wc.lpszMenuName = 0;
-   wc.lpszClassName = TEXT_WINDOW_CLASS;
+   wc.lpszClassName = L"irc application";
    if(!RegisterClass(&wc)){
       return FALSE;
    }
-   hWnd_Main = CreateWindowEx(0,TEXT_WINDOW_CLASS, TEXT_TITLE, WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL,(HMENU)0, hInstance, NULL);
+   hWnd_Main = CreateWindowEx(0,L"irc application", L"IRC v1.0", WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL,(HMENU)0, hInstance, NULL);
    if(!hWnd_Main){
       return 0;
    }
@@ -136,7 +139,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
       }
       case WM_CONNECTING:{
          if(connecting(hWnd)!=0){
-            MessageBox(NULL,TEXT("Connecting failed."),NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+            MessageBox(NULL,L"Connecting failed.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
          }
          break;
       }
@@ -146,7 +149,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
       }
       case WM_RECONNECTING:{
          if(reconnecting(hWnd)!=0){
-            MessageBox(NULL,TEXT("Reconnecting failed."),NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+            MessageBox(NULL,L"Reconnecting failed.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
          }
          break;
       }
@@ -178,7 +181,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
          switch (LOWORD(element_id)){
             case BUTTON_CONNECT:{
                if(connecting(hWnd)!=0){
-                  MessageBox(NULL,TEXT("Connecting failed."),NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+                  MessageBox(NULL,L"Connecting failed.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                }
                break;
             }
@@ -203,7 +206,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
                   }
                   tab_delete_actual(hWnd_TabControlChat);
                }else{
-                  switch (MessageBox(hWnd,(LPCWSTR)L"Do you realy want to quit?",(LPCWSTR)L"QUIT",MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2|MB_APPLMODAL|MB_SETFOREGROUND)){
+                  switch (MessageBox(hWnd,L"Do you realy want to quit?",L"QUIT",MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2|MB_APPLMODAL|MB_SETFOREGROUND)){
                      case IDYES:{
                         disconnecting(hWnd);
                         break;
@@ -323,7 +326,7 @@ void *thread_procedure(void *inused){
                   swprintf(wchar_buffer[4],L"\r\n%s %s: %s",timestamp,wchar_buffer[0],wchar_buffer[2]);
                }
                if(tchar_buffer[3][0]=='#'){
-                  SendMessage(hWnd,WM_CREATE_TAB,STATUS,(LPARAM)wchar_buffer[1]);
+                  SendMessage(hWnd,WM_CREATE_TAB,CHAT,(LPARAM)wchar_buffer[1]);
                   tab_write_name(hWnd_TabControlChat,wchar_buffer[1],wchar_buffer[4],TEXT,APPEND);
                }else{
                   SendMessage(hWnd,WM_CREATE_TAB,STATUS,(LPARAM)wchar_buffer[0]);
@@ -468,7 +471,7 @@ void *thread_procedure(void *inused){
       }
       if(connected==1){
          if(irc.reconnect==0){
-            switch (MessageBox(NULL,(LPCWSTR)L"Do you realy want to reconnect?",(LPCWSTR)L"DISCONNECTED",MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2|MB_APPLMODAL|MB_SETFOREGROUND)){
+            switch (MessageBox(NULL,L"Do you realy want to reconnect?",L"DISCONNECTED",MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2|MB_APPLMODAL|MB_SETFOREGROUND)){
                case IDYES:{
                   SendMessage(hWnd,WM_DISCONNECTING,0,0);
                   SendMessage(hWnd,WM_CONNECTING,0,0);
@@ -494,7 +497,8 @@ int init(HWND hWnd){
    if(open_handle==NULL){
       return -1;
    }
-   if(CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)thread_procedure,(void*)hWnd,0,NULL)==NULL){
+   thread = CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)thread_procedure,(void*)hWnd,0,NULL);
+   if(thread==NULL){
       CloseHandle(open_handle);
       return -1;
    }
@@ -523,8 +527,9 @@ int connecting(HWND hWnd){
    if(connected!=0){
       return -1;
    }
-   WideCharToMultiByte(encoding,0,configfile,-1,ttextprocess,IRC_SIZE_MEDIUM,NULL,NULL);
-   if(irc_init_from_ini(&irc,ttextprocess)!=0){
+   char configbuffer[IRC_SIZE_MEDIUM];
+   WideCharToMultiByte(encoding,0,configfile,-1,configbuffer,IRC_SIZE_MEDIUM,NULL,NULL);
+   if(irc_init_from_ini(&irc,configbuffer)!=0){
       return -1;
    }
    destroy_login_menu(hWnd);
@@ -557,7 +562,6 @@ int reconnecting(HWND hWnd){
    int trys = irc.reconnect;
    int sleep = IRC_RECONNECT_TIMEOUT_START;
    while(irc_connect(&irc)<0){
-      tab_connect(hWnd_TabControlChat);//APAGAR..
       Sleep(sleep);
       sleep *= IRC_RECONNECT_TIMEOUT_MULTIPLIER;
       trys--;

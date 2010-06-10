@@ -245,6 +245,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions=" /subsystem:windowsce,5.01"
+				AdditionalDependencies="ws2.lib mmtimer.lib"
 				OutputFile="$(OutDir)/IRC.exe"
 				LinkIncremental="1"
 				DelayLoadDLLs="$(NOINHERIT)"
@@ -334,6 +335,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions=" /subsystem:windowsce,5.01"
+				AdditionalDependencies="ws2.lib mmtimer.lib"
 				OutputFile="$(OutDir)/IRC.exe"
 				LinkIncremental="1"
 				DelayLoadDLLs="$(NOINHERIT)"
@@ -411,6 +413,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ircprotocol.h"
+				>
+			</File>
+			<File
 				RelativePath=".\list.h"
 				>
 			</File>
@@ -442,11 +448,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\IRC.ico"
+				RelativePath=".\menu.rc"
 				>
 			</File>
 			<File
-				RelativePath=".\menu.rc"
+				RelativePath=".\microirc.ico"
 				>
 			</File>
 			<File

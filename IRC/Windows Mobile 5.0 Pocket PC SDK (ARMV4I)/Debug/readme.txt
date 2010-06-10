@@ -1,1 +1,0 @@
-Edit options.ini with your prefered options and just run.

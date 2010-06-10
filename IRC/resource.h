@@ -8,6 +8,7 @@
 * This code is licenced under the GPL version 2. For details see COPYING.txt file.
 */
 
+#define IDI_ICON 300
 #define IDS_APP_TITLE 1
 #define IDC_NEWONE 2
 #define IDR_MENU 102
