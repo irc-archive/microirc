@@ -22,6 +22,7 @@
 #include <wchar.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <nled.h>
 
 int height;
 int width;
@@ -273,6 +274,24 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
    return DefWindowProc(hWnd, event_id, element_id, param_id);
 }
 
+void set_led(int led_num, int state){
+    NLED_SETTINGS_INFO settings;
+    settings.LedNum = led_num;
+    settings.OffOnBlink = state;
+    NLedSetDevice(NLED_SETTINGS_INFO_ID, &settings);
+}
+
+VOID CALLBACK deactivate_led(UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2){
+    timeKillEvent(uTimerID);
+    set_led(LED_NUMBER, 0);
+}
+
+void activate_led(){
+    MMRESULT timer;
+    timer = timeSetEvent(LED_INTERVAL, 50, deactivate_led, 0, TIME_ONESHOT|TIME_CALLBACK_FUNCTION);
+    set_led(LED_NUMBER, 1);
+}
+
 void *thread_procedure(void *inused){
    HWND hWnd = (HWND)inused;
    SYSTEMTIME systime_now;
@@ -308,8 +327,11 @@ void *thread_procedure(void *inused){
                if(tchar_size<5){
                   break;
                }
-               if(strstri(tchar_buffer[4],irc.nick)!=NULL && irc.sounds!=0){
-                  PlaySound(alertsound,NULL,SND_ASYNC|SND_FILENAME);
+               if(strstri(tchar_buffer[4],irc.nick)!=NULL){
+                  if(irc.sounds!=0)
+                     PlaySound(alertsound,NULL,SND_ASYNC|SND_FILENAME);
+                  if(LED_NUMBER>=0)
+                    activate_led();
                }
                MultiByteToWideChar(encoding,0,tchar_buffer[0],-1,wchar_buffer[0],IRC_SIZE_MEDIUM);
                MultiByteToWideChar(encoding,0,tchar_buffer[3],-1,wchar_buffer[1],IRC_SIZE_MEDIUM);
@@ -332,8 +354,11 @@ void *thread_procedure(void *inused){
                if(tchar_size<5){
                   break;
                }
-               if(strstri(tchar_buffer[4],irc.nick)!=NULL && irc.sounds!=0){
-                  PlaySound(alertsound,NULL,SND_ASYNC|SND_FILENAME);
+               if(strstri(tchar_buffer[4],irc.nick)!=NULL){
+                  if(irc.sounds!=0)
+                     PlaySound(alertsound,NULL,SND_ASYNC|SND_FILENAME);
+                  if(LED_NUMBER>=0)
+                    activate_led();
                }
                MultiByteToWideChar(encoding,0,tchar_buffer[0],-1,wchar_buffer[0],IRC_SIZE_MEDIUM);
                MultiByteToWideChar(encoding,0,tchar_buffer[3],-1,wchar_buffer[1],IRC_SIZE_MEDIUM);

@@ -35,6 +35,9 @@
 
 #define DELETE_TEXT_MARGIN 2048
 
+#define LED_INTERVAL 250
+#define LED_NUMBER 1
+
 int init(HWND);
 void destroy();
 int connecting(HWND);
