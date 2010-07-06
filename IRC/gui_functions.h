@@ -75,7 +75,7 @@ void init_chat_screen(HWND hWnd){
    edit_hWnd_Main = hWnd;
    edit_OldEditHandler = (WNDPROC)GetWindowLong(hWnd_EditChat,GWL_WNDPROC);
    SetWindowLong(hWnd_EditChat,GWL_WNDPROC,(LONG)EditProc);
-
+   
    Edit_LineLength(hWnd_EditChat,200);
    Edit_LimitText(hWnd_EditChat,200);
    hWnd_ButtonChat = CreateWindowEx(0,L"button",TEXT("Send"),WS_VISIBLE|WS_CHILD|BS_DEFPUSHBUTTON,200,246,38,20,hWnd,(HMENU)BUTTON_SEND,hInstance_Main,NULL);
@@ -84,6 +84,7 @@ void init_chat_screen(HWND hWnd){
    InitCommonControlsEx(&icex);
    hWnd_TabControlChat = CreateWindowEx(0,WC_TABCONTROL,NULL,WS_CHILD|WS_VISIBLE,0,0,220,23,hWnd,(HMENU)TAB_CONTROL,hInstance_Main,NULL);//240,245
    hWnd_CloseTab = CreateWindowEx(0,L"button",TEXT("X"),WS_VISIBLE|WS_CHILD,223,5,14,14,hWnd,(HMENU)BUTTON_CLOSE,hInstance_Main,NULL);
+   CreateWindow(WC_SIPPREF, L"", WS_CHILD, 0, 0, 0, 0, hWnd, NULL, NULL, NULL);
    UpdateWindow(hWnd);
 }
 

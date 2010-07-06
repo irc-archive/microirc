@@ -4,7 +4,7 @@
 * This file contains an irc client gui implementation with ircprotocol lib.
 *
 * Copyright(C) 2009-2010, Diogo Reis <diogoandre12@gmail.com>
-* Copyright(C) 2010-2010, Josó Diogo Reis <diogoandre12@gmail.com>
+* Copyright(C) 2010-2010, José Pedroso <josedpedroso@gmail.com>
 *
 * This code is licenced under the GPL version 2. For details see COPYING.txt file.
 */
@@ -73,12 +73,13 @@ wchar_t wwritebuffer[IRC_SIZE_MEDIUM];
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow){
    MSG msg;
    hInstance_Main = hInstance;
-   SHInitExtraControls();
    HWND hWnd_Main = FindWindow(L"irc application", L"IRC v1.0");   
    if(hWnd_Main){
       SetForegroundWindow((HWND)((ULONG) hWnd_Main | 0x00000001));
       return 0;
-   } 
+   }
+   InitCommonControls();
+   SHInitExtraControls();
    WNDCLASS wc;
    wc.style = CS_HREDRAW|CS_VREDRAW;
    wc.lpfnWndProc = WindowProc;
@@ -99,13 +100,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
    }
    ShowWindow(hWnd_Main, nCmdShow);
    UpdateWindow(hWnd_Main);
-   /*InitCommonControls();
-   if(SHInitExtraControls()==FALSE){
-      return 0;
-   }
-   if(CreateWindowEx(0,WC_SIPPREF, L"", WS_CHILD, 0, 0, 0, 0, hWnd_Main, (HMENU)0, hInstance_Main, NULL)==NULL){
-      return 0;
-   }*/
    //HACCEL hAccelTable;
    //hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_NEWONE));
    while (GetMessage(&msg, NULL, 0, 0)){
