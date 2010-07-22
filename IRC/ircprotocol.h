@@ -21,6 +21,8 @@
 #define RECV_CTCP 60
 #define RECV_REGISTERED 61
 #define RECV_NOTICE 62
+#define RECV_TOPIC 63
+#define RECV_TOPIC_CHANGED 64
 
 #define SEND_PRIVMSG 80
 #define SEND_JOIN 81
@@ -32,9 +34,8 @@
 #define SEND_USER 87
 #define SEND_RAW 88
 #define SEND_CTCP 89
-
-#define ENCODING_UTF8 30
-#define ENCODING_ISO8859 31
+#define SEND_SET_TOPIC 90
+#define SEND_GET_TOPIC 91
 
 #define CHAR_SPACE ' '
 #define CHAR_COLON ':'
@@ -64,9 +65,6 @@ typedef struct irc_t{
    char perform[IRC_BUFFER_SIZE_MEDIUM];
    char autojoin_channels[IRC_BUFFER_SIZE_MEDIUM];
    int autojoin_delay;
-   int encoding;
-   int reconnect;
-   int sounds;
    
    network_t network;
    char recv_buffer[IRC_BUFFER_SIZE_MEDIUM];
@@ -76,14 +74,8 @@ typedef struct irc_t{
    int connected;
 }irc_t;
 
-__declspec(dllexport) int irc_init(irc_t*, char*, char*, char*, char*, char*, char*, char*, int, int, int, int);
-__declspec(dllexport) int irc_init_from_ini(irc_t*, char *);
+__declspec(dllexport) int irc_init(irc_t*, char*, char*, char*, char*, char*, char*, char*, int);
 __declspec(dllexport) void irc_destroy(irc_t*);
-
-__declspec(dllexport) void irc_read_config_file(irc_t*);
-__declspec(dllexport) void irc_write_config_file(irc_t*);
-__declspec(dllexport) int irc_read_config(irc_t*,char*, char*, char*, char*, char*, char*, char*, int, char*);
-__declspec(dllexport) void irc_write_config(irc_t*);
 
 __declspec(dllexport) int irc_connect(irc_t*);
 __declspec(dllexport) void irc_disconnect(irc_t*, char*);

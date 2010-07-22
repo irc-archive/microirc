@@ -37,6 +37,7 @@ HWND hWnd_TabControlChat;
 HWND hWnd_CloseTab;
 HWND hWnd_ButtonChat;
 HWND hWnd_EditChat;
+HWND hWnd_TapAndHold;
 
 HCURSOR hOldCursor;
 
@@ -51,16 +52,11 @@ HCURSOR hOldCursor;
 #include "gui_functions.h"
 
 HANDLE thread;
-
 HANDLE open_handle;
-volatile int open_state;
-
-irc_t irc;
-volatile int connected;
-volatile int encoding;
+int open_state;
 
 wchar_t alertsound[IRC_SIZE_LITTLE];
-wchar_t configfile[IRC_SIZE_LITTLE];
+char configfile[IRC_SIZE_LITTLE];
 
 wchar_t wdestination[IRC_SIZE_LITTLE];
 char tdestination[IRC_SIZE_LITTLE];
@@ -70,11 +66,22 @@ wchar_t wtextprocess[IRC_SIZE_MEDIUM];
 char ttextprocess[IRC_SIZE_MEDIUM];
 wchar_t wwritebuffer[IRC_SIZE_MEDIUM];
 
+irc_t irc;
+ircconfig_t config;
+int connected;
+
+#include "functions.h"
+#include "dialogs.h"
+
 //MessageBox(NULL,L"LOL",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow){
-   MSG msg;
    hInstance_Main = hInstance;
-   HWND hWnd_Main = FindWindow(L"irc application", L"IRC v1.0");   
+   MSG msg;
+   TCHAR szTitle[IRC_SIZE_LITTLE];
+   TCHAR szWindowClass[IRC_SIZE_LITTLE];
+   LoadString(hInstance, IDS_APP_TITLE, szTitle, IRC_SIZE_LITTLE); //L"IRC v1.0"
+   LoadString(hInstance, IDC_IRC, szWindowClass, IRC_SIZE_LITTLE); //L"irc application"
+   HWND hWnd_Main = FindWindow(szWindowClass, szTitle);   
    if(hWnd_Main){
       SetForegroundWindow((HWND)((ULONG) hWnd_Main | 0x00000001));
       return 0;
@@ -87,27 +94,27 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
    wc.cbClsExtra = 0;
    wc.cbWndExtra = 0;
    wc.hInstance = hInstance;
-   wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON));
+   wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_IRC));
    wc.hCursor = 0;
    wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
    wc.lpszMenuName = 0;
-   wc.lpszClassName = L"irc application";
+   wc.lpszClassName = szWindowClass;
    if(!RegisterClass(&wc)){
       return FALSE;
    }
-   hWnd_Main = CreateWindowEx(0,L"irc application", L"IRC v1.0", WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL,(HMENU)0, hInstance, NULL);
+   hWnd_Main = CreateWindowEx(0, szWindowClass, szTitle, WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL,(HMENU)0, hInstance, NULL);
    if(!hWnd_Main){
       return 0;
    }
    ShowWindow(hWnd_Main, nCmdShow);
    UpdateWindow(hWnd_Main);
-   //HACCEL hAccelTable;
-   //hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_NEWONE));
+   HACCEL hAccelTable;
+   hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_IRC));
    while (GetMessage(&msg, NULL, 0, 0)){
-      //if(!TranslateAccelerator(msg.hwnd, hAccelTable, &msg)){
+      if(!TranslateAccelerator(msg.hwnd, hAccelTable, &msg)){
          TranslateMessage(&msg);
          DispatchMessage(&msg);
-      //}
+      }
    }
    return (int) msg.wParam;
 }
@@ -194,7 +201,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
                char *send[1];
                send[0]=ttextprocess;
                tab_get_name_actual(hWnd_TabControlChat,wtextprocess,IRC_SIZE_MEDIUM);
-               WideCharToMultiByte(encoding,0,wtextprocess,-1,ttextprocess,IRC_SIZE_MEDIUM,NULL,NULL);
+               WideCharToMultiByte(config.encoding,0,wtextprocess,-1,ttextprocess,IRC_SIZE_MEDIUM,NULL,NULL);
                if(memcmp(ttextprocess,".status",7)!=0){
                   if(memcmp(ttextprocess,"#",1)==0){
                      irc_send_message(&irc,SEND_PART,send,1);
@@ -219,11 +226,11 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
                send[1]=ttextprocess;
                GetWindowText(hWnd_EditChat, wtextprocess, IRC_SIZE_MEDIUM);
                if(wcslen(wtextprocess)!=0){
-                  WideCharToMultiByte(encoding,0,wtextprocess,-1,ttextprocess,IRC_SIZE_MEDIUM,NULL,NULL);
+                  WideCharToMultiByte(config.encoding,0,wtextprocess,-1,ttextprocess,IRC_SIZE_MEDIUM,NULL,NULL);
                   tab_get_name_actual(hWnd_TabControlChat,wdestination,IRC_SIZE_LITTLE);
-                  WideCharToMultiByte(encoding,0,wdestination,-1,tdestination,IRC_SIZE_LITTLE,NULL,NULL);
+                  WideCharToMultiByte(config.encoding,0,wdestination,-1,tdestination,IRC_SIZE_LITTLE,NULL,NULL);
                   send[0]=tdestination;
-                  MultiByteToWideChar(encoding,0,irc.nick,-1,wnick,IRC_SIZE_LITTLE);
+                  MultiByteToWideChar(config.encoding,0,irc.nick,-1,wnick,IRC_SIZE_LITTLE);
                   if(memcmp(tdestination,".status",7)==0){
                      send[0]=send[1];
                      irc_send_message(&irc,SEND_RAW,send,1);
@@ -238,21 +245,101 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
                }
                break;
             }
-            /*case IDM_HELP_ABOUT:
-            DialogBox(g_hInstanceMain, (LPCTSTR)IDD_ABOUTBOX, hWnd, About);
-            break;
-            case IDM_OK:
-            SendMessage (hWnd, WM_CLOSE, 0, 0);				
-            break;*/
+            case ID_OPTIONS_PREFERENCES:{
+               DialogBox(hInstance_Main, (LPCTSTR)IDD_PREFERENCES, hWnd, Preferences);
+               break;
+            }
+            case ID_OPTIONS_OPENPRIVATE:{
+            }
+            case ID_OPTIONS_JOINCHANNEL:{
+               if(connected!=1){
+                  break;
+               }
+            }
+            case IDM_OPENURL:{
+               wchar_t title[IRC_SIZE_LITTLE];
+               if(LOWORD(element_id) == ID_OPTIONS_OPENPRIVATE){
+                  wcscpy(title,L"Open Private");
+               }else if(LOWORD(element_id) == ID_OPTIONS_JOINCHANNEL){
+                  wcscpy(title,L"Join Channel");
+               }else if(LOWORD(element_id) == IDM_OPENURL){
+                  wcscpy(title,L"Open URL");
+               }
+               wchar_t *result = (wchar_t*)DialogBoxParam(hInstance_Main, (LPCTSTR)IDD_INPUTBOX, hWnd, InputBox, (LPARAM)title);
+               if(result==NULL){
+                  break;
+               }
+               if(LOWORD(element_id) == ID_OPTIONS_OPENPRIVATE){
+                  SendMessage(hWnd,WM_CREATE_TAB,STATUS,(LPARAM)result);
+                  tab_select_name(hWnd_TabControlChat,result);
+               }else if(LOWORD(element_id) == ID_OPTIONS_JOINCHANNEL){
+                  char tresult[IRC_SIZE_LITTLE];
+                  char *send[1] = {tresult};
+                  WideCharToMultiByte(CP_UTF8,0,result,-1,tresult,IRC_SIZE_LITTLE,NULL,NULL);
+                  irc_send_message(&irc,SEND_JOIN,send,1);
+               }else if(LOWORD(element_id) == IDM_OPENURL){
+                  if(wcsncmp(L"http://",result,7)==0){
+                     wsprintf(wtextprocess,L"%s",result);
+                  }else{
+                     wsprintf(wtextprocess,L"http://%s",result);
+                  }
+                  SHELLEXECUTEINFO ShExecInfo;
+                  ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+                  ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+                  ShExecInfo.hwnd = NULL;
+                  ShExecInfo.lpVerb = L"open";
+                  ShExecInfo.lpFile = wtextprocess;
+                  ShExecInfo.lpParameters = NULL;
+                  ShExecInfo.lpDirectory = NULL;
+                  ShExecInfo.nShow = SW_SHOW;
+                  ShExecInfo.hInstApp = NULL;
+                  ShellExecuteEx(&ShExecInfo);
+               }
+               free(result);
+               break;
+            }
+            case ID_OPTIONS_SETTOPIC:{
+               if(connected!=1){
+                  break;
+               }
+               wchar_t *wtopic = (wchar_t*)DialogBoxParam(hInstance_Main, (LPCTSTR)IDD_INPUTBOX, hWnd, InputBox, (LPARAM)L"Set Topic");
+               if(wtopic==NULL){
+                  break;
+               }
+               wchar_t wchannel[IRC_SIZE_LITTLE];
+               tab_get_name_actual(hWnd_TabControlChat,wchannel,IRC_SIZE_LITTLE);
+               if(wcsncmp(wchannel,L"#",1)!=0){
+                  break;
+               }
+               char topic[IRC_SIZE_LITTLE];
+               char channel[IRC_SIZE_LITTLE];
+               WideCharToMultiByte(CP_UTF8,0,wtopic,-1,topic,IRC_SIZE_LITTLE,NULL,NULL);
+               WideCharToMultiByte(CP_UTF8,0,wchannel,-1,channel,IRC_SIZE_LITTLE,NULL,NULL);
+               char *send[2]={channel,topic};
+               irc_send_message(&irc,SEND_SET_TOPIC,send,2);
+               free(wtopic);
+               break;
+            }
+            case ID_OPTIONS_GETTOPIC:{
+               if(connected!=1){
+                  break;
+               }
+               wchar_t wchannel[IRC_SIZE_LITTLE];
+               tab_get_name_actual(hWnd_TabControlChat,wchannel,IRC_SIZE_LITTLE);
+               if(wcsncmp(wchannel,L"#",1)!=0){
+                  break;
+               }
+               char channel[IRC_SIZE_LITTLE];
+               WideCharToMultiByte(CP_UTF8,0,wchannel,-1,channel,IRC_SIZE_LITTLE,NULL,NULL);
+               char *send[1]={channel};
+               irc_send_message(&irc,SEND_GET_TOPIC,send,1);
+               break;
+            }
+            case ID_OPTIONS_EXIT:{
+               SendMessage(hWnd, WM_CLOSE, 0, 0);
+               break;
+            }
          }
-         break;
-      }
-      case WM_CREATE:{
-         init(hWnd);
-         break;
-      }
-      case WM_DESTROY:{
-         destroy();
          break;
       }
       case WM_SIZE:{
@@ -270,26 +357,27 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
          SHHandleWMSettingChange(hWnd, element_id, param_id, &s_sai);
          break;
       }
+      case WM_CREATE:{
+         if(init(hWnd)!=0){
+            PostQuitMessage(0);
+         }
+         break;
+      }
+      case WM_QUIT:{
+         //called on PostQuitMessage(0);
+         break;
+      }
+      case WM_HIBERNATE:{
+      }
+      case WM_CLOSE:{
+      }
+      case WM_DESTROY:{
+         destroy();
+         PostQuitMessage(0);
+         break;
+      }
    }
    return DefWindowProc(hWnd, event_id, element_id, param_id);
-}
-
-void set_led(int led_num, int state){
-    NLED_SETTINGS_INFO settings;
-    settings.LedNum = led_num;
-    settings.OffOnBlink = state;
-    NLedSetDevice(NLED_SETTINGS_INFO_ID, &settings);
-}
-
-VOID CALLBACK deactivate_led(UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2){
-    timeKillEvent(uTimerID);
-    set_led(LED_NUMBER, 0);
-}
-
-void activate_led(){
-    MMRESULT timer;
-    timer = timeSetEvent(LED_INTERVAL, 50, deactivate_led, 0, TIME_ONESHOT|TIME_CALLBACK_FUNCTION);
-    set_led(LED_NUMBER, 1);
 }
 
 void *thread_procedure(void *inused){
@@ -316,7 +404,7 @@ void *thread_procedure(void *inused){
                   break;
                }
                if(memcmp(tchar_buffer[4],"ACTION ",7)!=0){
-                  MultiByteToWideChar(encoding,0,tchar_buffer[4],-1,wchar_buffer[0],IRC_SIZE_MEDIUM);
+                  MultiByteToWideChar(config.encoding,0,tchar_buffer[4],-1,wchar_buffer[0],IRC_SIZE_MEDIUM);
                   swprintf(wchar_buffer[4],L"\r\n%s %s",timestamp,wchar_buffer[0]);
                   tab_write_name(hWnd_TabControlChat,L".status",wchar_buffer[4],TEXT,APPEND);
                   break;
@@ -324,52 +412,74 @@ void *thread_procedure(void *inused){
                tchar_buffer[4]+=7;
             }
             case RECV_PRIVMSG:{//nick user host destination mensagem
+            }
+            case RECV_NOTICE:{//nick user host destination mensagem
                if(tchar_size<5){
                   break;
                }
-               if(strstri(tchar_buffer[4],irc.nick)!=NULL){
-                  if(irc.sounds!=0)
+               if(strstri(tchar_buffer[4],irc.nick)!=NULL){//StrCmpI
+                  if(config.sounds!=0)
                      PlaySound(alertsound,NULL,SND_ASYNC|SND_FILENAME);
-                  if(LED_NUMBER>=0)
-                    activate_led();
+                  if(config.lednumber>=0)
+                     activate_led();
                }
-               MultiByteToWideChar(encoding,0,tchar_buffer[0],-1,wchar_buffer[0],IRC_SIZE_MEDIUM);
-               MultiByteToWideChar(encoding,0,tchar_buffer[3],-1,wchar_buffer[1],IRC_SIZE_MEDIUM);
-               MultiByteToWideChar(encoding,0,tchar_buffer[4],-1,wchar_buffer[2],IRC_SIZE_MEDIUM);
+               MultiByteToWideChar(config.encoding,0,tchar_buffer[0],-1,wchar_buffer[0],IRC_SIZE_MEDIUM);
+               MultiByteToWideChar(config.encoding,0,tchar_buffer[3],-1,wchar_buffer[1],IRC_SIZE_MEDIUM);
+               MultiByteToWideChar(config.encoding,0,tchar_buffer[4],-1,wchar_buffer[2],IRC_SIZE_MEDIUM);
                if(recv_result==RECV_CTCP){
                   swprintf(wchar_buffer[4],L"\r\n%s %s %s",timestamp,wchar_buffer[0],wchar_buffer[2]);
-               }else{
+               }else if(recv_result==RECV_PRIVMSG){
+                  swprintf(wchar_buffer[4],L"\r\n%s %s: %s",timestamp,wchar_buffer[0],wchar_buffer[2]);
+               }else if(recv_result==RECV_NOTICE){
                   swprintf(wchar_buffer[4],L"\r\n%s %s: %s",timestamp,wchar_buffer[0],wchar_buffer[2]);
                }
                if(tchar_buffer[3][0]=='#'){
                   SendMessage(hWnd,WM_CREATE_TAB,CHAT,(LPARAM)wchar_buffer[1]);
                   tab_write_name(hWnd_TabControlChat,wchar_buffer[1],wchar_buffer[4],TEXT,APPEND);
                }else{
-                  SendMessage(hWnd,WM_CREATE_TAB,STATUS,(LPARAM)wchar_buffer[0]);
-                  tab_write_name(hWnd_TabControlChat,wchar_buffer[0],wchar_buffer[4],TEXT,APPEND);
+                  if(recv_result==RECV_NOTICE){
+                     tab_write_name(hWnd_TabControlChat,L".status",wchar_buffer[4],TEXT,APPEND);
+                  }else{
+                     SendMessage(hWnd,WM_CREATE_TAB,STATUS,(LPARAM)wchar_buffer[0]);
+                     tab_write_name(hWnd_TabControlChat,wchar_buffer[0],wchar_buffer[4],TEXT,APPEND);
+                  }
                }
                break;
             }
-            case RECV_NOTICE:{
-               if(tchar_size<5){
+            case RECV_JOIN:{//nick user host canal
+               if(tchar_size<4){
                   break;
                }
-               if(strstri(tchar_buffer[4],irc.nick)!=NULL){
-                  if(irc.sounds!=0)
-                     PlaySound(alertsound,NULL,SND_ASYNC|SND_FILENAME);
-                  if(LED_NUMBER>=0)
-                    activate_led();
-               }
-               MultiByteToWideChar(encoding,0,tchar_buffer[0],-1,wchar_buffer[0],IRC_SIZE_MEDIUM);
-               MultiByteToWideChar(encoding,0,tchar_buffer[3],-1,wchar_buffer[1],IRC_SIZE_MEDIUM);
-               MultiByteToWideChar(encoding,0,tchar_buffer[4],-1,wchar_buffer[2],IRC_SIZE_MEDIUM);
-               swprintf(wchar_buffer[4],L"\r\n%s %s: %s",timestamp,wchar_buffer[0],wchar_buffer[2]);
-               if(tchar_buffer[3][0]=='#'){
-                  SendMessage(hWnd,WM_CREATE_TAB,STATUS,(LPARAM)wchar_buffer[1]);
-                  tab_write_name(hWnd_TabControlChat,wchar_buffer[1],wchar_buffer[4],TEXT,APPEND);
+               if(strcmp(tchar_buffer[0],irc.nick)==0){
+                  MultiByteToWideChar(config.encoding,0,tchar_buffer[3],-1,wchar_buffer[1],IRC_SIZE_MEDIUM);
+                  SendMessage(hWnd,WM_CREATE_TAB,CHAT,(LPARAM)wchar_buffer[1]);
                }else{
-                  tab_write_name(hWnd_TabControlChat,L".status",wchar_buffer[4],TEXT,APPEND);
+                  MultiByteToWideChar(config.encoding,0,tchar_buffer[0],-1,wchar_buffer[0],IRC_SIZE_MEDIUM);
+                  MultiByteToWideChar(config.encoding,0,tchar_buffer[3],-1,wchar_buffer[1],IRC_SIZE_MEDIUM);
+                  swprintf(wchar_buffer[4],L"\r\n%s %s joined",timestamp,wchar_buffer[0]);
+                  tab_write_name(hWnd_TabControlChat,wchar_buffer[1],wchar_buffer[4],TEXT,APPEND);
+                  tab_write_name(hWnd_TabControlChat,wchar_buffer[1],wchar_buffer[0],NICK,APPEND);
                }
+               break;
+            }
+            case RECV_KICK:{//nick user host canal nick_vitima mensagem
+               if(tchar_size<6){
+                  break;
+               }
+               MultiByteToWideChar(config.encoding,0,tchar_buffer[3],-1,wchar_buffer[1],IRC_SIZE_MEDIUM);
+               if(strcmp(tchar_buffer[4],irc.nick)==0){
+                  tab_write_name(hWnd_TabControlChat,wchar_buffer[1],NULL,NICK,REMOVE);
+               }
+               MultiByteToWideChar(config.encoding,0,tchar_buffer[0],-1,wchar_buffer[0],IRC_SIZE_MEDIUM);
+               MultiByteToWideChar(config.encoding,0,tchar_buffer[4],-1,wchar_buffer[2],IRC_SIZE_MEDIUM);
+               if(tchar_size==5){
+                  swprintf(wchar_buffer[4],L"\r\n%s %s kicked by %s",timestamp,wchar_buffer[2],wchar_buffer[0]);
+               }else{
+                  MultiByteToWideChar(config.encoding,0,tchar_buffer[5],-1,wchar_buffer[3],IRC_SIZE_MEDIUM);
+                  swprintf(wchar_buffer[4],L"\r\n%s %s kicked by %s (%s)",timestamp,wchar_buffer[2],wchar_buffer[0],wchar_buffer[3]);
+               }
+               tab_write_name(hWnd_TabControlChat,wchar_buffer[1],wchar_buffer[4],TEXT,APPEND);
+               tab_write_name(hWnd_TabControlChat,wchar_buffer[1],wchar_buffer[2],NICK,REMOVE);
                break;
             }
             case RECV_NICK:{//nick user host newnick
@@ -379,91 +489,23 @@ void *thread_procedure(void *inused){
                if(strcmp(tchar_buffer[0],irc.nick)==0){
                   sprintf(irc.nick,"%s",tchar_buffer[3]);
                }
-               MultiByteToWideChar(encoding,0,tchar_buffer[0],-1,wchar_buffer[0],IRC_SIZE_MEDIUM);
-               MultiByteToWideChar(encoding,0,tchar_buffer[3],-1,wchar_buffer[1],IRC_SIZE_MEDIUM);
+               MultiByteToWideChar(config.encoding,0,tchar_buffer[0],-1,wchar_buffer[0],IRC_SIZE_MEDIUM);
+               MultiByteToWideChar(config.encoding,0,tchar_buffer[3],-1,wchar_buffer[1],IRC_SIZE_MEDIUM);
                tab_nickchange(hWnd_TabControlChat,timestamp,wchar_buffer[0],wchar_buffer[1]);
-               break;
-            }
-            case RECV_JOIN:{//nick user host canal
-               if(tchar_size<4){
-                  break;
-               }
-               if(strcmp(tchar_buffer[0],irc.nick)==0){
-                  MultiByteToWideChar(encoding,0,tchar_buffer[3],-1,wchar_buffer[1],IRC_SIZE_MEDIUM);
-                  SendMessage(hWnd,WM_CREATE_TAB,CHAT,(LPARAM)wchar_buffer[1]);
-               }else{
-                  MultiByteToWideChar(encoding,0,tchar_buffer[0],-1,wchar_buffer[0],IRC_SIZE_MEDIUM);
-                  MultiByteToWideChar(encoding,0,tchar_buffer[3],-1,wchar_buffer[1],IRC_SIZE_MEDIUM);
-                  swprintf(wchar_buffer[4],L"\r\n%s %s joined",timestamp,wchar_buffer[0]);
-                  tab_write_name(hWnd_TabControlChat,wchar_buffer[1],wchar_buffer[4],TEXT,APPEND);
-                  tab_write_name(hWnd_TabControlChat,wchar_buffer[1],wchar_buffer[0],NICK,APPEND);
-               }
-               break;
-            }
-            case RECV_PART:{//nick user host canal mensagem
-               if(tchar_size<4){
-                  break;
-               }
-               MultiByteToWideChar(encoding,0,tchar_buffer[3],-1,wchar_buffer[1],IRC_SIZE_MEDIUM);
-               if(strcmp(tchar_buffer[0],irc.nick)==0){
-                  tab_write_name(hWnd_TabControlChat,wchar_buffer[1],NULL,NICK,REMOVE);
-               }
-               MultiByteToWideChar(encoding,0,tchar_buffer[0],-1,wchar_buffer[0],IRC_SIZE_MEDIUM);
-               if(tchar_size==4){
-                  swprintf(wchar_buffer[4],L"\r\n%s %s parted",timestamp,wchar_buffer[0]);
-               }else{
-                  MultiByteToWideChar(encoding,0,tchar_buffer[4],-1,wchar_buffer[2],IRC_SIZE_MEDIUM);
-                  swprintf(wchar_buffer[4],L"\r\n%s %s parted (%s)",timestamp,wchar_buffer[0],wchar_buffer[2]);
-               }
-               tab_write_name(hWnd_TabControlChat,wchar_buffer[1],wchar_buffer[4],TEXT,APPEND);
-               tab_write_name(hWnd_TabControlChat,wchar_buffer[1],wchar_buffer[0],NICK,REMOVE);
-               break;
-            }
-            case RECV_QUIT:{//nick user host mensagem
-               if(tchar_size<4){
-                  break;
-               }
-               MultiByteToWideChar(encoding,0,tchar_buffer[0],-1,wchar_buffer[0],IRC_SIZE_MEDIUM);
-               if(tchar_size==3){
-                  tab_quit(hWnd_TabControlChat,timestamp,wchar_buffer[0],L"");
-               }else{
-                  MultiByteToWideChar(encoding,0,tchar_buffer[3],-1,wchar_buffer[1],IRC_SIZE_MEDIUM);
-                  tab_quit(hWnd_TabControlChat,timestamp,wchar_buffer[0],wchar_buffer[1]);
-               }
-               break;
-            }
-            case RECV_KICK:{//nick user host canal nick_vitima mensagem
-               if(tchar_size<6){
-                  break;
-               }
-               MultiByteToWideChar(encoding,0,tchar_buffer[3],-1,wchar_buffer[1],IRC_SIZE_MEDIUM);
-               if(strcmp(tchar_buffer[4],irc.nick)==0){
-                  tab_write_name(hWnd_TabControlChat,wchar_buffer[1],NULL,NICK,REMOVE);
-               }
-               MultiByteToWideChar(encoding,0,tchar_buffer[0],-1,wchar_buffer[0],IRC_SIZE_MEDIUM);
-               MultiByteToWideChar(encoding,0,tchar_buffer[4],-1,wchar_buffer[2],IRC_SIZE_MEDIUM);
-               if(tchar_size==5){
-                  swprintf(wchar_buffer[4],L"\r\n%s %s kicked by %s",timestamp,wchar_buffer[2],wchar_buffer[0]);
-               }else{
-                  MultiByteToWideChar(encoding,0,tchar_buffer[5],-1,wchar_buffer[3],IRC_SIZE_MEDIUM);
-                  swprintf(wchar_buffer[4],L"\r\n%s %s kicked by %s (%s)",timestamp,wchar_buffer[2],wchar_buffer[0],wchar_buffer[3]);
-               }
-               tab_write_name(hWnd_TabControlChat,wchar_buffer[1],wchar_buffer[4],TEXT,APPEND);
-               tab_write_name(hWnd_TabControlChat,wchar_buffer[1],wchar_buffer[2],NICK,REMOVE);
                break;
             }
             case RECV_NICK_LIST:{//host canal nicks
                if(tchar_size<3){
                   break;
                }
-               MultiByteToWideChar(encoding,0,tchar_buffer[1],-1,wchar_buffer[0],IRC_SIZE_MEDIUM);
+               MultiByteToWideChar(config.encoding,0,tchar_buffer[1],-1,wchar_buffer[0],IRC_SIZE_MEDIUM);
                char *nicks = tchar_buffer[2];
                char *d_tokens[IRC_MAX_NICKS_PER_MESSAGE];
                int s_tokens=0;
                int i;
                tokens_required(nicks,CHAR_SPACE,IRC_MAX_NICKS_PER_MESSAGE,d_tokens,&s_tokens);
                for(i=0;i<s_tokens;i++){
-                  MultiByteToWideChar(encoding,0,d_tokens[i],-1,wchar_buffer[1],IRC_SIZE_MEDIUM);
+                  MultiByteToWideChar(config.encoding,0,d_tokens[i],-1,wchar_buffer[1],IRC_SIZE_MEDIUM);
                   tab_write_name(hWnd_TabControlChat,wchar_buffer[0],wchar_buffer[1],NICK,APPEND);
                }
                break;
@@ -473,6 +515,25 @@ void *thread_procedure(void *inused){
                tab_write_actual(hWnd_TabControlChat,wchar_buffer[4],TEXT,APPEND);
                break;
             }
+            case RECV_PART:{//nick user host canal mensagem
+               if(tchar_size<4){
+                  break;
+               }
+               MultiByteToWideChar(config.encoding,0,tchar_buffer[3],-1,wchar_buffer[1],IRC_SIZE_MEDIUM);
+               if(strcmp(tchar_buffer[0],irc.nick)==0){
+                  tab_write_name(hWnd_TabControlChat,wchar_buffer[1],NULL,NICK,REMOVE);
+               }
+               MultiByteToWideChar(config.encoding,0,tchar_buffer[0],-1,wchar_buffer[0],IRC_SIZE_MEDIUM);
+               if(tchar_size==4){
+                  swprintf(wchar_buffer[4],L"\r\n%s %s parted",timestamp,wchar_buffer[0]);
+               }else{
+                  MultiByteToWideChar(config.encoding,0,tchar_buffer[4],-1,wchar_buffer[2],IRC_SIZE_MEDIUM);
+                  swprintf(wchar_buffer[4],L"\r\n%s %s parted (%s)",timestamp,wchar_buffer[0],wchar_buffer[2]);
+               }
+               tab_write_name(hWnd_TabControlChat,wchar_buffer[1],wchar_buffer[4],TEXT,APPEND);
+               tab_write_name(hWnd_TabControlChat,wchar_buffer[1],wchar_buffer[0],NICK,REMOVE);
+               break;
+            }
             case RECV_OTHER:{//host message
                if(tchar_size<2){
                   break;
@@ -480,16 +541,50 @@ void *thread_procedure(void *inused){
                swprintf(wchar_buffer[4],L"\r\n%s",timestamp);
                int i;
                for(i=0;i<tchar_size;i++){
-                  MultiByteToWideChar(encoding,0,tchar_buffer[i],-1,wchar_buffer[i],IRC_SIZE_MEDIUM);
+                  MultiByteToWideChar(config.encoding,0,tchar_buffer[i],-1,wchar_buffer[i],IRC_SIZE_MEDIUM);
                   swprintf(wchar_buffer[4]+wcslen(wchar_buffer[4]),L" %s",wchar_buffer[i]);
                }
                tab_write_name(hWnd_TabControlChat,L".status",wchar_buffer[4],TEXT,APPEND);
                break;
             }
+            case RECV_QUIT:{//nick user host mensagem
+               if(tchar_size<4){
+                  break;
+               }
+               MultiByteToWideChar(config.encoding,0,tchar_buffer[0],-1,wchar_buffer[0],IRC_SIZE_MEDIUM);
+               if(tchar_size==3){
+                  tab_quit(hWnd_TabControlChat,timestamp,wchar_buffer[0],L"");
+               }else{
+                  MultiByteToWideChar(config.encoding,0,tchar_buffer[3],-1,wchar_buffer[1],IRC_SIZE_MEDIUM);
+                  tab_quit(hWnd_TabControlChat,timestamp,wchar_buffer[0],wchar_buffer[1]);
+               }
+               break;
+            }
+            case RECV_TOPIC:{//host your_nick canal topic
+               if(tchar_size<4){
+                  break;
+               }
+               MultiByteToWideChar(config.encoding,0,tchar_buffer[2],-1,wchar_buffer[0],IRC_SIZE_MEDIUM);
+               MultiByteToWideChar(config.encoding,0,tchar_buffer[3],-1,wchar_buffer[1],IRC_SIZE_MEDIUM);
+               swprintf(wchar_buffer[4],L"\r\nTopic is %s",wchar_buffer[1]);
+               tab_write_name(hWnd_TabControlChat,wchar_buffer[0],wchar_buffer[4],TEXT,APPEND);
+               break;
+            }
+            case RECV_TOPIC_CHANGED:{//nick user host canal topic
+               if(tchar_size<5){
+                  break;
+               }
+               MultiByteToWideChar(config.encoding,0,tchar_buffer[0],-1,wchar_buffer[0],IRC_SIZE_MEDIUM);
+               MultiByteToWideChar(config.encoding,0,tchar_buffer[3],-1,wchar_buffer[1],IRC_SIZE_MEDIUM);
+               MultiByteToWideChar(config.encoding,0,tchar_buffer[4],-1,wchar_buffer[2],IRC_SIZE_MEDIUM);
+               swprintf(wchar_buffer[4],L"\r\nTopic changed by %s to %s",wchar_buffer[0],wchar_buffer[2]);
+               tab_write_name(hWnd_TabControlChat,wchar_buffer[1],wchar_buffer[4],TEXT,APPEND);
+               break;
+            }
          }
       }
       if(connected==1){
-         if(irc.reconnect==0){
+         if(config.reconnect==0){
             switch (MessageBox(NULL,L"Do you realy want to reconnect?",L"DISCONNECTED",MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2|MB_APPLMODAL|MB_SETFOREGROUND)){
                case IDYES:{
                   SendMessage(hWnd,WM_DISCONNECTING,0,0);
@@ -514,11 +609,13 @@ int init(HWND hWnd){
    open_state = 1;
    open_handle = CreateEvent(NULL,FALSE,FALSE,NULL);
    if(open_handle==NULL){
+      MessageBox(NULL,L"Critical error occurred.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
       return -1;
    }
    thread = CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)thread_procedure,(void*)hWnd,0,NULL);
    if(thread==NULL){
       CloseHandle(open_handle);
+      MessageBox(NULL,L"Critical error occurred.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
       return -1;
    }
    init_menu_bar(hWnd);
@@ -526,8 +623,14 @@ int init(HWND hWnd){
    if(GetModuleFileName(NULL,alertsound,IRC_SIZE_LITTLE)!=0){
       wcscpy(wcsrchr(alertsound,92)+1,L"alert.wav");
    }
-   if(GetModuleFileName(NULL,configfile,IRC_SIZE_LITTLE)!=0){
-      wcscpy(wcsrchr(configfile,92)+1,L"options.ini");
+   wchar_t configbuffer[IRC_SIZE_MEDIUM];
+   if(GetModuleFileName(NULL,configbuffer,IRC_SIZE_MEDIUM)!=0){
+      wcscpy(wcsrchr(configbuffer,92)+1,L"options.ini");
+   }
+   WideCharToMultiByte(CP_UTF8,0,configbuffer,-1,configfile,IRC_SIZE_MEDIUM,NULL,NULL);
+   if(irc_and_ircconfig_init(&irc,&config,configfile)!=0){
+      MessageBox(NULL,L"Config file is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+      return -1;
    }
    return 0;
 }
@@ -539,16 +642,17 @@ void destroy(){
    //destroy_login_menu();
    //destroy_menu_bar();
    //join thread...
-   PostQuitMessage(0);
+
+   //irc_destroy(&irc);
+   //ircconfig_destroy(&config);
 }
 
 int connecting(HWND hWnd){
    if(connected!=0){
       return -1;
    }
-   char configbuffer[IRC_SIZE_MEDIUM];
-   WideCharToMultiByte(encoding,0,configfile,-1,configbuffer,IRC_SIZE_MEDIUM,NULL,NULL);
-   if(irc_init_from_ini(&irc,configbuffer)!=0){
+   if(irc_and_ircconfig_init(&irc,&config,configfile)!=0){
+      MessageBox(NULL,L"Config file is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
       return -1;
    }
    destroy_login_menu(hWnd);
@@ -561,11 +665,6 @@ int connecting(HWND hWnd){
    destroy_loading_screen(hWnd);
    init_chat_screen(hWnd);
    tab_create(hWnd,hWnd_TabControlChat,L".status",STATUS);
-   if(irc.encoding == ENCODING_UTF8){
-      encoding = CP_UTF8;
-   }else if(irc.encoding == ENCODING_ISO8859){
-      encoding = CP_ACP;
-   }
    connected = 1;
    SetEvent(open_handle);
    return 0;
@@ -577,8 +676,12 @@ int reconnecting(HWND hWnd){
    }
    irc_disconnect(&irc,NULL);
    tab_disconnect(hWnd_TabControlChat);
+   if(irc_and_ircconfig_init(&irc,&config,configfile)!=0){
+      MessageBox(NULL,L"Config file is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+      return -1;
+   }
    init_loading_screen(hWnd);
-   int trys = irc.reconnect;
+   int trys = config.reconnect;
    int sleep = IRC_RECONNECT_TIMEOUT_START;
    while(irc_connect(&irc)<0){
       Sleep(sleep);
@@ -587,7 +690,8 @@ int reconnecting(HWND hWnd){
       if(trys==0){
          destroy_loading_screen(hWnd);
          connected = 0;
-         irc_destroy(&irc);
+         //irc_destroy(&irc);
+         //ircconfig_destroy(&config);
          while(tab_delete_actual(hWnd_TabControlChat)!=-1);
          destroy_chat_screen(hWnd);
          init_login_menu(hWnd);
@@ -604,7 +708,8 @@ void disconnecting(HWND hWnd){
    if(connected==1){
       connected = 0;
       irc_disconnect(&irc,NULL);
-      irc_destroy(&irc);
+      //irc_destroy(&irc);
+      //ircconfig_destroy(&config);
       while(tab_delete_actual(hWnd_TabControlChat)!=-1);
       destroy_chat_screen(hWnd);
       init_login_menu(hWnd);

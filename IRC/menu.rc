@@ -1,43 +1,249 @@
+// Microsoft Visual C++ generated resource script.
+//
 #include "resource.h"
-#include "afxres.h"
 
-IDI_ICON
-   ICON  "microirc.ico"
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#define APSTUDIO_HIDDEN_SYMBOLS
+#include "windows.h"
+#include "resdefce.h"
+#undef APSTUDIO_HIDDEN_SYMBOLS
 
-STRINGTABLE
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Neutral resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NEU)
+#ifdef _WIN32
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOG  0, 0, 156, 129
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION
+EXSTYLE 0x80000000L
+CAPTION "About irc"
+FONT 8, "MS Sans Serif"
 BEGIN
-   IDC_NEWONE   "IRC"
-   IDS_APP_TITLE    "irc"
-   IDS_OK	"OK"
-   IDS_HELP	"HELP"
+    ICON            IDI_IRC,IDC_STATIC_1,12,12,21,20,SS_REALSIZEIMAGE
+    LTEXT           "irc Version 1.0",IDC_STATIC_2,12,36,70,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2010",IDC_STATIC_3,12,48,66,8
+END
+
+IDD_INPUTBOX DIALOG  0, 0, 122, 50
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+FONT 8, "MS Shell Dlg"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,8,27,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,63,27,50,14
+    EDITTEXT        IDC_EDIT,8,7,105,13,ES_AUTOHSCROLL
+END
+
+IDD_PREFERENCES DIALOG  0, 0, 142, 215
+STYLE DS_SETFONT | DS_SETFOREGROUND | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_VSCROLL | WS_SYSMENU
+FONT 8, "MS Shell Dlg"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,7,194,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,72,194,50,14
+    EDITTEXT        IDC_EDIT1,66,7,56,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT2,66,21,56,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT3,66,35,56,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT4,66,49,56,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT5,66,64,56,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT6,66,79,56,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT7,66,93,56,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT8,66,107,56,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT9,66,122,56,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT10,66,136,56,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT11,66,150,56,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT12,66,164,56,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT13,66,179,56,12,ES_AUTOHSCROLL
+    LTEXT           "Host",IDC_STATIC,7,7,64,12
+    LTEXT           "Port",IDC_STATIC,7,20,64,12
+    LTEXT           "User",IDC_STATIC,7,35,64,12
+    LTEXT           "Name",IDC_STATIC,7,49,64,12
+    LTEXT           "Nick",IDC_STATIC,7,64,64,12
+    LTEXT           "Perform",IDC_STATIC,7,78,64,12
+    LTEXT           "Channels",IDC_STATIC,7,93,64,12
+    LTEXT           "Delay Before Join",IDC_STATIC,7,107,64,12
+    LTEXT           "Reconnect Retries",IDC_STATIC,7,122,64,12
+    LTEXT           "Encoding",IDC_STATIC,7,136,64,12
+    LTEXT           "Sounds",IDC_STATIC,7,150,64,12
+    LTEXT           "Led Number",IDC_STATIC,7,165,64,12
+    LTEXT           "Led Interval",IDC_STATIC,7,179,64,12
 END
 
 
-IDC_NEWONE ACCELERATORS
-BEGIN
-    "A",            IDM_HELP_ABOUT,         VIRTKEY, CONTROL, NOINVERT
-    "Q",            IDM_OK,          VIRTKEY, CONTROL, NOINVERT
-    //VK_RETURN,202,VIRTKEY,NOINVERT
-END
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
 
-
-IDR_MENU MENU DISCARDABLE 
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
 BEGIN
-    POPUP "Help"
+    IDD_ABOUTBOX, DIALOG
     BEGIN
-        MENUITEM "About",		IDM_HELP_ABOUT
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 149
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 122
+    END
+
+    IDD_INPUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 8
+        RIGHTMARGIN, 113
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 41
+    END
+
+    IDD_PREFERENCES, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 122
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 208
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+#endif    // Neutral resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_IRC                 ICON                    "microirc.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU MENU 
+BEGIN
+    POPUP "Options"
+    BEGIN
+        MENUITEM "About",                       ID_OPTIONS_ABOUT
+        MENUITEM "Help",                        ID_OPTIONS_HELP
+        MENUITEM SEPARATOR
+        MENUITEM "Exit",                        ID_OPTIONS_EXIT
+        MENUITEM "Preferences",                 ID_OPTIONS_PREFERENCES
+        MENUITEM SEPARATOR
+        MENUITEM "Set Topic",                   ID_OPTIONS_SETTOPIC
+        MENUITEM "Get Topic",                   ID_OPTIONS_GETTOPIC
+        MENUITEM SEPARATOR
+        MENUITEM "Open Private",                ID_OPTIONS_OPENPRIVATE
+        MENUITEM "Join Channel",                ID_OPTIONS_JOINCHANNEL
     END
 END
 
 
-IDR_MENU SHMENUBAR DISCARDABLE
-BEGIN
-    IDR_MENU, 
-    2,
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
 
-    I_IMAGENONE, IDM_OK, TBSTATE_ENABLED, TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE,
-    IDS_OK, 0, NOMENU,
-    
-    I_IMAGENONE, IDM_HELP, TBSTATE_ENABLED, TBSTYLE_DROPDOWN | TBSTYLE_AUTOSIZE,
-    IDS_HELP, 0, 0,
+IDC_IRC ACCELERATORS 
+BEGIN
+    "A",            ID_OPTIONS_PREFERENCES, VIRTKEY, CONTROL, NOINVERT
+    "Q",            IDM_OPENURL,            VIRTKEY, CONTROL, NOINVERT
 END
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#define APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#include ""windows.h""\r\n"
+    "#include ""resdefce.h""\r\n"
+    "#undef APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#include ""menu.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_APP_TITLE           "IRC"
+    IDC_IRC                 "irc"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_OPENURL             "Open URL"
+    IDS_OPTIONS             "Options"
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#include "menu.rc2"  // non-Microsoft Visual C++ edited resources
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

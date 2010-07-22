@@ -4,6 +4,7 @@
 * This file contains some gui functions for irc client.
 *
 * Copyright(C) 2009-2010, Diogo Reis <diogoandre12@gmail.com>
+* Copyright(C) 2010-2010, José Pedroso <josedpedroso@gmail.com>
 *
 * This code is licenced under the GPL version 2. For details see COPYING.txt file.
 */
@@ -84,11 +85,12 @@ void init_chat_screen(HWND hWnd){
    InitCommonControlsEx(&icex);
    hWnd_TabControlChat = CreateWindowEx(0,WC_TABCONTROL,NULL,WS_CHILD|WS_VISIBLE,0,0,220,23,hWnd,(HMENU)TAB_CONTROL,hInstance_Main,NULL);//240,245
    hWnd_CloseTab = CreateWindowEx(0,L"button",TEXT("X"),WS_VISIBLE|WS_CHILD,223,5,14,14,hWnd,(HMENU)BUTTON_CLOSE,hInstance_Main,NULL);
-   CreateWindow(WC_SIPPREF, L"", WS_CHILD, 0, 0, 0, 0, hWnd, NULL, NULL, NULL);
+   hWnd_TapAndHold = CreateWindow(WC_SIPPREF, L"", WS_CHILD, 0, 0, 0, 0, hWnd, NULL, hInstance_Main, NULL);
    UpdateWindow(hWnd);
 }
 
 void destroy_chat_screen(HWND hWnd){
+   DestroyWindow(hWnd_TapAndHold);
    DestroyWindow(hWnd_EditChat);
    DestroyWindow(hWnd_ButtonChat);
    DestroyWindow(hWnd_TabControlChat);

@@ -401,6 +401,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\dialogs.h"
+				>
+			</File>
+			<File
+				RelativePath=".\functions.h"
+				>
+			</File>
+			<File
 				RelativePath=".\gui_functions.h"
 				>
 			</File>
@@ -449,6 +457,10 @@
 			</File>
 			<File
 				RelativePath=".\menu.rc"
+				>
+			</File>
+			<File
+				RelativePath=".\menu.rc2"
 				>
 			</File>
 			<File

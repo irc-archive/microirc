@@ -4,6 +4,7 @@
 * This file contains an irc client gui implementation with ircprotocol lib.
 *
 * Copyright(C) 2009-2010, Diogo Reis <diogoandre12@gmail.com>
+* Copyright(C) 2010-2010, José Pedroso <josedpedroso@gmail.com>
 *
 * This code is licenced under the GPL version 2. For details see COPYING.txt file.
 */
@@ -35,8 +36,13 @@
 
 #define DELETE_TEXT_MARGIN 2048
 
-#define LED_INTERVAL 250
-#define LED_NUMBER 1
+typedef struct ircconfig_t{
+   int reconnect;
+   int encoding;
+   int sounds;
+   int lednumber;
+   int ledinterval;
+}ircconfig_t;
 
 int init(HWND);
 void destroy();
@@ -46,23 +52,19 @@ int reconnecting(HWND);
 LRESULT CALLBACK WindowProc(HWND, UINT, WPARAM, LPARAM);
 char *tokens_required(char*, char, int, char**, int*);
 
-char *strstri(char *t, char *s){
-   int i, j;
-   for(i=0; t[i] != '\0'; i++){
-      for(j=0; s[j] != '\0'; j++){
-         if(toupper(s[j])==toupper(t[i+j])){
-            continue; 
-         }else{
-            break;
-         }
-      }
-      if (s[j] == '\0'){
-         break;
-      }
+int ircconfig_init(ircconfig_t *ircconfig, int reconnect, int encoding, int sounds, int lednumber, int ledinterval){
+   memset(ircconfig,0,sizeof(ircconfig_t));
+   if(reconnect<0 || ledinterval<0){
+      return -1;
    }
-   if (s[j] == '\0'){
-      return (i+t);
-   }else{
-      return '\0';
-   }
+   ircconfig->reconnect = reconnect;
+   ircconfig->encoding = encoding;
+   ircconfig->sounds = sounds;
+   ircconfig->lednumber = lednumber;
+   ircconfig->ledinterval = ledinterval;
+   return 0;
+}
+
+void ircconfig_destroy(ircconfig_t *ircconfig){
+   memset(ircconfig,0,sizeof(ircconfig_t));
 }
