@@ -29,36 +29,6 @@
     return (INT_PTR)FALSE;
 }*/
 
-INT_PTR CALLBACK InputBox(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam){
-   switch (message){
-      case WM_INITDIALOG:{
-         SetWindowText(hDlg,(LPCWSTR)lParam);
-         HWND edit = GetDlgItem(hDlg,IDC_EDIT);
-         SetFocus(edit);
-         return FALSE;
-      }
-      //VK_ENTER, case WM_GETDLGCODE:MessageBox(NULL,L"LOL",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
-      case WM_COMMAND:{
-         if (LOWORD(wParam) == IDOK){
-            HWND edit = GetDlgItem(hDlg,IDC_EDIT);
-            LPWSTR result = (LPWSTR)malloc(IRC_SIZE_LITTLE);
-            Edit_GetText(edit,result,IRC_SIZE_LITTLE);
-            EndDialog(hDlg, (int)result);
-            return TRUE;
-         }else if (LOWORD(wParam) == IDCANCEL){
-            EndDialog(hDlg, (int)NULL);
-            return TRUE;
-         }
-         break;
-      }
-      case WM_CLOSE:{
-         EndDialog(hDlg, message);
-         return TRUE;
-      }
-   }
-   return FALSE;
-}
-
 INT_PTR CALLBACK Preferences(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam){
    switch (message){
       case WM_VSCROLL:{
@@ -158,35 +128,35 @@ INT_PTR CALLBACK Preferences(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
 
             gettext_tostr(hDlg, IDC_EDIT1, tempstr, IRC_BUFFER_SIZE_LITTLE);
             if(strlen(tempstr)==0){
-               MessageBox(NULL,L"Host is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               MessageBox(hDlg,L"Host is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                return FALSE;
             }
             iniparser_setstring(&iniparser, "server", "host", tempstr);
 
             gettext_tostr(hDlg, IDC_EDIT2, tempstr, IRC_BUFFER_SIZE_LITTLE);
             if(strlen(tempstr)==0){
-               MessageBox(NULL,L"Port is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               MessageBox(hDlg,L"Port is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                return FALSE;
             }
             iniparser_setstring(&iniparser, "server", "port", tempstr);
 
             gettext_tostr(hDlg, IDC_EDIT3, tempstr, IRC_BUFFER_SIZE_LITTLE);
             if(strlen(tempstr)==0){
-               MessageBox(NULL,L"User is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               MessageBox(hDlg,L"User is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                return FALSE;
             }
             iniparser_setstring(&iniparser, "client", "user", tempstr);
 
             gettext_tostr(hDlg, IDC_EDIT4, tempstr, IRC_BUFFER_SIZE_LITTLE);
             if(strlen(tempstr)==0){
-               MessageBox(NULL,L"Name is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               MessageBox(hDlg,L"Name is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                return FALSE;
             }
             iniparser_setstring(&iniparser, "client", "name", tempstr);
 
             gettext_tostr(hDlg, IDC_EDIT5, tempstr, IRC_BUFFER_SIZE_LITTLE);
             if(strlen(tempstr)==0){
-               MessageBox(NULL,L"Nick is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               MessageBox(hDlg,L"Nick is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                return FALSE;
             }
             iniparser_setstring(&iniparser, "client", "nick", tempstr);
@@ -199,14 +169,14 @@ INT_PTR CALLBACK Preferences(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
 
             tempint = gettext_toint(hDlg,IDC_EDIT8);
             if(tempint < 0){
-               MessageBox(NULL,L"Auto-join Delay is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               MessageBox(hDlg,L"Auto-join Delay is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                return FALSE;
             }
             iniparser_setint(&iniparser, "autojoin", "delay", tempint);
 
             tempint = gettext_toint(hDlg,IDC_EDIT9);
             if(tempint < 0){
-               MessageBox(NULL,L"Reconnect Retries is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               MessageBox(hDlg,L"Reconnect Retries is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                return FALSE;
             }
             iniparser_setint(&iniparser, "autoreconnect", "retries", tempint);
@@ -230,7 +200,7 @@ INT_PTR CALLBACK Preferences(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
 
             tempint = gettext_toint(hDlg,IDC_EDIT13);
             if(tempint < 0){
-               MessageBox(NULL,L"Led Interval is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               MessageBox(hDlg,L"Led Interval is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                return FALSE;
             }
             iniparser_setint(&iniparser, "options", "ledinterval", tempint);
@@ -246,6 +216,36 @@ INT_PTR CALLBACK Preferences(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
          }
          if (LOWORD(wParam) == IDCANCEL){
             EndDialog(hDlg, LOWORD(wParam));
+            return TRUE;
+         }
+         break;
+      }
+      case WM_CLOSE:{
+         EndDialog(hDlg, message);
+         return TRUE;
+      }
+   }
+   return FALSE;
+}
+
+INT_PTR CALLBACK InputBox(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam){
+   switch (message){
+      case WM_INITDIALOG:{
+         SetWindowText(hDlg,(LPCWSTR)lParam);
+         HWND edit = GetDlgItem(hDlg,IDC_EDIT);
+         SetFocus(edit);
+         return FALSE;
+      }
+      //VK_ENTER, case WM_GETDLGCODE:MessageBox(NULL,L"LOL",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+      case WM_COMMAND:{
+         if (LOWORD(wParam) == IDOK){
+            HWND edit = GetDlgItem(hDlg,IDC_EDIT);
+            LPWSTR result = (LPWSTR)malloc(IRC_SIZE_LITTLE);
+            Edit_GetText(edit,result,IRC_SIZE_LITTLE);
+            EndDialog(hDlg, (int)result);
+            return TRUE;
+         }else if (LOWORD(wParam) == IDCANCEL){
+            EndDialog(hDlg, (int)NULL);
             return TRUE;
          }
          break;

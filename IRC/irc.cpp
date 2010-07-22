@@ -49,7 +49,6 @@ HCURSOR hOldCursor;
 #include "iniparser.h"
 #include "ircprotocol.h"
 #include "tab_manager.h"
-#include "gui_functions.h"
 
 HANDLE thread;
 HANDLE open_handle;
@@ -72,6 +71,7 @@ int connected;
 
 #include "functions.h"
 #include "dialogs.h"
+#include "gui_functions.h"
 
 //MessageBox(NULL,L"LOL",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow){
@@ -141,7 +141,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
       }
       case WM_CONNECTING:{
          if(connecting(hWnd)!=0){
-            MessageBox(NULL,L"Connecting failed.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+            MessageBox(hWnd,L"Connecting failed.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
          }
          break;
       }
@@ -151,7 +151,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
       }
       case WM_RECONNECTING:{
          if(reconnecting(hWnd)!=0){
-            MessageBox(NULL,L"Reconnecting failed.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+            MessageBox(hWnd,L"Reconnecting failed.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
          }
          break;
       }
@@ -183,7 +183,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
          switch (LOWORD(element_id)){
             case BUTTON_CONNECT:{
                if(connecting(hWnd)!=0){
-                  MessageBox(NULL,L"Connecting failed.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+                  MessageBox(hWnd,L"Connecting failed.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                }
                break;
             }
@@ -208,7 +208,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
                   }
                   tab_delete_actual(hWnd_TabControlChat);
                }else{
-                  switch (MessageBox(hWnd,L"Do you realy want to quit?",L"QUIT",MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2|MB_APPLMODAL|MB_SETFOREGROUND)){
+                  switch (MessageBox(hWnd,L"Do you realy want to quit?",L"Quit",MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2|MB_APPLMODAL|MB_SETFOREGROUND)){
                      case IDYES:{
                         disconnecting(hWnd);
                         break;
@@ -250,60 +250,67 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
                break;
             }
             case ID_OPTIONS_OPENPRIVATE:{
+              if(!connected){
+                 break;
+              }
+              wchar_t result[IRC_SIZE_LITTLE];
+              open_input_box(hWnd, L"Open Private", result, IRC_SIZE_LITTLE);
+              if(!*result){
+                 break;
+              }
+              SendMessage(hWnd,WM_CREATE_TAB,STATUS,(LPARAM)result);
+              tab_select_name(hWnd_TabControlChat,result);
+              break;
             }
             case ID_OPTIONS_JOINCHANNEL:{
-               if(connected!=1){
-                  break;
-               }
+              if(!connected){
+                 break;
+              }
+              wchar_t result[IRC_SIZE_LITTLE];
+              open_input_box(hWnd, L"Join Channel", result, IRC_SIZE_LITTLE);
+              if(!*result){
+                 break;
+              }
+              char tresult[IRC_SIZE_LITTLE];
+              char *send[1] = {tresult};
+              WideCharToMultiByte(CP_UTF8,0,result,-1,tresult,IRC_SIZE_LITTLE,NULL,NULL);
+              irc_send_message(&irc,SEND_JOIN,send,1);
+              break;
             }
             case IDM_OPENURL:{
-               wchar_t title[IRC_SIZE_LITTLE];
-               if(LOWORD(element_id) == ID_OPTIONS_OPENPRIVATE){
-                  wcscpy(title,L"Open Private");
-               }else if(LOWORD(element_id) == ID_OPTIONS_JOINCHANNEL){
-                  wcscpy(title,L"Join Channel");
-               }else if(LOWORD(element_id) == IDM_OPENURL){
-                  wcscpy(title,L"Open URL");
-               }
-               wchar_t *result = (wchar_t*)DialogBoxParam(hInstance_Main, (LPCTSTR)IDD_INPUTBOX, hWnd, InputBox, (LPARAM)title);
-               if(result==NULL){
+               wchar_t result[IRC_SIZE_LITTLE];
+               open_input_box(hWnd, L"Open URL", result, IRC_SIZE_LITTLE);
+               if(!*result){
                   break;
                }
-               if(LOWORD(element_id) == ID_OPTIONS_OPENPRIVATE){
-                  SendMessage(hWnd,WM_CREATE_TAB,STATUS,(LPARAM)result);
-                  tab_select_name(hWnd_TabControlChat,result);
-               }else if(LOWORD(element_id) == ID_OPTIONS_JOINCHANNEL){
-                  char tresult[IRC_SIZE_LITTLE];
-                  char *send[1] = {tresult};
-                  WideCharToMultiByte(CP_UTF8,0,result,-1,tresult,IRC_SIZE_LITTLE,NULL,NULL);
-                  irc_send_message(&irc,SEND_JOIN,send,1);
-               }else if(LOWORD(element_id) == IDM_OPENURL){
-                  if(wcsncmp(L"http://",result,7)==0){
-                     wsprintf(wtextprocess,L"%s",result);
-                  }else{
-                     wsprintf(wtextprocess,L"http://%s",result);
-                  }
-                  SHELLEXECUTEINFO ShExecInfo;
-                  ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-                  ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-                  ShExecInfo.hwnd = NULL;
-                  ShExecInfo.lpVerb = L"open";
-                  ShExecInfo.lpFile = wtextprocess;
-                  ShExecInfo.lpParameters = NULL;
-                  ShExecInfo.lpDirectory = NULL;
-                  ShExecInfo.nShow = SW_SHOW;
-                  ShExecInfo.hInstApp = NULL;
-                  ShellExecuteEx(&ShExecInfo);
+               if(wcsncmp(L"http://",result,7)==0){
+                  wsprintf(wtextprocess,L"%s",result);
+               }else{
+                  wsprintf(wtextprocess,L"http://%s",result);
                }
-               free(result);
+               SHELLEXECUTEINFO ShExecInfo;
+               ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+               ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+               ShExecInfo.hwnd = NULL;
+               ShExecInfo.lpVerb = L"open";
+               ShExecInfo.lpFile = wtextprocess;
+               ShExecInfo.lpParameters = NULL;
+               ShExecInfo.lpDirectory = NULL;
+               ShExecInfo.nShow = SW_SHOW;
+               ShExecInfo.hInstApp = NULL;
+               ShellExecuteEx(&ShExecInfo);
+               break;
+            }
+            case ID_OPTIONS_ABOUT:{
+               MessageBox(hWnd, L"µIRC(C) 2009-2010\ncode.google.com/p/microirc\nThis program is licenced under the GPL version 2.\nFor details see COPYING.txt.", L"About", MB_APPLMODAL|MB_SETFOREGROUND);
                break;
             }
             case ID_OPTIONS_SETTOPIC:{
-               if(connected!=1){
+               if(!connected){
                   break;
                }
-               wchar_t *wtopic = (wchar_t*)DialogBoxParam(hInstance_Main, (LPCTSTR)IDD_INPUTBOX, hWnd, InputBox, (LPARAM)L"Set Topic");
-               if(wtopic==NULL){
+               wchar_t wtopic[IRC_SIZE_LITTLE];
+               if(open_input_box(hWnd, L"Set Topic", wtopic, IRC_SIZE_LITTLE)){
                   break;
                }
                wchar_t wchannel[IRC_SIZE_LITTLE];
@@ -321,7 +328,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
                break;
             }
             case ID_OPTIONS_GETTOPIC:{
-               if(connected!=1){
+               if(!connected){
                   break;
                }
                wchar_t wchannel[IRC_SIZE_LITTLE];
@@ -566,7 +573,7 @@ void *thread_procedure(void *inused){
                }
                MultiByteToWideChar(config.encoding,0,tchar_buffer[2],-1,wchar_buffer[0],IRC_SIZE_MEDIUM);
                MultiByteToWideChar(config.encoding,0,tchar_buffer[3],-1,wchar_buffer[1],IRC_SIZE_MEDIUM);
-               swprintf(wchar_buffer[4],L"\r\nTopic is %s",wchar_buffer[1]);
+               swprintf(wchar_buffer[4],L"\r\nTopic is '%s'",wchar_buffer[1]);
                tab_write_name(hWnd_TabControlChat,wchar_buffer[0],wchar_buffer[4],TEXT,APPEND);
                break;
             }
@@ -577,7 +584,7 @@ void *thread_procedure(void *inused){
                MultiByteToWideChar(config.encoding,0,tchar_buffer[0],-1,wchar_buffer[0],IRC_SIZE_MEDIUM);
                MultiByteToWideChar(config.encoding,0,tchar_buffer[3],-1,wchar_buffer[1],IRC_SIZE_MEDIUM);
                MultiByteToWideChar(config.encoding,0,tchar_buffer[4],-1,wchar_buffer[2],IRC_SIZE_MEDIUM);
-               swprintf(wchar_buffer[4],L"\r\nTopic changed by %s to %s",wchar_buffer[0],wchar_buffer[2]);
+               swprintf(wchar_buffer[4],L"\r\nTopic changed by %s to '%s'",wchar_buffer[0],wchar_buffer[2]);
                tab_write_name(hWnd_TabControlChat,wchar_buffer[1],wchar_buffer[4],TEXT,APPEND);
                break;
             }
@@ -585,7 +592,7 @@ void *thread_procedure(void *inused){
       }
       if(connected==1){
          if(config.reconnect==0){
-            switch (MessageBox(NULL,L"Do you realy want to reconnect?",L"DISCONNECTED",MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2|MB_APPLMODAL|MB_SETFOREGROUND)){
+            switch (MessageBox(NULL,L"Do you realy want to reconnect?",L"DISCONNECTED",MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2|MB_SETFOREGROUND)){
                case IDYES:{
                   SendMessage(hWnd,WM_DISCONNECTING,0,0);
                   SendMessage(hWnd,WM_CONNECTING,0,0);

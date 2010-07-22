@@ -28,6 +28,7 @@
 #define IDC_EDIT11                      1011
 #define IDC_EDIT12                      1012
 #define IDC_EDIT13                      1013
+#define IDC_SIP1                        1027
 #define ID_OPTIONS_JOINCHANNEL          32771
 #define ID_OPTIONS_OPENPRIVATE          32772
 #define ID_OPTIONS_HELP                 32773
@@ -47,7 +48,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        132
 #define _APS_NEXT_COMMAND_VALUE         32778
-#define _APS_NEXT_CONTROL_VALUE         1027
+#define _APS_NEXT_CONTROL_VALUE         1028
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif
