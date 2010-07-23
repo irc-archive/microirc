@@ -141,7 +141,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
       }
       case WM_CONNECTING:{
          if(connecting(hWnd)!=0){
-            MessageBox(hWnd,L"Connecting failed.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+            MessageBox(hWnd,L"Error connecting to server.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
          }
          break;
       }
@@ -151,11 +151,10 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
       }
       case WM_RECONNECTING:{
          if(reconnecting(hWnd)!=0){
-            MessageBox(hWnd,L"Reconnecting failed.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+            MessageBox(hWnd,L"Error reconnecting to server.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
          }
          break;
       }
-
       case WM_NOTIFY:{
          switch(LOWORD(element_id)){
             case TAB_CONTROL:{
@@ -180,18 +179,31 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
       }
       case WM_COMMAND:{
          int wmEvent = HIWORD(element_id);
+         HWND controlHwnd = (HWND)param_id;
          switch (LOWORD(element_id)){
             case BUTTON_CONNECT:{
                if(connecting(hWnd)!=0){
-                  MessageBox(hWnd,L"Connecting failed.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+                  MessageBox(hWnd,L"Error connecting to server.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               }
+               break;
+            }
+            case TALK_BOX:{
+               switch(wmEvent){
+                  case EN_SETFOCUS:{
+                     //SetFocus(hWnd_EditChat);
+                     break;
+                  }
+                  case EN_KILLFOCUS:{
+                     SendMessage(controlHwnd,WM_COPY,0,0);
+                     break;
+                  }
                }
                break;
             }
             case LIST_BOX:{
                if(wmEvent==LBN_DBLCLK){
-                  HWND listbox = (HWND)param_id;
-                  int element = ListBox_GetCurSel(listbox);
-                  ListBox_GetText(listbox,element,wtextprocess);
+                  int element = ListBox_GetCurSel(controlHwnd);
+                  ListBox_GetText(controlHwnd,element,wtextprocess);
                   SendMessage(hWnd,WM_CREATE_TAB,STATUS,(LPARAM)wtextprocess);
                   tab_select_name(hWnd_TabControlChat,wtextprocess);
                }
@@ -208,7 +220,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
                   }
                   tab_delete_actual(hWnd_TabControlChat);
                }else{
-                  switch (MessageBox(hWnd,L"Do you realy want to quit?",L"Quit",MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2|MB_APPLMODAL|MB_SETFOREGROUND)){
+                  switch (MessageBox(hWnd,L"Do you really want to quit?",L"Quit",MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2|MB_APPLMODAL|MB_SETFOREGROUND)){
                      case IDYES:{
                         disconnecting(hWnd);
                         break;
@@ -310,7 +322,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
                   break;
                }
                wchar_t wtopic[IRC_SIZE_LITTLE];
-               if(open_input_box(hWnd, L"Set Topic", wtopic, IRC_SIZE_LITTLE)){
+               if(open_input_box(hWnd, L"Set Topic", wtopic, IRC_SIZE_LITTLE)!=0){
                   break;
                }
                wchar_t wchannel[IRC_SIZE_LITTLE];
@@ -324,7 +336,6 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
                WideCharToMultiByte(CP_UTF8,0,wchannel,-1,channel,IRC_SIZE_LITTLE,NULL,NULL);
                char *send[2]={channel,topic};
                irc_send_message(&irc,SEND_SET_TOPIC,send,2);
-               free(wtopic);
                break;
             }
             case ID_OPTIONS_GETTOPIC:{
@@ -592,7 +603,7 @@ void *thread_procedure(void *inused){
       }
       if(connected==1){
          if(config.reconnect==0){
-            switch (MessageBox(NULL,L"Do you realy want to reconnect?",L"DISCONNECTED",MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2|MB_SETFOREGROUND)){
+            switch (MessageBox(NULL,L"Do you really want to reconnect?",L"Disconnected",MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2|MB_SETFOREGROUND)){
                case IDYES:{
                   SendMessage(hWnd,WM_DISCONNECTING,0,0);
                   SendMessage(hWnd,WM_CONNECTING,0,0);
@@ -616,13 +627,13 @@ int init(HWND hWnd){
    open_state = 1;
    open_handle = CreateEvent(NULL,FALSE,FALSE,NULL);
    if(open_handle==NULL){
-      MessageBox(NULL,L"Critical error occurred.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+       MessageBox(NULL,L"Critical error: CreateEvent() failed.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
       return -1;
    }
    thread = CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)thread_procedure,(void*)hWnd,0,NULL);
    if(thread==NULL){
       CloseHandle(open_handle);
-      MessageBox(NULL,L"Critical error occurred.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+      MessageBox(NULL,L"Critical error: CreateThread() failed.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
       return -1;
    }
    init_menu_bar(hWnd);

@@ -98,7 +98,6 @@ void destroy_chat_screen(HWND hWnd){
    UpdateWindow(hWnd);
 }
 
-
 int open_input_box(HWND parent_window, wchar_t *title, wchar_t *result, unsigned result_len){
    //result will be null string if DialogBoxParam fails or user provides no text
    wchar_t *temp = (wchar_t*)DialogBoxParam(hInstance_Main, (LPCTSTR)IDD_INPUTBOX, parent_window, InputBox, (LPARAM)title);

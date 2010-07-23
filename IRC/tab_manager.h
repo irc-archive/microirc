@@ -102,14 +102,14 @@ int tab_create(HWND hWnd, HWND tab_control, wchar_t *tab_name, TAB_TYPE type){
       return -1;
    }
    if(type==STATUS){
-      new_tab->talk=CreateWindowEx(0,L"edit",NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|ES_MULTILINE,2,25,235,220,hWnd,(HMENU)0,hInstance_Main,NULL);
+      new_tab->talk=CreateWindowEx(0,L"edit",NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|ES_MULTILINE,2,25,235,220,hWnd,(HMENU)TALK_BOX,hInstance_Main,NULL);
       if(new_tab->talk==NULL){
          free(new_tab);
          return -1;
       }
       new_tab->nick=NULL;
    }else if(type==CHAT){
-      new_tab->talk=CreateWindowEx(0,L"edit",NULL,ES_AUTOVSCROLL|WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|ES_MULTILINE,2,25,174,220,hWnd,(HMENU)0,hInstance_Main,NULL);
+      new_tab->talk=CreateWindowEx(0,L"edit",NULL,ES_AUTOVSCROLL|WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|ES_MULTILINE,2,25,174,220,hWnd,(HMENU)TALK_BOX,hInstance_Main,NULL);
       if(new_tab->talk==NULL){
          free(new_tab);
          return -1;
