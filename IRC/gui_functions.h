@@ -54,28 +54,28 @@ void destroy_loading_screen(HWND hWnd){
    UpdateWindow(hWnd);
 }
 
-WNDPROC edit_OldEditHandler;
-HWND edit_hWnd_Main;
-LRESULT CALLBACK EditProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM param_id){
+WNDPROC old_SendTextProc;
+HWND hWnd_SendText;
+LRESULT CALLBACK SendTextProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM param_id){
    switch (event_id){
       case WM_CHAR:{
          if(element_id == VK_RETURN){
-            SendMessage(edit_hWnd_Main,WM_COMMAND,BUTTON_SEND,0);
+            SendMessage(hWnd_SendText,WM_COMMAND,BUTTON_SEND,0);
             return 0;
          }
          break;
       }
    }
-   return CallWindowProc(edit_OldEditHandler, hWnd, event_id, element_id, param_id);
+   return CallWindowProc(old_SendTextProc, hWnd, event_id, element_id, param_id);
 }
 
 void init_chat_screen(HWND hWnd){
    INITCOMMONCONTROLSEX icex;
-   hWnd_EditChat = CreateWindowEx(0,L"edit", NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|ES_AUTOHSCROLL,2,246,197,20,hWnd,(HMENU)TEXT_SEND,hInstance_Main,NULL);
+   hWnd_EditChat = CreateWindowEx(0,L"edit", NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|ES_AUTOHSCROLL,2,246,197,20,hWnd,NULL,hInstance_Main,NULL);
    
-   edit_hWnd_Main = hWnd;
-   edit_OldEditHandler = (WNDPROC)GetWindowLong(hWnd_EditChat,GWL_WNDPROC);
-   SetWindowLong(hWnd_EditChat,GWL_WNDPROC,(LONG)EditProc);
+   hWnd_SendText = hWnd;
+   old_SendTextProc = (WNDPROC)GetWindowLong(hWnd_EditChat,GWL_WNDPROC);
+   SetWindowLong(hWnd_EditChat,GWL_WNDPROC,(LONG)SendTextProc);
    
    Edit_LineLength(hWnd_EditChat,200);
    Edit_LimitText(hWnd_EditChat,200);

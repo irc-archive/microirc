@@ -27,7 +27,6 @@
 
 #define BUTTON_CONNECT 200
 #define BUTTON_SEND 201
-#define TEXT_SEND 202
 #define TAB_CONTROL 203
 #define BUTTON_CLOSE 204
 #define TALK_BOX 205

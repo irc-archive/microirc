@@ -1,3 +1,14 @@
+/*
+* functions.h
+*
+* This file contains some generic functions.
+*
+* Copyright(C) 2009-2010, Diogo Reis <diogoandre12@gmail.com>
+* Copyright(C) 2010-2010, José Pedroso <josedpedroso@gmail.com>
+*
+* This code is licenced under the GPL version 2. For details see COPYING.txt file.
+*/
+
 char *strstri(char *t, char *s){//lstrcmpi
    int i, j;
    for(i=0; t[i] != '\0'; i++){

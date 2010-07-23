@@ -14,6 +14,7 @@
 #define IDC_STATIC_1                    201
 #define IDC_STATIC_2                    202
 #define IDC_STATIC_3                    203
+#define IDC_STATIC_4                    204
 #define IDC_EDIT                        1000
 #define IDC_EDIT1                       1001
 #define IDC_EDIT2                       1002

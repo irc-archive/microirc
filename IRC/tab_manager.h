@@ -4,6 +4,7 @@
 * This file contains an implementation of a tab manager to use on irc client.
 *
 * Copyright(C) 2009-2010, Diogo Reis <diogoandre12@gmail.com>
+* Copyright(C) 2010-2010, José Pedroso <josedpedroso@gmail.com>
 *
 * This code is licenced under the GPL version 2. For details see COPYING.txt file.
 */
@@ -92,6 +93,18 @@ void tab_refresh(HWND tab_control, TAB_VISIBLE_ACTION hide){
    }
 }
 
+WNDPROC old_TalkBoxProc;
+HWND hWnd_TalkBox;
+LRESULT CALLBACK TalkBoxProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM param_id){
+   switch (event_id){
+      case WM_LBUTTONUP:{
+         SetFocus(hWnd_EditChat);
+         break;
+      }
+   }
+   return CallWindowProc(old_TalkBoxProc, hWnd, event_id, element_id, param_id);
+}
+
 int tab_create(HWND hWnd, HWND tab_control, wchar_t *tab_name, TAB_TYPE type){
    int tab_index = tab_find(tab_control,tab_name);
    if(tab_index!=-1){
@@ -123,6 +136,11 @@ int tab_create(HWND hWnd, HWND tab_control, wchar_t *tab_name, TAB_TYPE type){
    }else{
       return -1;
    }
+
+   hWnd_TalkBox = hWnd;
+   old_TalkBoxProc = (WNDPROC)GetWindowLong(new_tab->talk,GWL_WNDPROC);
+   SetWindowLong(new_tab->talk,GWL_WNDPROC,(LONG)TalkBoxProc);
+
    tab_index = SendMessage(tab_control,TCM_GETITEMCOUNT,0,0);
    if(tab_insert_both_index(tab_control,tab_index,tab_name,new_tab)==-1){
       DestroyWindow(new_tab->talk);

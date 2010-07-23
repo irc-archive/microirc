@@ -1,33 +1,38 @@
-/*INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
-{
-    switch (message)
-    {
-        case WM_INITDIALOG:
-            {
-                // Create a Done button and size it.  
-                SHINITDLGINFO shidi;
-                shidi.dwMask = SHIDIM_FLAGS;
-                shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIPDOWN | SHIDIF_SIZEDLGFULLSCREEN | SHIDIF_EMPTYMENU | SHIDIF_WANTSCROLLBAR;
-                shidi.hDlg = hDlg;
-                SHInitDialog(&shidi);
-            }
-            return (INT_PTR)TRUE;
+/*
+* dialogs.h
+*
+* This file contains the code used on resource dialogs.
+*
+* Copyright(C) 2009-2010, Diogo Reis <diogoandre12@gmail.com>
+* Copyright(C) 2010-2010, José Pedroso <josedpedroso@gmail.com>
+*
+* This code is licenced under the GPL version 2. For details see COPYING.txt file.
+*/
 
-        case WM_COMMAND:
-            if (LOWORD(wParam) == IDOK)
-            {
-                EndDialog(hDlg, LOWORD(wParam));
-                return TRUE;
-            }
-            break;
-
-        case WM_CLOSE:
-            EndDialog(hDlg, message);
+INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam){
+   switch (message){
+      case WM_INITDIALOG:{
+         SHINITDLGINFO shidi;
+         shidi.dwMask = SHIDIM_FLAGS;
+         shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIPDOWN | SHIDIF_SIZEDLGFULLSCREEN | SHIDIF_EMPTYMENU | SHIDIF_WANTSCROLLBAR;
+         shidi.hDlg = hDlg;
+         SHInitDialog(&shidi);
+         return (INT_PTR)TRUE;
+      }
+      case WM_COMMAND:{
+         if (LOWORD(wParam) == IDOK){
+            EndDialog(hDlg, LOWORD(wParam));
             return TRUE;
-
-    }
-    return (INT_PTR)FALSE;
-}*/
+         }
+         break;
+      }
+      case WM_CLOSE:{
+         EndDialog(hDlg, message);
+         return TRUE;
+      }
+   }
+   return (INT_PTR)FALSE;
+}
 
 INT_PTR CALLBACK Preferences(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam){
    switch (message){

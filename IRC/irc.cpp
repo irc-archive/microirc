@@ -155,6 +155,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
          }
          break;
       }
+
       case WM_NOTIFY:{
          switch(LOWORD(element_id)){
             case TAB_CONTROL:{
@@ -189,10 +190,6 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
             }
             case TALK_BOX:{
                switch(wmEvent){
-                  case EN_SETFOCUS:{
-                     //SetFocus(hWnd_EditChat);
-                     break;
-                  }
                   case EN_KILLFOCUS:{
                      SendMessage(controlHwnd,WM_COPY,0,0);
                      break;
@@ -314,7 +311,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
                break;
             }
             case ID_OPTIONS_ABOUT:{
-               MessageBox(hWnd, L"µIRC(C) 2009-2010\ncode.google.com/p/microirc\nThis program is licenced under the GPL version 2.\nFor details see COPYING.txt.", L"About", MB_APPLMODAL|MB_SETFOREGROUND);
+               DialogBoxParam(hInstance_Main, (LPCTSTR)IDD_ABOUTBOX, hWnd, About, NULL);
                break;
             }
             case ID_OPTIONS_SETTOPIC:{
