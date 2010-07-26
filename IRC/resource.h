@@ -3,43 +3,43 @@
 // Used by menu.rc
 //
 #define IDS_APP_TITLE                   1
-#define IDC_IRC                         2
+#define IDS_WNDCLASS_IRC                2
 #define IDI_IRC                         101
-#define IDR_MENU                        102
-#define IDS_OPENURL                     103
-#define IDS_OPTIONS                     104
-#define IDD_ABOUTBOX                    105
-#define IDD_INPUTBOX                    129
-#define IDD_PREFERENCES                 131
-#define IDC_STATIC_1                    201
-#define IDC_STATIC_2                    202
-#define IDC_STATIC_3                    203
-#define IDC_STATIC_4                    204
-#define IDC_EDIT                        1000
-#define IDC_EDIT1                       1001
-#define IDC_EDIT2                       1002
-#define IDC_EDIT3                       1003
-#define IDC_EDIT4                       1004
-#define IDC_EDIT5                       1005
-#define IDC_EDIT6                       1006
-#define IDC_EDIT7                       1007
-#define IDC_EDIT8                       1008
-#define IDC_EDIT9                       1009
-#define IDC_EDIT10                      1010
-#define IDC_EDIT11                      1011
-#define IDC_EDIT12                      1012
-#define IDC_EDIT13                      1013
-#define IDC_SIP1                        1027
-#define ID_OPTIONS_JOINCHANNEL          32771
-#define ID_OPTIONS_OPENPRIVATE          32772
-#define ID_OPTIONS_HELP                 32773
-#define ID_OPTIONS_ABOUT                32774
-#define ID_OPTIONS_EXIT                 32775
-#define ID_OPTIONS_SETTOPIC             32776
-#define ID_OPTIONS_GETTOPIC             32777
-#define IDM_OPENURL                     40000
-#define IDM_OPTIONS                     40001
-#define ID_OPTIONS_PREFERENCES          40002
+#define IDC_SIP1                        102
+#define IDC_SIP2                        103
+#define IDC_IRC                         104
+#define IDR_MAIN_MENU                   201
+#define IDR_PREFERENCES_MENU            202
+#define IDS_OPENURL                     301
+#define IDS_OPTIONS                     302
+#define IDS_OK                          303
+#define IDS_CANCEL                      304
+#define IDD_ABOUTBOX                    401
+#define IDD_INPUTBOX                    402
+#define IDD_PREFERENCES                 403
+#define IDM_OPENURL                     600
+#define IDM_OPTIONS                     601
+#define IDM_OPTIONS_ABOUT               602
+#define IDM_OPTIONS_HELP                603
+#define IDM_OPTIONS_EXIT                604
+#define IDM_OPTIONS_PREFERENCES         605
+#define IDM_OPTIONS_SETTOPIC            606
+#define IDM_OPTIONS_GETTOPIC            607
+#define IDM_OPTIONS_OPENPRIVATE         608
+#define IDM_OPTIONS_JOINCHANNEL         609
+#define IDC_EDIT1                       1000
+#define IDC_EDIT2                       1001
+#define IDC_EDIT3                       1002
+#define IDC_EDIT4                       1003
+#define IDC_EDIT5                       1004
+#define IDC_EDIT6                       1005
+#define IDC_EDIT7                       1006
+#define IDC_EDIT8                       1007
+#define IDC_EDIT9                       1008
+#define IDC_EDIT10                      1009
+#define IDC_EDIT11                      1010
+#define IDC_CHECK1                      1028
+#define IDC_COMBO1                      1029
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -47,9 +47,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        132
+#define _APS_NEXT_RESOURCE_VALUE        134
 #define _APS_NEXT_COMMAND_VALUE         32778
-#define _APS_NEXT_CONTROL_VALUE         1028
+#define _APS_NEXT_CONTROL_VALUE         1030
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

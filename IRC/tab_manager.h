@@ -115,19 +115,19 @@ int tab_create(HWND hWnd, HWND tab_control, wchar_t *tab_name, TAB_TYPE type){
       return -1;
    }
    if(type==STATUS){
-      new_tab->talk=CreateWindowEx(0,L"edit",NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|ES_MULTILINE,width*0.01,height*0.10,width*0.98,height*0.80,hWnd,(HMENU)TALK_BOX,hInstance_Main,NULL);
+      new_tab->talk=CreateWindowEx(0,L"edit",NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|ES_MULTILINE,TABTALK_LEFT*width,TABTALK_TOP*height,TABTALK_STATUS_WIDTH*width,TABALL_HEIGHT*height,hWnd,(HMENU)TALK_BOX,hInstance_Main,NULL);
       if(new_tab->talk==NULL){
          free(new_tab);
          return -1;
       }
       new_tab->nick=NULL;
    }else if(type==CHAT){
-      new_tab->talk=CreateWindowEx(0,L"edit",NULL,ES_AUTOVSCROLL|WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|ES_MULTILINE,width*0.01,height*0.10,width*0.72,height*0.80,hWnd,(HMENU)TALK_BOX,hInstance_Main,NULL);
+      new_tab->talk=CreateWindowEx(0,L"edit",NULL,ES_AUTOVSCROLL|WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|ES_MULTILINE,TABTALK_LEFT*width,TABTALK_TOP*height,TABTALK_CHAT_WIDTH*width,TABALL_HEIGHT*height,hWnd,(HMENU)TALK_BOX,hInstance_Main,NULL);
       if(new_tab->talk==NULL){
          free(new_tab);
          return -1;
       }
-      new_tab->nick=CreateWindowEx(0,L"listbox",NULL,LBS_NOINTEGRALHEIGHT|ES_AUTOVSCROLL|WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|WS_HSCROLL|LBS_SORT|LBS_HASSTRINGS|LBS_NOTIFY,width*0.74,height*0.10,width*0.25,height*0.80,hWnd,(HMENU)LIST_BOX,hInstance_Main,NULL);
+      new_tab->nick=CreateWindowEx(0,L"listbox",NULL,LBS_NOINTEGRALHEIGHT|ES_AUTOVSCROLL|WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|WS_HSCROLL|LBS_SORT|LBS_HASSTRINGS|LBS_NOTIFY,TABNICK_LEFT*width,TABNICK_TOP*height,TABNICK_CHAT_WIDTH*width,TABALL_HEIGHT*height,hWnd,(HMENU)LIST_BOX,hInstance_Main,NULL);
       if(new_tab->nick==NULL){
          DestroyWindow(new_tab->talk);
          free(new_tab);
@@ -315,7 +315,6 @@ int tab_disconnect(HWND tab_control){
 }
 
 int tab_connect(HWND tab_control){
-   tab_t *tab;
    int size = SendMessage(tab_control,TCM_GETITEMCOUNT,0,0);
    for(size--;size>=0;size--){
       tab_write_index(tab_control,size,L"\r\nCONNECTED",TEXT,APPEND);
@@ -329,10 +328,10 @@ void tab_resize_all(HWND tab_control){
    for(size--;size>=0;size--){
       if(tab_get_parameters_index(tab_control,size,&tab)!=-1){
          if(tab->nick==NULL){
-            MoveWindow(tab->talk,width*0.01,height*0.10,width*0.98,height*0.80,TRUE);
+            MoveWindow(tab->talk,TABTALK_LEFT*width,TABTALK_TOP*height,TABTALK_STATUS_WIDTH*width,TABALL_HEIGHT*height,TRUE);
          }else{
-            MoveWindow(tab->talk,width*0.01,height*0.10,width*0.72,height*0.80,TRUE);
-            MoveWindow(tab->nick,width*0.74,height*0.10,width*0.25,height*0.80,TRUE);
+            MoveWindow(tab->talk,TABTALK_LEFT*width,TABTALK_TOP*height,TABTALK_CHAT_WIDTH*width,TABALL_HEIGHT*height,TRUE);
+            MoveWindow(tab->nick,TABNICK_LEFT*width,TABNICK_TOP*height,TABNICK_CHAT_WIDTH*width,TABALL_HEIGHT*height,TRUE);
          }
       }
    }

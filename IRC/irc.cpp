@@ -79,8 +79,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
    MSG msg;
    TCHAR szTitle[IRC_SIZE_LITTLE];
    TCHAR szWindowClass[IRC_SIZE_LITTLE];
-   LoadString(hInstance, IDS_APP_TITLE, szTitle, IRC_SIZE_LITTLE); //L"IRC v1.0"
-   LoadString(hInstance, IDC_IRC, szWindowClass, IRC_SIZE_LITTLE); //L"irc application"
+   LoadString(hInstance, IDS_APP_TITLE, szTitle, IRC_SIZE_LITTLE);
+   LoadString(hInstance, IDS_WNDCLASS_IRC, szWindowClass, IRC_SIZE_LITTLE);
    HWND hWnd_Main = FindWindow(szWindowClass, szTitle);   
    if(hWnd_Main){
       SetForegroundWindow((HWND)((ULONG) hWnd_Main | 0x00000001));
@@ -254,11 +254,11 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
                }
                break;
             }
-            case ID_OPTIONS_PREFERENCES:{
+            case IDM_OPTIONS_PREFERENCES:{
                DialogBox(hInstance_Main, (LPCTSTR)IDD_PREFERENCES, hWnd, Preferences);
                break;
             }
-            case ID_OPTIONS_OPENPRIVATE:{
+            case IDM_OPTIONS_OPENPRIVATE:{
               if(!connected){
                  break;
               }
@@ -271,7 +271,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
               tab_select_name(hWnd_TabControlChat,result);
               break;
             }
-            case ID_OPTIONS_JOINCHANNEL:{
+            case IDM_OPTIONS_JOINCHANNEL:{
               if(!connected){
                  break;
               }
@@ -310,11 +310,11 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
                ShellExecuteEx(&ShExecInfo);
                break;
             }
-            case ID_OPTIONS_ABOUT:{
+            case IDM_OPTIONS_ABOUT:{
                DialogBoxParam(hInstance_Main, (LPCTSTR)IDD_ABOUTBOX, hWnd, About, NULL);
                break;
             }
-            case ID_OPTIONS_SETTOPIC:{
+            case IDM_OPTIONS_SETTOPIC:{
                if(!connected){
                   break;
                }
@@ -335,7 +335,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
                irc_send_message(&irc,SEND_SET_TOPIC,send,2);
                break;
             }
-            case ID_OPTIONS_GETTOPIC:{
+            case IDM_OPTIONS_GETTOPIC:{
                if(!connected){
                   break;
                }
@@ -350,7 +350,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
                irc_send_message(&irc,SEND_GET_TOPIC,send,1);
                break;
             }
-            case ID_OPTIONS_EXIT:{
+            case IDM_OPTIONS_EXIT:{
                SendMessage(hWnd, WM_CLOSE, 0, 0);
                break;
             }
@@ -363,12 +363,12 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
          width = rect.right;
          height = rect.bottom;
          height -= rect.top*2;
-         MoveWindow(hWnd_ButtonConnect,width*0.1,height*0.45,width*0.8,height*0.1,TRUE);
-         MoveWindow(hWnd_StaticConnecting,0,0,width,height,TRUE);
-         MoveWindow(hWnd_EditChat,width*0.01,height*0.91,width*0.80,height*0.08,TRUE);
-         MoveWindow(hWnd_ButtonChat,width*0.82,height*0.91,width*0.17,height*0.08,TRUE);
-         MoveWindow(hWnd_TabControlChat,width*0.01,height*0.01,width*0.89,height*0.08,TRUE);
-         MoveWindow(hWnd_CloseTab,width*0.91,height*0.01,width*0.08,height*0.08,TRUE);
+         MoveWindow(hWnd_ButtonConnect,BUTTONCONNECT_LEFT*width,BUTTONCONNECT_TOP*height,BUTTONCONNECT_WIDTH*width,BUTTONCONNECT_HEIGHT*height,TRUE);
+         MoveWindow(hWnd_StaticConnecting,STATICCONNECTING_LEFT*width,STATICCONNECTING_TOP*height,STATICCONNECTING_WIDTH*width,STATICCONNECTING_HEIGHT*height,TRUE);
+         MoveWindow(hWnd_EditChat,EDITCHAT_LEFT*width,EDITCHAT_TOP*height,EDITCHAT_WIDTH*width,EDITCHAT_HEIGHT*height,TRUE);
+         MoveWindow(hWnd_ButtonChat,BUTTONCHAT_LEFT*width,BUTTONCHAT_TOP*height,BUTTONCHAT_WIDTH*width,BUTTONCHAT_HEIGHT*height,TRUE);
+         MoveWindow(hWnd_TabControlChat,TABCONTROLCHAT_LEFT*width,TABCONTROLCHAT_TOP*height,TABCONTROLCHAT_WIDTH*width,TABCONTROLCHAT_HEIGHT*height,TRUE);
+         MoveWindow(hWnd_CloseTab,CLOSETAB_LEFT*width,CLOSETAB_TOP*height,CLOSETAB_WIDTH*width,CLOSETAB_HEIGHT*height,TRUE);
          tab_resize_all(hWnd_TabControlChat);
          break;
       }
