@@ -358,8 +358,18 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
          break;
       }
       case WM_SIZE:{
-         width = LOWORD(param_id);
-         height = HIWORD(param_id);
+         RECT rect;
+         GetWindowRect(hWnd, &rect);
+         width = rect.right;
+         height = rect.bottom;
+         height -= rect.top*2;
+         MoveWindow(hWnd_ButtonConnect,width*0.1,height*0.45,width*0.8,height*0.1,TRUE);
+         MoveWindow(hWnd_StaticConnecting,0,0,width,height,TRUE);
+         MoveWindow(hWnd_EditChat,width*0.01,height*0.91,width*0.80,height*0.08,TRUE);
+         MoveWindow(hWnd_ButtonChat,width*0.82,height*0.91,width*0.17,height*0.08,TRUE);
+         MoveWindow(hWnd_TabControlChat,width*0.01,height*0.01,width*0.89,height*0.08,TRUE);
+         MoveWindow(hWnd_CloseTab,width*0.91,height*0.01,width*0.08,height*0.08,TRUE);
+         tab_resize_all(hWnd_TabControlChat);
          break;
       }
       case WM_ACTIVATE:{
@@ -373,6 +383,11 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
          break;
       }
       case WM_CREATE:{
+         RECT rect;
+         GetWindowRect(hWnd, &rect);
+         width = rect.right;
+         height = rect.bottom;
+         height -= rect.top*2;
          if(init(hWnd)!=0){
             PostQuitMessage(0);
          }

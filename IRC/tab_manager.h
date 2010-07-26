@@ -66,7 +66,7 @@ int tab_find(HWND tab_control, wchar_t *target){
    int size = SendMessage(tab_control,TCM_GETITEMCOUNT,0,0);
    for(size--;size>=0;size--){
       if(tab_get_name_index(tab_control,size,buffer,TAB_LITTLE_BUFFER)==0){
-         if(wcscmp(buffer,target)==0){
+         if(wcsicmp(buffer,target)==0){
             return size;
          }
       }
@@ -115,19 +115,19 @@ int tab_create(HWND hWnd, HWND tab_control, wchar_t *tab_name, TAB_TYPE type){
       return -1;
    }
    if(type==STATUS){
-      new_tab->talk=CreateWindowEx(0,L"edit",NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|ES_MULTILINE,2,25,235,220,hWnd,(HMENU)TALK_BOX,hInstance_Main,NULL);
+      new_tab->talk=CreateWindowEx(0,L"edit",NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|ES_MULTILINE,width*0.01,height*0.10,width*0.98,height*0.80,hWnd,(HMENU)TALK_BOX,hInstance_Main,NULL);
       if(new_tab->talk==NULL){
          free(new_tab);
          return -1;
       }
       new_tab->nick=NULL;
    }else if(type==CHAT){
-      new_tab->talk=CreateWindowEx(0,L"edit",NULL,ES_AUTOVSCROLL|WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|ES_MULTILINE,2,25,174,220,hWnd,(HMENU)TALK_BOX,hInstance_Main,NULL);
+      new_tab->talk=CreateWindowEx(0,L"edit",NULL,ES_AUTOVSCROLL|WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|ES_MULTILINE,width*0.01,height*0.10,width*0.72,height*0.80,hWnd,(HMENU)TALK_BOX,hInstance_Main,NULL);
       if(new_tab->talk==NULL){
          free(new_tab);
          return -1;
       }
-      new_tab->nick=CreateWindowEx(0,L"listbox",NULL,ES_AUTOVSCROLL|WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|WS_HSCROLL|LBS_SORT|LBS_HASSTRINGS|LBS_NOTIFY,177,25,60,238,hWnd,(HMENU)LIST_BOX,hInstance_Main,NULL);
+      new_tab->nick=CreateWindowEx(0,L"listbox",NULL,LBS_NOINTEGRALHEIGHT|ES_AUTOVSCROLL|WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|WS_HSCROLL|LBS_SORT|LBS_HASSTRINGS|LBS_NOTIFY,width*0.74,height*0.10,width*0.25,height*0.80,hWnd,(HMENU)LIST_BOX,hInstance_Main,NULL);
       if(new_tab->nick==NULL){
          DestroyWindow(new_tab->talk);
          free(new_tab);
@@ -318,9 +318,22 @@ int tab_connect(HWND tab_control){
    tab_t *tab;
    int size = SendMessage(tab_control,TCM_GETITEMCOUNT,0,0);
    for(size--;size>=0;size--){
-      if(tab_get_parameters_index(tab_control,size,&tab)!=-1){
-         tab_write_index(tab_control,size,L"\r\nCONNECTED",TEXT,APPEND);
-      }
+      tab_write_index(tab_control,size,L"\r\nCONNECTED",TEXT,APPEND);
    }
    return -1;
+}
+
+void tab_resize_all(HWND tab_control){
+   tab_t *tab;
+   int size = SendMessage(tab_control,TCM_GETITEMCOUNT,0,0);
+   for(size--;size>=0;size--){
+      if(tab_get_parameters_index(tab_control,size,&tab)!=-1){
+         if(tab->nick==NULL){
+            MoveWindow(tab->talk,width*0.01,height*0.10,width*0.98,height*0.80,TRUE);
+         }else{
+            MoveWindow(tab->talk,width*0.01,height*0.10,width*0.72,height*0.80,TRUE);
+            MoveWindow(tab->nick,width*0.74,height*0.10,width*0.25,height*0.80,TRUE);
+         }
+      }
+   }
 }
