@@ -77,10 +77,10 @@ int irc_and_ircconfig_init(irc_t *irc, ircconfig_t *config, char *filepath){
    strncpy(name,iniparser_getstring(&iniparser, "client", "name", "default"),IRC_BUFFER_SIZE_LITTLE);
    strncpy(nick,iniparser_getstring(&iniparser, "client", "nick", "default_nick"),IRC_BUFFER_SIZE_LITTLE);
    strncpy(perform,iniparser_getstring(&iniparser, "client", "perform", ""),IRC_BUFFER_SIZE_MEDIUM);
-   strncpy(autojoin_channels,iniparser_getstring(&iniparser, "autojoin", "channels", ""),IRC_BUFFER_SIZE_MEDIUM);
+   strncpy(autojoin_channels,iniparser_getstring(&iniparser, "autojoin", "channels", "#microirc"),IRC_BUFFER_SIZE_MEDIUM);
    autojoin_delay = iniparser_getint(&iniparser, "autojoin", "delay", 5000);
 
-   reconnect = iniparser_getint(&iniparser, "autoreconnect", "retries", 0);
+   reconnect = iniparser_getint(&iniparser, "autoreconnect", "retries", 5);
    if(iniparser_getint(&iniparser, "options", "encoding", 1)){
       encoding = CP_UTF8;
    }else{

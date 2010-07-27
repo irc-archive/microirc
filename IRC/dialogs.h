@@ -118,12 +118,12 @@ INT_PTR CALLBACK Preferences(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
          settext_fromstr(hDlg,IDC_EDIT4,iniparser_getstring(&iniparser, "client", "name", "default"));
          settext_fromstr(hDlg,IDC_EDIT5,iniparser_getstring(&iniparser, "client", "nick", "default_nick"));
          settext_fromstr(hDlg,IDC_EDIT6,iniparser_getstring(&iniparser, "client", "perform", ""));
-         settext_fromstr(hDlg,IDC_EDIT7,iniparser_getstring(&iniparser, "autojoin", "channels", ""));
+         settext_fromstr(hDlg,IDC_EDIT7,iniparser_getstring(&iniparser, "autojoin", "channels", "#microirc"));
          settext_fromint(hDlg,IDC_EDIT8,iniparser_getint(&iniparser, "autojoin", "delay", 5000));
          settext_fromint(hDlg,IDC_EDIT9,config.reconnect);
 
          HWND combo = GetDlgItem(hDlg,IDC_COMBO1);
-         ComboBox_AddString(combo,L"ANSI");
+         ComboBox_AddString(combo,L"Local");
          ComboBox_AddString(combo,L"UTF-8");
          if(config.encoding == CP_UTF8){
             ComboBox_SetCurSel(combo,1);
