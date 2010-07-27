@@ -54,6 +54,8 @@ HANDLE thread;
 HANDLE open_handle;
 int open_state;
 
+TCHAR szTitle[IRC_SIZE_LITTLE];
+
 wchar_t alertsound[IRC_SIZE_LITTLE];
 char configfile[IRC_SIZE_LITTLE];
 
@@ -77,7 +79,6 @@ int connected;
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow){
    hInstance_Main = hInstance;
    MSG msg;
-   TCHAR szTitle[IRC_SIZE_LITTLE];
    TCHAR szWindowClass[IRC_SIZE_LITTLE];
    LoadString(hInstance, IDS_APP_TITLE, szTitle, IRC_SIZE_LITTLE);
    LoadString(hInstance, IDS_WNDCLASS_IRC, szWindowClass, IRC_SIZE_LITTLE);
@@ -201,8 +202,10 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
                if(wmEvent==LBN_DBLCLK){
                   int element = ListBox_GetCurSel(controlHwnd);
                   ListBox_GetText(controlHwnd,element,wtextprocess);
-                  SendMessage(hWnd,WM_CREATE_TAB,STATUS,(LPARAM)wtextprocess);
-                  tab_select_name(hWnd_TabControlChat,wtextprocess);
+                  if(wcslen(wtextprocess)!=0){
+                     SendMessage(hWnd,WM_CREATE_TAB,STATUS,(LPARAM)wtextprocess);
+                     tab_select_name(hWnd_TabControlChat,wtextprocess);
+                  }
                }
                break;
             }
@@ -297,7 +300,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
                }else{
                   wsprintf(wtextprocess,L"http://%s",result);
                }
-               SHELLEXECUTEINFO ShExecInfo;
+               SHELLEXECUTEINFO ShExecInfo = {0};
                ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
                ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
                ShExecInfo.hwnd = NULL;
@@ -452,6 +455,20 @@ void *thread_procedure(void *inused){
                      PlaySound(alertsound,NULL,SND_ASYNC|SND_FILENAME);
                   if(config.lednumber>=0)
                      activate_led();
+                  if(GetForegroundWindow()!=hWnd){
+                     SHNOTIFICATIONDATA sn = {0};
+                     sn.cbStruct = sizeof(sn);
+                     sn.dwID = BUBBLE_NOTIFICATION;
+                     sn.npPriority = SHNP_INFORM;
+                     sn.csDuration = 15; //make configurable
+                     sn.grfFlags = SHNF_DISPLAYON|SHNF_SILENT;
+                     sn.hwndSink = hWnd;
+                     sn.pszHTML = L"<html><body>You have received a message on IRC.</body></html>";
+                     sn.pszTitle = szTitle;
+                     sn.rgskn[0].pszTitle = L"Dismiss";
+                     sn.rgskn[0].skc.wpCmd = 100; //should be NOTIF_SOFTKEY_FLAGS_DISMISS, but that doesn't work...
+                     SHNotificationAdd(&sn);
+                  }
                }
                MultiByteToWideChar(config.encoding,0,tchar_buffer[0],-1,wchar_buffer[0],IRC_SIZE_MEDIUM);
                MultiByteToWideChar(config.encoding,0,tchar_buffer[3],-1,wchar_buffer[1],IRC_SIZE_MEDIUM);
@@ -615,7 +632,7 @@ void *thread_procedure(void *inused){
       }
       if(connected==1){
          if(config.reconnect==0){
-            switch (MessageBox(NULL,L"Do you really want to reconnect?",L"Disconnected",MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2|MB_SETFOREGROUND)){
+            switch (MessageBox(hWnd,L"Do you really want to reconnect?",L"Disconnected",MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2|MB_SETFOREGROUND)){
                case IDYES:{
                   SendMessage(hWnd,WM_DISCONNECTING,0,0);
                   SendMessage(hWnd,WM_CONNECTING,0,0);
