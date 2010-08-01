@@ -43,11 +43,11 @@ HCURSOR hOldCursor;
 
 #include "resource.h"
 #include "irc.h"
-#include "buffer.h"
-#include "network.h"
-#include "list.h"
-#include "iniparser.h"
-#include "ircprotocol.h"
+#include "../buffer/buffer.h"
+#include "../network/network.h"
+#include "../list/list.h"
+#include "../iniparser/iniparser.h"
+#include "../ircprotocol/ircprotocol.h"
 #include "tab_manager.h"
 
 HANDLE thread;

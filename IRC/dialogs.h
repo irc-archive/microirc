@@ -114,9 +114,9 @@ INT_PTR CALLBACK Preferences(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
          }
          settext_fromstr(hDlg,IDC_EDIT1,iniparser_getstring(&iniparser, "server", "host", "chat.freenode.net"));
          settext_fromstr(hDlg,IDC_EDIT2,iniparser_getstring(&iniparser, "server", "port", "6667"));
-         settext_fromstr(hDlg,IDC_EDIT3,iniparser_getstring(&iniparser, "client", "user", "irc"));
-         settext_fromstr(hDlg,IDC_EDIT4,iniparser_getstring(&iniparser, "client", "name", "default"));
-         settext_fromstr(hDlg,IDC_EDIT5,iniparser_getstring(&iniparser, "client", "nick", "default_nick"));
+         settext_fromstr(hDlg,IDC_EDIT3,iniparser_getstring(&iniparser, "client", "user", "user"));
+         settext_fromstr(hDlg,IDC_EDIT4,iniparser_getstring(&iniparser, "client", "name", "Real Name"));
+         settext_fromstr(hDlg,IDC_EDIT5,iniparser_getstring(&iniparser, "client", "nick", "nickname"));
          settext_fromstr(hDlg,IDC_EDIT6,iniparser_getstring(&iniparser, "client", "perform", ""));
          settext_fromstr(hDlg,IDC_EDIT7,iniparser_getstring(&iniparser, "autojoin", "channels", "#microirc"));
          settext_fromint(hDlg,IDC_EDIT8,iniparser_getint(&iniparser, "autojoin", "delay", 5000));

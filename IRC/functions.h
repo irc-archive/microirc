@@ -73,9 +73,9 @@ int irc_and_ircconfig_init(irc_t *irc, ircconfig_t *config, char *filepath){
 
    strncpy(host,iniparser_getstring(&iniparser, "server", "host", "chat.freenode.net"),IRC_BUFFER_SIZE_LITTLE);
    strncpy(port,iniparser_getstring(&iniparser, "server", "port", "6667"),IRC_BUFFER_SIZE_LITTLE);
-   strncpy(user,iniparser_getstring(&iniparser, "client", "user", "irc"),IRC_BUFFER_SIZE_LITTLE);
-   strncpy(name,iniparser_getstring(&iniparser, "client", "name", "default"),IRC_BUFFER_SIZE_LITTLE);
-   strncpy(nick,iniparser_getstring(&iniparser, "client", "nick", "default_nick"),IRC_BUFFER_SIZE_LITTLE);
+   strncpy(user,iniparser_getstring(&iniparser, "client", "user", "user"),IRC_BUFFER_SIZE_LITTLE);
+   strncpy(name,iniparser_getstring(&iniparser, "client", "name", "Real Name"),IRC_BUFFER_SIZE_LITTLE);
+   strncpy(nick,iniparser_getstring(&iniparser, "client", "nick", "nickname"),IRC_BUFFER_SIZE_LITTLE);
    strncpy(perform,iniparser_getstring(&iniparser, "client", "perform", ""),IRC_BUFFER_SIZE_MEDIUM);
    strncpy(autojoin_channels,iniparser_getstring(&iniparser, "autojoin", "channels", "#microirc"),IRC_BUFFER_SIZE_MEDIUM);
    autojoin_delay = iniparser_getint(&iniparser, "autojoin", "delay", 5000);
@@ -88,7 +88,7 @@ int irc_and_ircconfig_init(irc_t *irc, ircconfig_t *config, char *filepath){
    }
    sounds = iniparser_getint(&iniparser, "options", "sounds", 0);
    lednumber = iniparser_getint(&iniparser, "options", "lednumber", -1);
-   ledinterval = iniparser_getint(&iniparser, "options", "ledinterval", 250);
+   ledinterval = iniparser_getint(&iniparser, "options", "ledinterval", 500);
    
    iniparser_destroy(&iniparser);
    if(irc_init(irc,host,port,user,name,nick,perform,autojoin_channels,autojoin_delay)!=0){

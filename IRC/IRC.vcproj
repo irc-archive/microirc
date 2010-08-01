@@ -397,10 +397,6 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\buffer.h"
-				>
-			</File>
-			<File
 				RelativePath=".\dialogs.h"
 				>
 			</File>
@@ -413,23 +409,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\iniparser.h"
-				>
-			</File>
-			<File
 				RelativePath=".\irc.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ircprotocol.h"
-				>
-			</File>
-			<File
-				RelativePath=".\list.h"
-				>
-			</File>
-			<File
-				RelativePath=".\network.h"
 				>
 			</File>
 			<File

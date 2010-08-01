@@ -152,13 +152,14 @@ __declspec(dllexport) int irc_connect(irc_t *irc){
       result = irc_recv_message(irc,sendrecv,&size);
       switch(result){
          case RECV_WELCOME:{
+            timeKillEvent(timer);
             char *d_tokens[IRC_CONFIG_MAX_TOKENS];
             int s_tokens=0;
             int i;
             tokens_required(irc->perform,CHAR_COMMA,IRC_CONFIG_MAX_TOKENS,d_tokens,&s_tokens);
             for(i=0;i<s_tokens;i++){
                if(irc_send_message(irc,SEND_RAW,&d_tokens[i],1)<0){
-                  goto fullerror1;
+                  goto fullerror;
                }
             }
             s_tokens=0;
@@ -166,7 +167,7 @@ __declspec(dllexport) int irc_connect(irc_t *irc){
             tokens_required(irc->autojoin_channels,CHAR_COMMA,IRC_CONFIG_MAX_TOKENS,d_tokens,&s_tokens);
             for(i=0;i<s_tokens;i++){
                if(irc_send_message(irc,SEND_JOIN,&d_tokens[i],1)<0){
-                  goto fullerror1;
+                  goto fullerror;
                }
             }
             break;
@@ -179,20 +180,13 @@ __declspec(dllexport) int irc_connect(irc_t *irc){
          }
       }
    }
-   timeKillEvent(timer);
-   if(result<0){
-      buffer_destroy(&irc->recv_buffer_stream);
-      DeleteCriticalSection(&irc->send_buffer_critical_section);
-      return -1;
+   if(result<=0){
+      goto fullerror;
    }
    return 0;
-   fullerror:
-      close_tcp(&irc->network);
-      buffer_destroy(&irc->recv_buffer_stream);
-      DeleteCriticalSection(&irc->send_buffer_critical_section);
-      return -1;
    fullerror1:
       timeKillEvent(timer);
+   fullerror:
       close_tcp(&irc->network);
       buffer_destroy(&irc->recv_buffer_stream);
       DeleteCriticalSection(&irc->send_buffer_critical_section);
@@ -231,12 +225,12 @@ __declspec(dllexport) int irc_recv_message(irc_t *irc, char **d_result, int *s_r
          int sresult=0;
          char *next = tokens_required(irc->recv_buffer,CHAR_SPACE,2,dresult,&sresult);
          get_nick_user_host(dresult[0],d_result,s_result);
-         if(!memcmp(dresult[1],"JOIN",4) && next!=NULL){//nick user host canal
+         if(!memcmp(dresult[1],"JOIN",4) && next!=NULL){//nick user host channel
             next = strignorechar(next,CHAR_COLON);
             d_result[*s_result] = next;
             (*s_result)++;
             return RECV_JOIN;
-         }else if(!memcmp(dresult[1],"KICK",4) && next!=NULL){//nick user host canal nick_vitima mensagem
+         }else if(!memcmp(dresult[1],"KICK",4) && next!=NULL){//nick user host channel victim message
             char *message = tokens_required(next,CHAR_SPACE,2,d_result,s_result);
             if(message!=NULL){
                message = strignorechar(message,CHAR_COLON);
@@ -249,13 +243,13 @@ __declspec(dllexport) int irc_recv_message(irc_t *irc, char **d_result, int *s_r
             d_result[*s_result] = next;
             (*s_result)++;
             return RECV_NICK;
-         }else if(!memcmp(dresult[1],"NOTICE",6) && next!=NULL){//nick user host destination mensagem
+         }else if(!memcmp(dresult[1],"NOTICE",6) && next!=NULL){//nick user host destination message
             char *message = tokens_required(next,CHAR_SPACE,1,d_result,s_result);
             message = strignorechar(message,CHAR_COLON);
             d_result[*s_result] = message;
             (*s_result)++;
             return RECV_NOTICE;
-         }else if(!memcmp(dresult[1],"PART",4) && next!=NULL){//nick user host canal mensagem
+         }else if(!memcmp(dresult[1],"PART",4) && next!=NULL){//nick user host channel message
             char *message = tokens_required(next,CHAR_SPACE,1,d_result,s_result);
             if(message!=NULL){
                message = strignorechar(message,CHAR_COLON);
@@ -263,7 +257,7 @@ __declspec(dllexport) int irc_recv_message(irc_t *irc, char **d_result, int *s_r
                (*s_result)++;
             }
             return RECV_PART;
-         }else if(!memcmp(dresult[1],"PRIVMSG",7) && next!=NULL){//nick user host destination mensagem
+         }else if(!memcmp(dresult[1],"PRIVMSG",7) && next!=NULL){//nick user host destination message
             char *message = tokens_required(next,CHAR_SPACE,1,d_result,s_result);
             message = strignorechar(message,CHAR_COLON);
             if(message[0]==CHAR_CTCP){
@@ -277,14 +271,14 @@ __declspec(dllexport) int irc_recv_message(irc_t *irc, char **d_result, int *s_r
                (*s_result)++;
                return RECV_PRIVMSG;
             }
-         }else if(!memcmp(dresult[1],"QUIT",4)){//nick user host mensagem
+         }else if(!memcmp(dresult[1],"QUIT",4)){//nick user host message
             if(next!=NULL){
                next = strignorechar(next,CHAR_COLON);
                d_result[*s_result] = next;
                (*s_result)++;
             }
             return RECV_QUIT;
-         }else if(!memcmp(dresult[1],"TOPIC",5) && next!=NULL){//nick user host canal topic
+         }else if(!memcmp(dresult[1],"TOPIC",5) && next!=NULL){//nick user host channel topic
             char *message = tokens_required(next,CHAR_SPACE,1,d_result,s_result);
             message = strignorechar(message,CHAR_COLON);
             d_result[*s_result] = message;
@@ -298,13 +292,13 @@ __declspec(dllexport) int irc_recv_message(irc_t *irc, char **d_result, int *s_r
                (*s_result)++;
             }
             return RECV_WELCOME;
-         }else if(!memcmp(dresult[1],"332",3) && next!=NULL){//host nick canal topic
+         }else if(!memcmp(dresult[1],"332",3) && next!=NULL){//host nick channel topic
             char *message = tokens_required(next,CHAR_SPACE,2,d_result,s_result);
             message = strignorechar(message,CHAR_COLON);
             d_result[*s_result] = message;
             (*s_result)++;
             return RECV_TOPIC;
-         }else if(!memcmp(dresult[1],"353",3) && next!=NULL){//host canal nicks
+         }else if(!memcmp(dresult[1],"353",3) && next!=NULL){//host channel nicklist
             char *nicks = tokens_required(next,CHAR_SPACE,3,d_result,s_result);
             d_result[(*s_result)-3] = d_result[(*s_result)-1];
             (*s_result)-=2;
