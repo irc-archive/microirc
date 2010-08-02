@@ -41,6 +41,8 @@ HWND hWnd_TapAndHold;
 
 HCURSOR hOldCursor;
 
+MMRESULT LEDtimer;
+
 #include "resource.h"
 #include "irc.h"
 #include "../buffer/buffer.h"
@@ -80,6 +82,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
    hInstance_Main = hInstance;
    MSG msg;
    TCHAR szWindowClass[IRC_SIZE_LITTLE];
+   LEDtimer = NULL;
    LoadString(hInstance, IDS_APP_TITLE, szTitle, IRC_SIZE_LITTLE);
    LoadString(hInstance, IDS_WNDCLASS_IRC, szWindowClass, IRC_SIZE_LITTLE);
    HWND hWnd_Main = FindWindow(szWindowClass, szTitle);   
@@ -432,7 +435,7 @@ void *thread_procedure(void *inused){
          GetSystemTime(&systime_now);
          swprintf(timestamp,L"[%02d:%02d:%02d]",(unsigned short)systime_now.wHour,(unsigned short)systime_now.wMinute,(unsigned short)systime_now.wSecond);
          switch(recv_result){
-            case RECV_CTCP:{//nick user host destination mensagem
+            case RECV_CTCP:{//nick user host destination message
                if(tchar_size<5){
                   break;
                }
@@ -444,9 +447,9 @@ void *thread_procedure(void *inused){
                }
                tchar_buffer[4]+=7;
             }
-            case RECV_PRIVMSG:{//nick user host destination mensagem
+            case RECV_PRIVMSG:{//nick user host destination message
             }
-            case RECV_NOTICE:{//nick user host destination mensagem
+            case RECV_NOTICE:{//nick user host destination message
                if(tchar_size<5){
                   break;
                }
@@ -493,7 +496,7 @@ void *thread_procedure(void *inused){
                }
                break;
             }
-            case RECV_JOIN:{//nick user host canal
+            case RECV_JOIN:{//nick user host channel
                if(tchar_size<4){
                   break;
                }
@@ -509,7 +512,7 @@ void *thread_procedure(void *inused){
                }
                break;
             }
-            case RECV_KICK:{//nick user host canal nick_vitima mensagem
+            case RECV_KICK:{//nick user host channel victim message
                if(tchar_size<6){
                   break;
                }
@@ -541,7 +544,7 @@ void *thread_procedure(void *inused){
                tab_nickchange(hWnd_TabControlChat,timestamp,wchar_buffer[0],wchar_buffer[1]);
                break;
             }
-            case RECV_NICK_LIST:{//host canal nicks
+            case RECV_NICK_LIST:{//host channel nicklist
                if(tchar_size<3){
                   break;
                }
@@ -562,7 +565,7 @@ void *thread_procedure(void *inused){
                tab_write_actual(hWnd_TabControlChat,wchar_buffer[4],TEXT,APPEND);
                break;
             }
-            case RECV_PART:{//nick user host canal mensagem
+            case RECV_PART:{//nick user host channel message
                if(tchar_size<4){
                   break;
                }
@@ -690,6 +693,9 @@ void destroy(HWND hWnd){
       destroy_chat_screen(hWnd);
    }else{
       destroy_login_menu(hWnd);
+   }
+   if(LEDtimer!=NULL){
+      deactivate_led(LEDtimer,0,NULL,NULL,NULL);
    }
    destroy_menu_bar(hWnd);
    SetEvent(open_handle);

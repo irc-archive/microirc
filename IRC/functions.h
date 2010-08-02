@@ -32,20 +32,22 @@ char *strstri(char *t, char *s){//lstrcmpi
 
 void set_led(int led_num, int state){
     NLED_SETTINGS_INFO settings;
-    settings.LedNum = led_num;
-    settings.OffOnBlink = state;
-    NLedSetDevice(NLED_SETTINGS_INFO_ID, &settings);
+    settings.LedNum=led_num;
+    settings.OffOnBlink=state;
+    NLedSetDevice(NLED_SETTINGS_INFO_ID,&settings);
 }
 
 VOID CALLBACK deactivate_led(UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2){
     timeKillEvent(uTimerID);
-    set_led(config.lednumber, 0);
+    LEDtimer=NULL;
+    set_led(config.lednumber,0);
 }
 
 void activate_led(){
-    MMRESULT timer;
-    timer = timeSetEvent(config.ledinterval, 50, deactivate_led, 0, TIME_ONESHOT|TIME_CALLBACK_FUNCTION);
-    set_led(config.lednumber, 1);
+    LEDtimer = timeSetEvent(config.ledinterval, 50, deactivate_led, 0, TIME_ONESHOT|TIME_CALLBACK_FUNCTION);
+    if(LEDtimer!=NULL){
+       set_led(config.lednumber,1);
+    }
 }
 
 int irc_and_ircconfig_init(irc_t *irc, ircconfig_t *config, char *filepath){
