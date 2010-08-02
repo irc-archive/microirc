@@ -38,13 +38,12 @@ void set_led(int led_num, int state){
 }
 
 VOID CALLBACK deactivate_led(UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2){
-    timeKillEvent(uTimerID);
     LEDtimer=NULL;
     set_led(config.lednumber,0);
 }
 
 void activate_led(){
-    LEDtimer = timeSetEvent(config.ledinterval, 50, deactivate_led, 0, TIME_ONESHOT|TIME_CALLBACK_FUNCTION);
+    LEDtimer=timeSetEvent(config.ledinterval, 50, deactivate_led, 0, TIME_ONESHOT|TIME_CALLBACK_FUNCTION|TIME_KILL_SYNCHRONOUS);
     if(LEDtimer!=NULL){
        set_led(config.lednumber,1);
     }

@@ -82,7 +82,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
    hInstance_Main = hInstance;
    MSG msg;
    TCHAR szWindowClass[IRC_SIZE_LITTLE];
-   LEDtimer = NULL;
    LoadString(hInstance, IDS_APP_TITLE, szTitle, IRC_SIZE_LITTLE);
    LoadString(hInstance, IDS_WNDCLASS_IRC, szWindowClass, IRC_SIZE_LITTLE);
    HWND hWnd_Main = FindWindow(szWindowClass, szTitle);   
@@ -682,6 +681,7 @@ int init(HWND hWnd){
       MessageBox(NULL,L"Config file is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
       return -1;
    }
+   LEDtimer=NULL;
    return 0;
 }
 
@@ -695,6 +695,7 @@ void destroy(HWND hWnd){
       destroy_login_menu(hWnd);
    }
    if(LEDtimer!=NULL){
+      timeKillEvent(LEDtimer);
       deactivate_led(LEDtimer,0,NULL,NULL,NULL);
    }
    destroy_menu_bar(hWnd);

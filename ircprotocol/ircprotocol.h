@@ -9,6 +9,9 @@
 * This code is licenced under the GPL version 2. For details see COPYING.txt file.
 */
 
+//It's still unknown whether timeSetEvent() actually uses this value or not...
+#define TIME_KILL_SYNCHRONOUS 64
+
 #define RECV_PRIVMSG 50
 #define RECV_NICK 51
 #define RECV_JOIN 52
@@ -48,7 +51,7 @@
 
 #define IRC_CONFIG_MAX_TOKENS 10
 #define IRC_RECV_MAX_TOKENS 10
-#define IRC_REGISTER_TIMEOUT 15000
+#define IRC_REGISTER_TIMEOUT 30000
 
 #define IRC_BUFFER_SIZE_LITTLE 256
 #define IRC_BUFFER_SIZE_MEDIUM 1024

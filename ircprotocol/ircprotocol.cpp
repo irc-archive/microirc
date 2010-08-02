@@ -142,7 +142,7 @@ __declspec(dllexport) int irc_connect(irc_t *irc){
       goto fullerror;
    }
    MMRESULT timer;
-   timer = timeSetEvent(IRC_REGISTER_TIMEOUT,1000,timer_procedure,(DWORD)irc,TIME_ONESHOT);
+   timer = timeSetEvent(IRC_REGISTER_TIMEOUT,1000,timer_procedure,(DWORD)irc,TIME_ONESHOT|TIME_CALLBACK_FUNCTION|TIME_KILL_SYNCHRONOUS);
    if(timer==0){
       goto fullerror;
    }
@@ -366,7 +366,7 @@ __declspec(dllexport) int irc_send_message(irc_t *irc, int opcode, char **messag
          EnterCriticalSection(&irc->send_buffer_critical_section);
          if(size==0){
             srand(GetTickCount());
-            sprintf(irc->send_buffer, "NICK nick_em_uso%d", rand()%1000);
+            sprintf(irc->send_buffer, "NICK microirc%d", rand()%1000);
          }else{
             sprintf(irc->send_buffer, "NICK %s", messages[0]);
          }
