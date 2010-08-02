@@ -81,7 +81,7 @@ typedef struct ircconfig_t{
 }ircconfig_t;
 
 int init(HWND);
-void destroy();
+void destroy(HWND);
 int connecting(HWND);
 void disconnecting(HWND);
 int reconnecting(HWND);

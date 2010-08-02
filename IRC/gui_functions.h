@@ -93,6 +93,7 @@ void destroy_chat_screen(HWND hWnd){
    DestroyWindow(hWnd_TapAndHold);
    DestroyWindow(hWnd_EditChat);
    DestroyWindow(hWnd_ButtonChat);
+   while(tab_delete_actual(hWnd_TabControlChat)!=-1);
    DestroyWindow(hWnd_TabControlChat);
    DestroyWindow(hWnd_CloseTab);
    UpdateWindow(hWnd);

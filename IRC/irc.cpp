@@ -405,7 +405,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
       case WM_CLOSE:{
       }
       case WM_DESTROY:{
-         destroy();
+         destroy(hWnd);
          PostQuitMessage(0);
          break;
       }
@@ -682,16 +682,22 @@ int init(HWND hWnd){
    return 0;
 }
 
-void destroy(){
+void destroy(HWND hWnd){
    open_state = 0;
-   //CloseHandle(open_handle);
-   //CloseHandle(connected_handle);
-   //destroy_login_menu();
-   //destroy_menu_bar();
-   //join thread...
-
-   //irc_destroy(&irc);
-   //ircconfig_destroy(&config);
+   if(connected==1){
+      connected = 0;
+      irc_disconnect(&irc,NULL);
+      destroy_chat_screen(hWnd);
+   }else{
+      destroy_login_menu(hWnd);
+   }
+   destroy_menu_bar(hWnd);
+   SetEvent(open_handle);
+   WaitForSingleObject(thread,INFINITE);
+   CloseHandle(open_handle);
+   CloseHandle(thread);
+   irc_destroy(&irc);
+   ircconfig_destroy(&config);
 }
 
 int connecting(HWND hWnd){
@@ -739,7 +745,6 @@ int reconnecting(HWND hWnd){
          connected = 0;
          //irc_destroy(&irc);
          //ircconfig_destroy(&config);
-         while(tab_delete_actual(hWnd_TabControlChat)!=-1);
          destroy_chat_screen(hWnd);
          init_login_menu(hWnd);
          return -1;
@@ -757,7 +762,6 @@ void disconnecting(HWND hWnd){
       irc_disconnect(&irc,NULL);
       //irc_destroy(&irc);
       //ircconfig_destroy(&config);
-      while(tab_delete_actual(hWnd_TabControlChat)!=-1);
       destroy_chat_screen(hWnd);
       init_login_menu(hWnd);
    }
