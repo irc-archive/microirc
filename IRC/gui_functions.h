@@ -71,7 +71,7 @@ LRESULT CALLBACK SendTextProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARA
 
 void init_chat_screen(HWND hWnd){
    INITCOMMONCONTROLSEX icex;
-   hWnd_EditChat = CreateWindowEx(0,L"edit", NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|ES_AUTOHSCROLL,EDITCHAT_LEFT*width,EDITCHAT_TOP*height,EDITCHAT_WIDTH*width,EDITCHAT_HEIGHT*height,hWnd,NULL,hInstance_Main,NULL);
+   hWnd_EditChat = CreateWindowEx(0,L"edit", NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|ES_AUTOHSCROLL|ES_NOHIDESEL,EDITCHAT_LEFT*width,EDITCHAT_TOP*height,EDITCHAT_WIDTH*width,EDITCHAT_HEIGHT*height,hWnd,NULL,hInstance_Main,NULL);
    
    hWnd_SendText = hWnd;
    old_SendTextProc = (WNDPROC)GetWindowLong(hWnd_EditChat,GWL_WNDPROC);
@@ -79,12 +79,12 @@ void init_chat_screen(HWND hWnd){
    
    Edit_LineLength(hWnd_EditChat,200);
    Edit_LimitText(hWnd_EditChat,200);
-   hWnd_ButtonChat = CreateWindowEx(0,L"button",TEXT("Send"),WS_VISIBLE|WS_CHILD|BS_DEFPUSHBUTTON,BUTTONCHAT_LEFT*width,BUTTONCHAT_TOP*height,BUTTONCHAT_WIDTH*width,BUTTONCHAT_HEIGHT*height,hWnd,(HMENU)BUTTON_SEND,hInstance_Main,NULL);
+   hWnd_ButtonChat = CreateWindowEx(0,L"button",TEXT("Send"),WS_VISIBLE|WS_CHILD|BS_DEFPUSHBUTTON|BS_CENTER|BS_VCENTER,BUTTONCHAT_LEFT*width,BUTTONCHAT_TOP*height,BUTTONCHAT_WIDTH*width,BUTTONCHAT_HEIGHT*height,hWnd,(HMENU)BUTTON_SEND,hInstance_Main,NULL);
    icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
    icex.dwICC = ICC_TAB_CLASSES;
    InitCommonControlsEx(&icex);
-   hWnd_TabControlChat = CreateWindowEx(0,WC_TABCONTROL,NULL,WS_CHILD|WS_VISIBLE,TABCONTROLCHAT_LEFT*width,TABCONTROLCHAT_TOP*height,TABCONTROLCHAT_WIDTH*width,TABCONTROLCHAT_HEIGHT*height,hWnd,(HMENU)TAB_CONTROL,hInstance_Main,NULL);
-   hWnd_CloseTab = CreateWindowEx(0,L"button",TEXT("X"),WS_VISIBLE|WS_CHILD,CLOSETAB_LEFT*width,CLOSETAB_TOP*height,CLOSETAB_WIDTH*width,CLOSETAB_HEIGHT*height,hWnd,(HMENU)BUTTON_CLOSE,hInstance_Main,NULL);
+   hWnd_TabControlChat = CreateWindowEx(0,WC_TABCONTROL,NULL,WS_CHILD|WS_VISIBLE|TCS_FOCUSNEVER|TCS_BUTTONS|TCS_FLATBUTTONS,TABCONTROLCHAT_LEFT*width,TABCONTROLCHAT_TOP*height,TABCONTROLCHAT_WIDTH*width,TABCONTROLCHAT_HEIGHT*height,hWnd,(HMENU)TAB_CONTROL,hInstance_Main,NULL);
+   hWnd_CloseTab = CreateWindowEx(0,L"button",TEXT("x"),WS_VISIBLE|WS_CHILD|BS_CENTER|BS_VCENTER,CLOSETAB_LEFT*width,CLOSETAB_TOP*height,CLOSETAB_WIDTH*width,CLOSETAB_HEIGHT*height,hWnd,(HMENU)BUTTON_CLOSE,hInstance_Main,NULL);
    hWnd_TapAndHold = CreateWindow(WC_SIPPREF,L"",WS_CHILD,0,0,0,0,hWnd,NULL,hInstance_Main,NULL);
    UpdateWindow(hWnd);
 }
