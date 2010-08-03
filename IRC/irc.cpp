@@ -18,6 +18,7 @@
 #include <windowsx.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#include <Windef.h>
 #include <time.h>
 #include <wchar.h>
 #include <stdlib.h>
@@ -385,6 +386,22 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
       case WM_SETTINGCHANGE:{
          SHACTIVATEINFO s_sai;
          SHHandleWMSettingChange(hWnd, element_id, param_id, &s_sai);
+         switch(element_id){
+            case SPI_SETSIPINFO:{
+               SIPINFO si;
+               memset(&si,0,sizeof(si));
+               si.cbSize=sizeof(si);
+               if(SHSipInfo(SPI_GETSIPINFO,0,&si,0)){
+                  RECT rect = si.rcVisibleDesktop;
+                  if(rect.bottom>height){
+                     MoveWindow(hWnd,rect.left,rect.top,rect.right,rect.bottom-rect.top,TRUE);
+                  }else{
+                     MoveWindow(hWnd,rect.left,rect.top,rect.right,rect.bottom,TRUE);
+                  }
+               }
+               break;
+            }
+         }
          break;
       }
       case WM_CREATE:{

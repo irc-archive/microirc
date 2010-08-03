@@ -85,7 +85,7 @@ void init_chat_screen(HWND hWnd){
    InitCommonControlsEx(&icex);
    hWnd_TabControlChat = CreateWindowEx(0,WC_TABCONTROL,NULL,WS_CHILD|WS_VISIBLE|TCS_FOCUSNEVER|TCS_BUTTONS|TCS_FLATBUTTONS,TABCONTROLCHAT_LEFT*width,TABCONTROLCHAT_TOP*height,TABCONTROLCHAT_WIDTH*width,TABCONTROLCHAT_HEIGHT*height,hWnd,(HMENU)TAB_CONTROL,hInstance_Main,NULL);
    hWnd_CloseTab = CreateWindowEx(0,L"button",TEXT("x"),WS_VISIBLE|WS_CHILD|BS_CENTER|BS_VCENTER,CLOSETAB_LEFT*width,CLOSETAB_TOP*height,CLOSETAB_WIDTH*width,CLOSETAB_HEIGHT*height,hWnd,(HMENU)BUTTON_CLOSE,hInstance_Main,NULL);
-   hWnd_TapAndHold = CreateWindow(WC_SIPPREF,L"",WS_CHILD,0,0,0,0,hWnd,NULL,hInstance_Main,NULL);
+   hWnd_TapAndHold = CreateWindowEx(0,WC_SIPPREF,L"",WS_CHILD,0,0,0,0,hWnd,NULL,hInstance_Main,NULL);
    UpdateWindow(hWnd);
 }
 
