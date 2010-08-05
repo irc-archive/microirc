@@ -274,8 +274,8 @@ INT_PTR CALLBACK InputBoxProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
       case WM_COMMAND:{
          if (LOWORD(wParam) == IDOK){
             HWND edit = GetDlgItem(hDlg,IDC_EDIT1);
-            LPWSTR result = (LPWSTR)malloc(IRC_SIZE_LITTLE);
-            Edit_GetText(edit,result,IRC_SIZE_LITTLE);
+            LPWSTR result = (LPWSTR)malloc(IRC_SIZE_SMALL);
+            Edit_GetText(edit,result,IRC_SIZE_SMALL);
             EndDialog(hDlg, (int)result);
             return TRUE;
          }else if (LOWORD(wParam) == IDCANCEL){

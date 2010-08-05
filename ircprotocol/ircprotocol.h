@@ -12,9 +12,6 @@
 #ifndef IRCPROTOCOL_T
 #define IRCPROTOCOL_T
 
-//It's still unknown whether timeSetEvent() actually uses this value or not...
-#define TIME_KILL_SYNCHRONOUS 64
-
 #define RECV_PRIVMSG 50
 #define RECV_NICK 51
 #define RECV_JOIN 52

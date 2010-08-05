@@ -9,7 +9,7 @@
 * This code is licenced under the GPL version 2. For details see COPYING.txt file.
 */
 
-#define IRC_SIZE_LITTLE 256
+#define IRC_SIZE_SMALL 256
 #define IRC_SIZE_MEDIUM 1024
 
 #define IRC_MAX_NICKS_PER_MESSAGE 100

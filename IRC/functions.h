@@ -31,22 +31,25 @@ char *strstri(char *t, char *s){//lstrcmpi
 }
 
 void set_led(int led_num, int state){
-    NLED_SETTINGS_INFO settings;
-    settings.LedNum=led_num;
-    settings.OffOnBlink=state;
-    NLedSetDevice(NLED_SETTINGS_INFO_ID,&settings);
+   NLED_SETTINGS_INFO settings;
+   settings.LedNum=led_num;
+   settings.OffOnBlink=state;
+   NLedSetDevice(NLED_SETTINGS_INFO_ID,&settings);
 }
 
 VOID CALLBACK deactivate_led(UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2){
-    timer_led=NULL;
-    set_led(config.lednumber,0);
+   timer_led=NULL;
+   set_led(config.lednumber,0);
 }
 
 void activate_led(){
-    timer_led=timeSetEvent(config.ledinterval, 50, deactivate_led, 0, TIME_ONESHOT|TIME_CALLBACK_FUNCTION|TIME_KILL_SYNCHRONOUS);
-    if(timer_led!=NULL){
-       set_led(config.lednumber,1);
-    }
+   if(timer_led!=NULL){
+      return;
+   }
+   timer_led=timeSetEvent(config.ledinterval, 50, deactivate_led, 0, TIME_ONESHOT|TIME_CALLBACK_FUNCTION);
+   if(timer_led!=NULL){
+      set_led(config.lednumber,1);
+   }
 }
 
 void settext_fromstr(HWND hDlg, int control, char *edittext){

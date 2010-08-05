@@ -148,7 +148,7 @@ __declspec(dllexport) int irc_connect(irc_t *irc){
       goto fullerror;
    }
    MMRESULT timer;
-   timer = timeSetEvent(IRCPROTOCOL_REGISTER_TIMEOUT,1000,timer_procedure,(DWORD)irc,TIME_ONESHOT|TIME_CALLBACK_FUNCTION|TIME_KILL_SYNCHRONOUS);
+   timer = timeSetEvent(IRCPROTOCOL_REGISTER_TIMEOUT,1000,timer_procedure,(DWORD)irc,TIME_ONESHOT|TIME_CALLBACK_FUNCTION);
    if(timer==0){
       goto fullerror;
    }
