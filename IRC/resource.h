@@ -10,6 +10,7 @@
 #define IDC_IRC                         104
 #define IDR_MAIN_MENU                   201
 #define IDR_PREFERENCES_MENU            202
+#define IDR_CHATBOX_MENU                203
 #define IDS_OPENURL                     301
 #define IDS_OPTIONS                     302
 #define IDS_OK                          303
@@ -27,6 +28,11 @@
 #define IDM_OPTIONS_GETTOPIC            607
 #define IDM_OPTIONS_OPENPRIVATE         608
 #define IDM_OPTIONS_JOINCHANNEL         609
+#define IDM_CHATBOX_BAN                 610
+#define IDM_CHATBOX_KICK                611
+#define IDM_CHATBOX_KICKBAN             612
+#define IDM_CHATBOX_WHOIS               613
+#define IDM_OPTIONS_DISCONNECT          614
 #define IDC_EDIT1                       1000
 #define IDC_EDIT2                       1001
 #define IDC_EDIT3                       1002

@@ -141,6 +141,7 @@ BEGIN
         MENUITEM "Help",                        IDM_OPTIONS_HELP
         MENUITEM SEPARATOR
         MENUITEM "Exit",                        IDM_OPTIONS_EXIT
+        MENUITEM "Disconnect",                  IDM_OPTIONS_DISCONNECT
         MENUITEM "Preferences",                 IDM_OPTIONS_PREFERENCES
         MENUITEM SEPARATOR
         MENUITEM "Set Topic",                   IDM_OPTIONS_SETTOPIC
@@ -151,6 +152,18 @@ BEGIN
     END
 END
 
+IDR_CHATBOX_MENU MENU 
+BEGIN
+    POPUP "Nick Menu"
+    BEGIN
+        MENUITEM "Kick",                        IDM_CHATBOX_KICK
+        MENUITEM "Kick-Ban",                    IDM_CHATBOX_KICKBAN
+        MENUITEM "Ban",                         IDM_CHATBOX_BAN
+        MENUITEM SEPARATOR
+        MENUITEM "Whois",                       IDM_CHATBOX_WHOIS
+        MENUITEM "Copy Nick",                   IDM_OPTIONS_SETTOPIC
+    END
+END
 
 /////////////////////////////////////////////////////////////////////////////
 //

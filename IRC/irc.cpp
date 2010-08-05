@@ -356,6 +356,10 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
                irc_send_message(&irc,SEND_GET_TOPIC,send,1);
                break;
             }
+            case IDM_OPTIONS_DISCONNECT:{
+               SendMessage(hWnd, WM_DISCONNECTING, 0, 0);
+               break;
+            }
             case IDM_OPTIONS_EXIT:{
                SendMessage(hWnd, WM_CLOSE, 0, 0);
                break;

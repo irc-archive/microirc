@@ -105,6 +105,62 @@ LRESULT CALLBACK TalkBoxProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM
    return CallWindowProc(old_TalkBoxProc, hWnd, event_id, element_id, param_id);
 }
 
+WNDPROC old_NickBoxProc;
+HWND hWnd_NickBox;
+LRESULT CALLBACK NickBoxProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM param_id){
+   switch(event_id){
+      case WM_COMMAND:{
+         int wmEvent = HIWORD(element_id);
+         switch (LOWORD(element_id)){
+            case IDM_CHATBOX_KICK:{
+/*               wchar_t wnick[IRC_SIZE_MEDIUM];
+               wchar_t wchannel[IRC_SIZE_MEDIUM];
+               char nick[IRC_SIZE_MEDIUM];
+               char channel[IRC_SIZE_MEDIUM];
+               int element = ListBox_GetCurSel(hWnd);
+               ListBox_GetText(hWnd,element,wnick);
+               if(wcslen(wnick)!=0){
+                  tab_get_name_actual(hWnd_TabControlChat,wchannel,IRC_SIZE_MEDIUM);
+                  WideCharToMultiByte(CP_UTF8,0,wchannel,-1,channel,IRC_SIZE_MEDIUM,NULL,NULL);
+                  WideCharToMultiByte(CP_UTF8,0,wnick,-1,nick,IRC_SIZE_MEDIUM,NULL,NULL);
+                  char *send[3] = {channel,nick,"cocks"};
+                  irc_send_message(&irc,SEND_KICK,send,3);
+               }*/
+               break;
+            }
+            case IDM_CHATBOX_KICKBAN:{
+               MessageBox(NULL,L"LOL",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               break;
+            }
+            case IDM_CHATBOX_BAN:{
+               MessageBox(NULL,L"LOL",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               break;
+            }
+            case IDM_CHATBOX_WHOIS:{
+               MessageBox(NULL,L"LOL",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               break;
+            }
+         }
+         break;
+      }
+      case WM_LBUTTONDOWN:{
+         SHRGINFO shrg;
+         shrg.cbSize = sizeof(shrg);
+         shrg.hwndClient = hWnd;
+         shrg.ptDown.x = LOWORD(param_id);
+         shrg.ptDown.y = HIWORD(param_id);
+         shrg.dwFlags = SHRG_RETURNCMD;
+         if(SHRecognizeGesture(&shrg) == GN_CONTEXTMENU){
+            HMENU menu = LoadMenu(hInstance_Main, MAKEINTRESOURCE(IDR_CHATBOX_MENU));
+            menu = GetSubMenu(menu, 0);
+            TrackPopupMenuEx(menu,TPM_LEFTALIGN,TABNICK_LEFT*width+LOWORD(param_id),TABNICK_TOP*height+HIWORD(param_id),hWnd,NULL);
+         }
+         break;
+      }
+   }
+   return CallWindowProc(old_NickBoxProc, hWnd, event_id, element_id, param_id);
+}
+
 int tab_create(HWND hWnd, HWND tab_control, wchar_t *tab_name, TAB_TYPE type){
    int tab_index = tab_find(tab_control,tab_name);
    if(tab_index!=-1){
@@ -133,10 +189,12 @@ int tab_create(HWND hWnd, HWND tab_control, wchar_t *tab_name, TAB_TYPE type){
          free(new_tab);
          return -1;
       }
+      hWnd_NickBox = hWnd;
+      old_NickBoxProc = (WNDPROC)GetWindowLong(new_tab->nick,GWL_WNDPROC);
+      SetWindowLong(new_tab->nick,GWL_WNDPROC,(LONG)NickBoxProc);
    }else{
       return -1;
    }
-
    hWnd_TalkBox = hWnd;
    old_TalkBoxProc = (WNDPROC)GetWindowLong(new_tab->talk,GWL_WNDPROC);
    SetWindowLong(new_tab->talk,GWL_WNDPROC,(LONG)TalkBoxProc);

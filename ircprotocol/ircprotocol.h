@@ -42,15 +42,17 @@
 #define SEND_GET_TOPIC 91
 
 #define CHAR_SPACE ' '
-#define CHAR_COLON ':'
-#define CHAR_EXCLAMATAIONMARK '!'
-#define CHAR_ATSIGN '@'
-#define CHAR_COMMA ','
+#define CHAR_TRAIL ':'
+#define CHAR_MASKSEPARATOR1 '!'
+#define CHAR_MASKSEPARATOR2 '@'
+#define CHAR_LISTSEPARATOR ','
+#define CHAR_ISUPPORTSEPARATOR '='
+#define CHAR_PREFIXDELIMITER ')'
 #define CHAR_CTCP 1
 #define CHAR_TERMINATOR 0
 
 #define IRC_CONFIG_MAX_TOKENS 10
-#define IRC_RECV_MAX_TOKENS 10
+#define IRC_RECV_MAX_TOKENS 15
 #define IRC_REGISTER_TIMEOUT 30000
 
 #define IRC_BUFFER_SIZE_LITTLE 256
@@ -61,6 +63,13 @@
 #define IRC_SPLITER_SIZE 2
 
 typedef struct irc_t{
+   char prefix_mode[IRC_BUFFER_SIZE_LITTLE];
+   char prefix_char[IRC_BUFFER_SIZE_LITTLE];
+   char chantypes[IRC_BUFFER_SIZE_LITTLE];
+   int channellen;
+   int nicklen;
+   int maxnicklen;
+   
    char host[IRC_BUFFER_SIZE_LITTLE];
    char port[IRC_BUFFER_SIZE_LITTLE];
    char user[IRC_BUFFER_SIZE_LITTLE];

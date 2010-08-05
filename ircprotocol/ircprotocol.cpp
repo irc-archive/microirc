@@ -65,18 +65,18 @@ char *strignorechar(char *str, char character){
 }
 
 void get_nick_user_host(char *str, char **d_tokens, int *s_tokens){
-   d_tokens[*s_tokens] = strnullatchar(str,CHAR_COLON);
+   d_tokens[*s_tokens] = strnullatchar(str,CHAR_TRAIL);
    if(d_tokens[*s_tokens]==NULL){
       return;
    }
    (*s_tokens)++;
-   d_tokens[*s_tokens] = strnullatchar(d_tokens[(*s_tokens)-1],CHAR_EXCLAMATAIONMARK);
+   d_tokens[*s_tokens] = strnullatchar(d_tokens[(*s_tokens)-1],CHAR_MASKSEPARATOR1);
    if(d_tokens[*s_tokens]==NULL){
       return;
    }
    (*s_tokens)++;
    if(d_tokens[(*s_tokens)-1]!=NULL){
-      d_tokens[*s_tokens] = strnullatchar(d_tokens[(*s_tokens)-1],CHAR_ATSIGN);
+      d_tokens[*s_tokens] = strnullatchar(d_tokens[(*s_tokens)-1],CHAR_MASKSEPARATOR2);
       if(d_tokens[*s_tokens]==NULL){
          return;
       }
@@ -100,6 +100,12 @@ __declspec(dllexport) int irc_init(irc_t *irc, char *host, char *port, char *use
    if(strlen(host)==0 || strlen(port)==0 || strlen(user)==0 || strlen(name)==0 || strlen(nick)==0 || delay<0){
       return -1;
    }
+   strncpy(irc->prefix_mode,"ov",IRC_BUFFER_SIZE_LITTLE);
+   strncpy(irc->prefix_char,"@+",IRC_BUFFER_SIZE_LITTLE);
+   strncpy(irc->chantypes,"#",IRC_BUFFER_SIZE_LITTLE);
+   irc->channellen = 200;
+   irc->nicklen = 16;
+   irc->maxnicklen = 16;
    strncpy(irc->host,host,IRC_BUFFER_SIZE_LITTLE);
    strncpy(irc->port,port,IRC_BUFFER_SIZE_LITTLE);
    strncpy(irc->user,user,IRC_BUFFER_SIZE_LITTLE);
@@ -153,10 +159,11 @@ __declspec(dllexport) int irc_connect(irc_t *irc){
       switch(result){
          case RECV_WELCOME:{
             timeKillEvent(timer);
+            strncpy(irc->nick,sendrecv[1],IRC_BUFFER_SIZE_LITTLE);
             char *d_tokens[IRC_CONFIG_MAX_TOKENS];
             int s_tokens=0;
             int i;
-            tokens_required(irc->perform,CHAR_COMMA,IRC_CONFIG_MAX_TOKENS,d_tokens,&s_tokens);
+            tokens_required(irc->perform,CHAR_LISTSEPARATOR,IRC_CONFIG_MAX_TOKENS,d_tokens,&s_tokens);
             for(i=0;i<s_tokens;i++){
                if(irc_send_message(irc,SEND_RAW,&d_tokens[i],1)<0){
                   goto fullerror;
@@ -164,7 +171,7 @@ __declspec(dllexport) int irc_connect(irc_t *irc){
             }
             s_tokens=0;
             Sleep(irc->autojoin_delay);
-            tokens_required(irc->autojoin_channels,CHAR_COMMA,IRC_CONFIG_MAX_TOKENS,d_tokens,&s_tokens);
+            tokens_required(irc->autojoin_channels,CHAR_LISTSEPARATOR,IRC_CONFIG_MAX_TOKENS,d_tokens,&s_tokens);
             for(i=0;i<s_tokens;i++){
                if(irc_send_message(irc,SEND_JOIN,&d_tokens[i],1)<0){
                   goto fullerror;
@@ -195,12 +202,12 @@ __declspec(dllexport) int irc_connect(irc_t *irc){
 
 __declspec(dllexport) void irc_disconnect(irc_t *irc, char *message){
    irc->connected=0;
-   char *msgs[1];
-   msgs[0] = message;
+   char *sendrecv[1];
+   sendrecv[0] = message;
    if(message==NULL){
       irc_send_message(irc,SEND_QUIT,NULL,0);
    }else{
-      irc_send_message(irc,SEND_QUIT,msgs,1);
+      irc_send_message(irc,SEND_QUIT,sendrecv,1);
    }
    close_tcp(&irc->network);
    buffer_destroy(&irc->recv_buffer_stream);
@@ -213,7 +220,11 @@ __declspec(dllexport) int irc_recv_message(irc_t *irc, char **d_result, int *s_r
          return -1;
       }
       buffer_read_get_data(&irc->recv_buffer_stream,irc->recv_buffer,IRC_BUFFER_SIZE_MEDIUM);
-      irc->recv_buffer[buffer_line_len(&irc->recv_buffer_stream,irc->recv_buffer,IRC_BUFFER_SIZE_MEDIUM)]=CHAR_TERMINATOR;
+      int recvsize = buffer_line_len(&irc->recv_buffer_stream,irc->recv_buffer,IRC_BUFFER_SIZE_MEDIUM);
+      irc->recv_buffer[recvsize]=CHAR_TERMINATOR;
+      if(strlen(irc->recv_buffer)!=recvsize){
+         return -1;
+      }
       if(!memcmp(irc->recv_buffer,"PING",4)){
          char *pong[1] = {strnullatchar(irc->recv_buffer,CHAR_SPACE)};
          if(irc_send_message(irc,SEND_PONG,pong,1)<0){
@@ -224,42 +235,51 @@ __declspec(dllexport) int irc_recv_message(irc_t *irc, char **d_result, int *s_r
          char *dresult[2];
          int sresult=0;
          char *next = tokens_required(irc->recv_buffer,CHAR_SPACE,2,dresult,&sresult);
+         if(sresult<2){
+            return -1;
+         }
          get_nick_user_host(dresult[0],d_result,s_result);
          if(!memcmp(dresult[1],"JOIN",4) && next!=NULL){//nick user host channel
-            next = strignorechar(next,CHAR_COLON);
+            next = strignorechar(next,CHAR_TRAIL);
             d_result[*s_result] = next;
             (*s_result)++;
             return RECV_JOIN;
          }else if(!memcmp(dresult[1],"KICK",4) && next!=NULL){//nick user host channel victim message
             char *message = tokens_required(next,CHAR_SPACE,2,d_result,s_result);
             if(message!=NULL){
-               message = strignorechar(message,CHAR_COLON);
+               message = strignorechar(message,CHAR_TRAIL);
                d_result[*s_result] = message;
                (*s_result)++;
             }
             return RECV_KICK;
+         }else if(!memcmp(dresult[1],"MODE",4) && next!=NULL){//nick user host channel modes nicklist
+            //char *nicklist = tokens_required(next,CHAR_SPACE,2,d_result,s_result);
+            //d_result[*s_result] = nicklist;
+            //(*s_result)++;
+            //return RECV_NICK_LIST;
+            return RECV_OTHER;
          }else if(!memcmp(dresult[1],"NICK",4) && next!=NULL){//nick user host newnick
-            next = strignorechar(next,CHAR_COLON);
+            next = strignorechar(next,CHAR_TRAIL);
             d_result[*s_result] = next;
             (*s_result)++;
             return RECV_NICK;
          }else if(!memcmp(dresult[1],"NOTICE",6) && next!=NULL){//nick user host destination message
             char *message = tokens_required(next,CHAR_SPACE,1,d_result,s_result);
-            message = strignorechar(message,CHAR_COLON);
+            message = strignorechar(message,CHAR_TRAIL);
             d_result[*s_result] = message;
             (*s_result)++;
             return RECV_NOTICE;
          }else if(!memcmp(dresult[1],"PART",4) && next!=NULL){//nick user host channel message
             char *message = tokens_required(next,CHAR_SPACE,1,d_result,s_result);
             if(message!=NULL){
-               message = strignorechar(message,CHAR_COLON);
+               message = strignorechar(message,CHAR_TRAIL);
                d_result[*s_result] = message;
                (*s_result)++;
             }
             return RECV_PART;
          }else if(!memcmp(dresult[1],"PRIVMSG",7) && next!=NULL){//nick user host destination message
             char *message = tokens_required(next,CHAR_SPACE,1,d_result,s_result);
-            message = strignorechar(message,CHAR_COLON);
+            message = strignorechar(message,CHAR_TRAIL);
             if(message[0]==CHAR_CTCP){
                message = strignorechar(message,CHAR_CTCP);
                message[strlen(message)-1] = CHAR_TERMINATOR;
@@ -273,28 +293,61 @@ __declspec(dllexport) int irc_recv_message(irc_t *irc, char **d_result, int *s_r
             }
          }else if(!memcmp(dresult[1],"QUIT",4)){//nick user host message
             if(next!=NULL){
-               next = strignorechar(next,CHAR_COLON);
+               next = strignorechar(next,CHAR_TRAIL);
                d_result[*s_result] = next;
                (*s_result)++;
             }
             return RECV_QUIT;
          }else if(!memcmp(dresult[1],"TOPIC",5) && next!=NULL){//nick user host channel topic
             char *message = tokens_required(next,CHAR_SPACE,1,d_result,s_result);
-            message = strignorechar(message,CHAR_COLON);
+            message = strignorechar(message,CHAR_TRAIL);
             d_result[*s_result] = message;
             (*s_result)++;
             return RECV_TOPIC_CHANGED;
          }else if(!memcmp(dresult[1],"001",3) && next!=NULL){//host nick message
             char *message = tokens_required(next,CHAR_SPACE,1,d_result,s_result);
             if(message!=NULL){
-               message = strignorechar(message,CHAR_COLON);
+               message = strignorechar(message,CHAR_TRAIL);
                d_result[*s_result] = message;
                (*s_result)++;
             }
             return RECV_WELCOME;
+         }else if(!memcmp(dresult[1],"005",3) && next!=NULL){//host nick options
+            char *d_tokens[IRC_RECV_MAX_TOKENS];
+            int s_tokens=0;
+            int i;
+            char *separator;
+            tokens_required(next,CHAR_SPACE,IRC_RECV_MAX_TOKENS,d_tokens,&s_tokens);
+            for(i=1;i<s_tokens;i++){
+               separator = strchr(d_tokens[i],CHAR_ISUPPORTSEPARATOR);
+               if(separator!=NULL){
+                  *separator='\0';
+                  *separator++;
+                  if(memcmp("CHANTYPES",d_tokens[i],9)==0){
+                     strncpy(irc->chantypes,separator,IRC_BUFFER_SIZE_LITTLE);
+                  }else if(memcmp("PREFIX",d_tokens[i],6)==0){
+                     *separator++;
+                     char *newseparator = strchr(separator,CHAR_PREFIXDELIMITER);
+                     if(newseparator!=NULL){
+                        *newseparator='\0';
+                        *newseparator++;
+                        if(strlen(separator)==strlen(newseparator)){
+                           strncpy(irc->prefix_mode,separator,IRC_BUFFER_SIZE_LITTLE);
+                           strncpy(irc->prefix_char,newseparator,IRC_BUFFER_SIZE_LITTLE);
+                        }
+                     }
+                  }else if(memcmp("CHANNELLEN",d_tokens[i],10)==0){
+                     irc->channellen = atoi(separator);
+                  }else if(memcmp("NICKLEN",d_tokens[i],7)==0){
+                     irc->nicklen = atoi(separator);
+                  }else if(memcmp("MAXNICKLEN",d_tokens[i],10)==0){
+                     irc->maxnicklen = atoi(separator);
+                  }
+               }
+            }
          }else if(!memcmp(dresult[1],"332",3) && next!=NULL){//host nick channel topic
             char *message = tokens_required(next,CHAR_SPACE,2,d_result,s_result);
-            message = strignorechar(message,CHAR_COLON);
+            message = strignorechar(message,CHAR_TRAIL);
             d_result[*s_result] = message;
             (*s_result)++;
             return RECV_TOPIC;
@@ -302,20 +355,20 @@ __declspec(dllexport) int irc_recv_message(irc_t *irc, char **d_result, int *s_r
             char *nicks = tokens_required(next,CHAR_SPACE,3,d_result,s_result);
             d_result[(*s_result)-3] = d_result[(*s_result)-1];
             (*s_result)-=2;
-            nicks = strignorechar(nicks,CHAR_COLON);
+            nicks = strignorechar(nicks,CHAR_TRAIL);
             d_result[*s_result] = nicks;
             (*s_result)++;
             return RECV_NICK_LIST;
          }else if(!memcmp(dresult[1],"433",3) && next!=NULL){//host actualnick failednick message
             char *message = tokens_required(next,CHAR_SPACE,2,d_result,s_result);
             if(message!=NULL){
-               message = strignorechar(message,CHAR_COLON);
+               message = strignorechar(message,CHAR_TRAIL);
                d_result[*s_result] = message;
                (*s_result)++;
             }
             return RECV_NICK_TAKEN;
          }else if(next!=NULL){//host message
-            next = strignorechar(next,CHAR_COLON);
+            next = strignorechar(next,CHAR_TRAIL);
             d_result[*s_result] = next;
             (*s_result)++;
             return RECV_OTHER;
