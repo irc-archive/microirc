@@ -1,5 +1,5 @@
 /*
-* dialogs.h
+* dialogs_functions.h
 *
 * This file contains the code used on resource dialogs.
 *
@@ -9,8 +9,8 @@
 * This code is licenced under the GPL version 2. For details see COPYING.txt file.
 */
 
-INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam){
-   switch (message){
+INT_PTR CALLBACK AboutProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam){
+   switch(uMsg){
       case WM_INITDIALOG:{
          SHINITDLGINFO shidi;
          shidi.dwMask = SHIDIM_FLAGS;
@@ -27,15 +27,15 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam){
          break;
       }
       case WM_CLOSE:{
-         EndDialog(hDlg, message);
+         EndDialog(hDlg, uMsg);
          return TRUE;
       }
    }
    return (INT_PTR)FALSE;
 }
 
-INT_PTR CALLBACK Preferences(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam){
-   switch (message){
+INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam){
+   switch(uMsg){
       case WM_VSCROLL:{
          SCROLLINFO info;
          memset(&info,0,sizeof(SCROLLINFO));
@@ -49,10 +49,10 @@ INT_PTR CALLBACK Preferences(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
                int pos = HIWORD(wParam);
                if(info.nPos==1 && pos==2){
                   SetScrollPos(hDlg,SB_VERT,pos,TRUE);
-                  ScrollWindowEx(hDlg,0,SCROLLPAGE_HEIGHT*-wHeight,NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN);
+                  ScrollWindowEx(hDlg,0,SCROLLPAGE_HEIGHT*-window_height,NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN);
                }else if(info.nPos==2 && pos==1){
                   SetScrollPos(hDlg,SB_VERT,pos,TRUE);
-                  ScrollWindowEx(hDlg,0,SCROLLPAGE_HEIGHT*wHeight,NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN);
+                  ScrollWindowEx(hDlg,0,SCROLLPAGE_HEIGHT*window_height,NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN);
                }
                break;
             }
@@ -63,7 +63,7 @@ INT_PTR CALLBACK Preferences(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             case SB_LINEUP:{
                if(info.nPos != 1){
                   SetScrollPos(hDlg,SB_VERT,1,TRUE);
-                  ScrollWindowEx(hDlg,0,SCROLLPAGE_HEIGHT*wHeight,NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN);
+                  ScrollWindowEx(hDlg,0,SCROLLPAGE_HEIGHT*window_height,NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN);
                }
                break;
             }
@@ -74,7 +74,7 @@ INT_PTR CALLBACK Preferences(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             case SB_LINEDOWN:{
                if(info.nPos != 2){
                   SetScrollPos(hDlg,SB_VERT,2,TRUE);
-                  ScrollWindowEx(hDlg,0,SCROLLPAGE_HEIGHT*-wHeight,NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN);
+                  ScrollWindowEx(hDlg,0,SCROLLPAGE_HEIGHT*-window_height,NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN);
                }
                break;
             }
@@ -94,7 +94,7 @@ INT_PTR CALLBACK Preferences(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
          mbi.cbSize = sizeof(SHMENUBARINFO);
          mbi.hwndParent = hDlg;
          mbi.nToolBarId = IDR_PREFERENCES_MENU;
-         mbi.hInstRes = hInstance_Main;
+         mbi.hInstRes = app_instance;
          if (!SHCreateMenuBar(&mbi)){
             return FALSE;
          }
@@ -108,7 +108,7 @@ INT_PTR CALLBACK Preferences(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
          if(iniparser_init(&iniparser)!=0){
             return FALSE;
          }
-         if(iniparser_load(&iniparser,configfile)!=0){
+         if(iniparser_load(&iniparser,file_config)!=0){
             iniparser_destroy(&iniparser);
             return FALSE;
          }
@@ -148,52 +148,52 @@ INT_PTR CALLBACK Preferences(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             if(iniparser_init(&iniparser)!=0){
                return FALSE;
             }
-            if(iniparser_load(&iniparser,configfile)!=0){
+            if(iniparser_load(&iniparser,file_config)!=0){
                iniparser_destroy(&iniparser);
                return FALSE;
             }
-            char tempstr[IRC_BUFFER_SIZE_LITTLE];
+            char tempstr[IRCPROTOCOL_SIZE_MEDIUM];
             int tempint;
 
-            gettext_tostr(hDlg, IDC_EDIT1, tempstr, IRC_BUFFER_SIZE_LITTLE);
+            gettext_tostr(hDlg, IDC_EDIT1, tempstr, IRCPROTOCOL_SIZE_MEDIUM);
             if(strlen(tempstr)==0){
                MessageBox(hDlg,L"Host is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                return FALSE;
             }
             iniparser_setstring(&iniparser, "server", "host", tempstr);
 
-            gettext_tostr(hDlg, IDC_EDIT2, tempstr, IRC_BUFFER_SIZE_LITTLE);
+            gettext_tostr(hDlg, IDC_EDIT2, tempstr, IRCPROTOCOL_SIZE_MEDIUM);
             if(strlen(tempstr)==0){
                MessageBox(hDlg,L"Port is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                return FALSE;
             }
             iniparser_setstring(&iniparser, "server", "port", tempstr);
 
-            gettext_tostr(hDlg, IDC_EDIT3, tempstr, IRC_BUFFER_SIZE_LITTLE);
+            gettext_tostr(hDlg, IDC_EDIT3, tempstr, IRCPROTOCOL_SIZE_MEDIUM);
             if(strlen(tempstr)==0){
                MessageBox(hDlg,L"User is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                return FALSE;
             }
             iniparser_setstring(&iniparser, "client", "user", tempstr);
 
-            gettext_tostr(hDlg, IDC_EDIT4, tempstr, IRC_BUFFER_SIZE_LITTLE);
+            gettext_tostr(hDlg, IDC_EDIT4, tempstr, IRCPROTOCOL_SIZE_MEDIUM);
             if(strlen(tempstr)==0){
                MessageBox(hDlg,L"Name is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                return FALSE;
             }
             iniparser_setstring(&iniparser, "client", "name", tempstr);
 
-            gettext_tostr(hDlg, IDC_EDIT5, tempstr, IRC_BUFFER_SIZE_LITTLE);
+            gettext_tostr(hDlg, IDC_EDIT5, tempstr, IRCPROTOCOL_SIZE_MEDIUM);
             if(strlen(tempstr)==0){
                MessageBox(hDlg,L"Nick is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                return FALSE;
             }
             iniparser_setstring(&iniparser, "client", "nick", tempstr);
 
-            gettext_tostr(hDlg, IDC_EDIT6, tempstr, IRC_BUFFER_SIZE_LITTLE);
+            gettext_tostr(hDlg, IDC_EDIT6, tempstr, IRCPROTOCOL_SIZE_MEDIUM);
             iniparser_setstring(&iniparser, "client", "perform", tempstr);
 
-            gettext_tostr(hDlg, IDC_EDIT7, tempstr, IRC_BUFFER_SIZE_LITTLE);
+            gettext_tostr(hDlg, IDC_EDIT7, tempstr, IRCPROTOCOL_SIZE_MEDIUM);
             iniparser_setstring(&iniparser, "autojoin", "channels", tempstr);
 
             tempint = gettext_toint(hDlg,IDC_EDIT8);
@@ -241,7 +241,7 @@ INT_PTR CALLBACK Preferences(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             iniparser_setint(&iniparser, "options", "ledinterval", tempint);
             config.ledinterval = tempint;
 
-            if(iniparser_store(&iniparser,configfile)!=0){
+            if(iniparser_store(&iniparser,file_config)!=0){
                iniparser_destroy(&iniparser);
                return FALSE;
             }
@@ -255,15 +255,15 @@ INT_PTR CALLBACK Preferences(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
          break;
       }
       case WM_CLOSE:{
-         EndDialog(hDlg, message);
+         EndDialog(hDlg, uMsg);
          return TRUE;
       }
    }
    return FALSE;
 }
 
-INT_PTR CALLBACK InputBox(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam){
-   switch (message){
+INT_PTR CALLBACK InputBoxProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam){
+   switch (uMsg){
       case WM_INITDIALOG:{
          SetWindowText(hDlg,(LPCWSTR)lParam);
          HWND edit = GetDlgItem(hDlg,IDC_EDIT1);
@@ -285,7 +285,7 @@ INT_PTR CALLBACK InputBox(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
          break;
       }
       case WM_CLOSE:{
-         EndDialog(hDlg, message);
+         EndDialog(hDlg, uMsg);
          return TRUE;
       }
    }

@@ -397,7 +397,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\dialogs.h"
+				RelativePath=".\dialogs_functions.h"
 				>
 			</File>
 			<File
@@ -410,6 +410,10 @@
 			</File>
 			<File
 				RelativePath=".\irc.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ircconfig.h"
 				>
 			</File>
 			<File

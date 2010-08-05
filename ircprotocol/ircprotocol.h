@@ -9,6 +9,9 @@
 * This code is licenced under the GPL version 2. For details see COPYING.txt file.
 */
 
+#ifndef IRCPROTOCOL_T
+#define IRCPROTOCOL_T
+
 //It's still unknown whether timeSetEvent() actually uses this value or not...
 #define TIME_KILL_SYNCHRONOUS 64
 
@@ -51,38 +54,38 @@
 #define CHAR_CTCP 1
 #define CHAR_TERMINATOR 0
 
-#define IRC_CONFIG_MAX_TOKENS 10
-#define IRC_RECV_MAX_TOKENS 15
-#define IRC_REGISTER_TIMEOUT 30000
+#define IRCPROTOCOL_CONFIG_MAX_TOKENS 10
+#define IRCPROTOCOL_RECV_MAX_TOKENS 15
+#define IRCPROTOCOL_REGISTER_TIMEOUT 30000
 
-#define IRC_BUFFER_SIZE_LITTLE 256
-#define IRC_BUFFER_SIZE_MEDIUM 1024
-#define IRC_BUFFER_SIZE_LARGE 16384
+#define IRCPROTOCOL_SIZE_SMALL 256
+#define IRCPROTOCOL_SIZE_MEDIUM 1024
+#define IRCPROTOCOL_SIZE_LARGE 16384
 
-#define IRC_SPLITER_DATA "\r\n"
-#define IRC_SPLITER_SIZE 2
+#define IRCPROTOCOL_SPLITER_DATA "\r\n"
+#define IRCPROTOCOL_SPLITER_SIZE 2
 
 typedef struct irc_t{
-   char prefix_mode[IRC_BUFFER_SIZE_LITTLE];
-   char prefix_char[IRC_BUFFER_SIZE_LITTLE];
-   char chantypes[IRC_BUFFER_SIZE_LITTLE];
+   char prefix_mode[IRCPROTOCOL_SIZE_SMALL];
+   char prefix_char[IRCPROTOCOL_SIZE_SMALL];
+   char chantypes[IRCPROTOCOL_SIZE_SMALL];
    int channellen;
    int nicklen;
    int maxnicklen;
    
-   char host[IRC_BUFFER_SIZE_LITTLE];
-   char port[IRC_BUFFER_SIZE_LITTLE];
-   char user[IRC_BUFFER_SIZE_LITTLE];
-   char name[IRC_BUFFER_SIZE_LITTLE];
-   char nick[IRC_BUFFER_SIZE_LITTLE];
-   char perform[IRC_BUFFER_SIZE_MEDIUM];
-   char autojoin_channels[IRC_BUFFER_SIZE_MEDIUM];
+   char host[IRCPROTOCOL_SIZE_SMALL];
+   char port[IRCPROTOCOL_SIZE_SMALL];
+   char user[IRCPROTOCOL_SIZE_SMALL];
+   char name[IRCPROTOCOL_SIZE_SMALL];
+   char nick[IRCPROTOCOL_SIZE_SMALL];
+   char perform[IRCPROTOCOL_SIZE_MEDIUM];
+   char autojoin_channels[IRCPROTOCOL_SIZE_MEDIUM];
    int autojoin_delay;
    
    network_t network;
-   char recv_buffer[IRC_BUFFER_SIZE_MEDIUM];
+   char recv_buffer[IRCPROTOCOL_SIZE_MEDIUM];
    buffer_t recv_buffer_stream;
-   char send_buffer[IRC_BUFFER_SIZE_MEDIUM];
+   char send_buffer[IRCPROTOCOL_SIZE_MEDIUM];
    CRITICAL_SECTION send_buffer_critical_section;
    int connected;
 }irc_t;
@@ -94,3 +97,5 @@ __declspec(dllexport) int irc_connect(irc_t*);
 __declspec(dllexport) void irc_disconnect(irc_t*, char*);
 __declspec(dllexport) int irc_recv_message(irc_t*, char**, int*);
 __declspec(dllexport) int irc_send_message(irc_t*, int, char**, int);
+
+#endif

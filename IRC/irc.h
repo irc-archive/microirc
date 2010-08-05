@@ -10,12 +10,14 @@
 */
 
 #define IRC_SIZE_LITTLE 256
-#define IRC_SIZE_MEDIUM 512
+#define IRC_SIZE_MEDIUM 1024
 
 #define IRC_MAX_NICKS_PER_MESSAGE 100
 
 #define IRC_RECONNECT_TIMEOUT_START 3000
 #define IRC_RECONNECT_TIMEOUT_MULTIPLIER 2
+
+#define IRC_CONFIG_FILE_ENCODING CP_UTF8
 
 #define WM_CREATE_TAB WM_USER+10
 #define WM_DESTROY_TAB WM_USER+11
@@ -26,12 +28,11 @@
 #define WM_RECONNECTING WM_USER+16
 
 #define BUTTON_CONNECT 200
-#define BUTTON_SEND 201
-#define TAB_CONTROL 203
-#define BUTTON_CLOSE 204
-#define TALK_BOX 205
-#define LIST_BOX 206
-#define BUTTON_CANCEL 207
+#define BUTTON_CHATSEND 201
+#define TABCONTROL_CHATVIEW 203
+#define BUTTON_CLOSETAB 204
+#define EDIT_CHATVIEW_TEXT 205
+#define LIST_CHATVIEW_NICK 206
 #define BUBBLE_NOTIFICATION 208
 
 #define DELETE_TEXT_MARGIN 2048
@@ -82,7 +83,7 @@ typedef struct ircconfig_t{
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow);
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-void *receiverThreadProc(void *inused);
+void *receiverThreadProc(void *window_handle);
 int init(HWND hWnd);
 void destroy(HWND hWnd);
 int connecting(HWND hWnd);
@@ -90,20 +91,3 @@ int reconnecting(HWND hWnd);
 void disconnecting(HWND hWnd);
 
 char *tokens_required(char*, char, int, char**, int*);
-
-int ircconfig_init(ircconfig_t *ircconfig, int reconnect, int encoding, int sounds, int lednumber, int ledinterval){
-   memset(ircconfig,0,sizeof(ircconfig_t));
-   if(reconnect<0 || ledinterval<0){
-      return -1;
-   }
-   ircconfig->reconnect = reconnect;
-   ircconfig->encoding = encoding;
-   ircconfig->sounds = sounds;
-   ircconfig->lednumber = lednumber;
-   ircconfig->ledinterval = ledinterval;
-   return 0;
-}
-
-void ircconfig_destroy(ircconfig_t *ircconfig){
-   memset(ircconfig,0,sizeof(ircconfig_t));
-}
