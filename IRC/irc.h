@@ -10,7 +10,7 @@
 */
 
 #define IRC_SIZE_LITTLE 256
-#define IRC_SIZE_MEDIUM IRC_BUFFER_SIZE_MEDIUM*2
+#define IRC_SIZE_MEDIUM 512
 
 #define IRC_MAX_NICKS_PER_MESSAGE 100
 
@@ -80,12 +80,15 @@ typedef struct ircconfig_t{
    int ledinterval;
 }ircconfig_t;
 
-int init(HWND);
-void destroy(HWND);
-int connecting(HWND);
-void disconnecting(HWND);
-int reconnecting(HWND);
-LRESULT CALLBACK WindowProc(HWND, UINT, WPARAM, LPARAM);
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow);
+LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+void *receiverThreadProc(void *inused);
+int init(HWND hWnd);
+void destroy(HWND hWnd);
+int connecting(HWND hWnd);
+int reconnecting(HWND hWnd);
+void disconnecting(HWND hWnd);
+
 char *tokens_required(char*, char, int, char**, int*);
 
 int ircconfig_init(ircconfig_t *ircconfig, int reconnect, int encoding, int sounds, int lednumber, int ledinterval){

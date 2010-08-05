@@ -113,7 +113,7 @@ LRESULT CALLBACK NickBoxProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM
          int wmEvent = HIWORD(element_id);
          switch (LOWORD(element_id)){
             case IDM_CHATBOX_KICK:{
-/*               wchar_t wnick[IRC_SIZE_MEDIUM];
+               wchar_t wnick[IRC_SIZE_MEDIUM];
                wchar_t wchannel[IRC_SIZE_MEDIUM];
                char nick[IRC_SIZE_MEDIUM];
                char channel[IRC_SIZE_MEDIUM];
@@ -123,21 +123,25 @@ LRESULT CALLBACK NickBoxProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM
                   tab_get_name_actual(hWnd_TabControlChat,wchannel,IRC_SIZE_MEDIUM);
                   WideCharToMultiByte(CP_UTF8,0,wchannel,-1,channel,IRC_SIZE_MEDIUM,NULL,NULL);
                   WideCharToMultiByte(CP_UTF8,0,wnick,-1,nick,IRC_SIZE_MEDIUM,NULL,NULL);
-                  char *send[3] = {channel,nick,"cocks"};
+                  char *send[3] = {channel,nick,"no reason"};
                   irc_send_message(&irc,SEND_KICK,send,3);
-               }*/
+               }
                break;
             }
             case IDM_CHATBOX_KICKBAN:{
-               MessageBox(NULL,L"LOL",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               MessageBox(NULL,L"not done",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                break;
             }
             case IDM_CHATBOX_BAN:{
-               MessageBox(NULL,L"LOL",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               MessageBox(NULL,L"not done",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                break;
             }
             case IDM_CHATBOX_WHOIS:{
-               MessageBox(NULL,L"LOL",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               MessageBox(NULL,L"not done",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               break;
+            }
+            case IDM_CHATBOX_COPYNICK:{
+               MessageBox(NULL,L"not done",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                break;
             }
          }
@@ -153,7 +157,7 @@ LRESULT CALLBACK NickBoxProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM
          if(SHRecognizeGesture(&shrg) == GN_CONTEXTMENU){
             HMENU menu = LoadMenu(hInstance_Main, MAKEINTRESOURCE(IDR_CHATBOX_MENU));
             menu = GetSubMenu(menu, 0);
-            TrackPopupMenuEx(menu,TPM_LEFTALIGN,TABNICK_LEFT*width+LOWORD(param_id),TABNICK_TOP*height+HIWORD(param_id),hWnd,NULL);
+            TrackPopupMenuEx(menu,TPM_LEFTALIGN,TABNICK_LEFT*wWidth+LOWORD(param_id),TABNICK_TOP*wHeight+HIWORD(param_id),hWnd,NULL);
          }
          break;
       }
@@ -171,19 +175,19 @@ int tab_create(HWND hWnd, HWND tab_control, wchar_t *tab_name, TAB_TYPE type){
       return -1;
    }
    if(type==STATUS){
-      new_tab->talk=CreateWindowEx(0,L"edit",NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|ES_MULTILINE,TABTALK_LEFT*width,TABTALK_TOP*height,TABTALK_STATUS_WIDTH*width,TABALL_HEIGHT*height,hWnd,(HMENU)TALK_BOX,hInstance_Main,NULL);
+      new_tab->talk=CreateWindowEx(0,L"edit",NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|ES_MULTILINE,TABTALK_LEFT*wWidth,TABTALK_TOP*wHeight,TABTALK_STATUS_WIDTH*wWidth,TABALL_HEIGHT*wHeight,hWnd,(HMENU)TALK_BOX,hInstance_Main,NULL);
       if(new_tab->talk==NULL){
          free(new_tab);
          return -1;
       }
       new_tab->nick=NULL;
    }else if(type==CHAT){
-      new_tab->talk=CreateWindowEx(0,L"edit",NULL,ES_AUTOVSCROLL|WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|ES_MULTILINE,TABTALK_LEFT*width,TABTALK_TOP*height,TABTALK_CHAT_WIDTH*width,TABALL_HEIGHT*height,hWnd,(HMENU)TALK_BOX,hInstance_Main,NULL);
+      new_tab->talk=CreateWindowEx(0,L"edit",NULL,ES_AUTOVSCROLL|WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|ES_MULTILINE,TABTALK_LEFT*wWidth,TABTALK_TOP*wHeight,TABTALK_CHAT_WIDTH*wWidth,TABALL_HEIGHT*wHeight,hWnd,(HMENU)TALK_BOX,hInstance_Main,NULL);
       if(new_tab->talk==NULL){
          free(new_tab);
          return -1;
       }
-      new_tab->nick=CreateWindowEx(0,L"listbox",NULL,LBS_NOINTEGRALHEIGHT|ES_AUTOVSCROLL|WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|WS_HSCROLL|LBS_SORT|LBS_HASSTRINGS|LBS_NOTIFY,TABNICK_LEFT*width,TABNICK_TOP*height,TABNICK_CHAT_WIDTH*width,TABALL_HEIGHT*height,hWnd,(HMENU)LIST_BOX,hInstance_Main,NULL);
+      new_tab->nick=CreateWindowEx(0,L"listbox",NULL,LBS_NOINTEGRALHEIGHT|ES_AUTOVSCROLL|WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|WS_HSCROLL|LBS_SORT|LBS_HASSTRINGS|LBS_NOTIFY,TABNICK_LEFT*wWidth,TABNICK_TOP*wHeight,TABNICK_CHAT_WIDTH*wWidth,TABALL_HEIGHT*wHeight,hWnd,(HMENU)LIST_BOX,hInstance_Main,NULL);
       if(new_tab->nick==NULL){
          DestroyWindow(new_tab->talk);
          free(new_tab);
@@ -386,10 +390,10 @@ void tab_resize_all(HWND tab_control){
    for(size--;size>=0;size--){
       if(tab_get_parameters_index(tab_control,size,&tab)!=-1){
          if(tab->nick==NULL){
-            MoveWindow(tab->talk,TABTALK_LEFT*width,TABTALK_TOP*height,TABTALK_STATUS_WIDTH*width,TABALL_HEIGHT*height,TRUE);
+            MoveWindow(tab->talk,TABTALK_LEFT*wWidth,TABTALK_TOP*wHeight,TABTALK_STATUS_WIDTH*wWidth,TABALL_HEIGHT*wHeight,TRUE);
          }else{
-            MoveWindow(tab->talk,TABTALK_LEFT*width,TABTALK_TOP*height,TABTALK_CHAT_WIDTH*width,TABALL_HEIGHT*height,TRUE);
-            MoveWindow(tab->nick,TABNICK_LEFT*width,TABNICK_TOP*height,TABNICK_CHAT_WIDTH*width,TABALL_HEIGHT*height,TRUE);
+            MoveWindow(tab->talk,TABTALK_LEFT*wWidth,TABTALK_TOP*wHeight,TABTALK_CHAT_WIDTH*wWidth,TABALL_HEIGHT*wHeight,TRUE);
+            MoveWindow(tab->nick,TABNICK_LEFT*wWidth,TABNICK_TOP*wHeight,TABNICK_CHAT_WIDTH*wWidth,TABALL_HEIGHT*wHeight,TRUE);
          }
       }
    }

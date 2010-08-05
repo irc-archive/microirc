@@ -33,6 +33,7 @@
 #define IDM_CHATBOX_KICKBAN             612
 #define IDM_CHATBOX_WHOIS               613
 #define IDM_OPTIONS_DISCONNECT          614
+#define IDM_CHATBOX_COPYNICK            615
 #define IDC_EDIT1                       1000
 #define IDC_EDIT2                       1001
 #define IDC_EDIT3                       1002

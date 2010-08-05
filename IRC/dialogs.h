@@ -49,10 +49,10 @@ INT_PTR CALLBACK Preferences(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
                int pos = HIWORD(wParam);
                if(info.nPos==1 && pos==2){
                   SetScrollPos(hDlg,SB_VERT,pos,TRUE);
-                  ScrollWindowEx(hDlg,0,SCROLLPAGE_HEIGHT*-height,NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN);
+                  ScrollWindowEx(hDlg,0,SCROLLPAGE_HEIGHT*-wHeight,NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN);
                }else if(info.nPos==2 && pos==1){
                   SetScrollPos(hDlg,SB_VERT,pos,TRUE);
-                  ScrollWindowEx(hDlg,0,SCROLLPAGE_HEIGHT*height,NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN);
+                  ScrollWindowEx(hDlg,0,SCROLLPAGE_HEIGHT*wHeight,NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN);
                }
                break;
             }
@@ -63,7 +63,7 @@ INT_PTR CALLBACK Preferences(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             case SB_LINEUP:{
                if(info.nPos != 1){
                   SetScrollPos(hDlg,SB_VERT,1,TRUE);
-                  ScrollWindowEx(hDlg,0,SCROLLPAGE_HEIGHT*height,NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN);
+                  ScrollWindowEx(hDlg,0,SCROLLPAGE_HEIGHT*wHeight,NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN);
                }
                break;
             }
@@ -74,7 +74,7 @@ INT_PTR CALLBACK Preferences(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             case SB_LINEDOWN:{
                if(info.nPos != 2){
                   SetScrollPos(hDlg,SB_VERT,2,TRUE);
-                  ScrollWindowEx(hDlg,0,SCROLLPAGE_HEIGHT*-height,NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN);
+                  ScrollWindowEx(hDlg,0,SCROLLPAGE_HEIGHT*-wHeight,NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN);
                }
                break;
             }

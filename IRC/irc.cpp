@@ -25,10 +25,19 @@
 #include <stdio.h>
 #include <nled.h>
 
-int height;
-int width;
+#include "resource.h"
+#include "irc.h"
+#include "../buffer/buffer.h"
+#include "../network/network.h"
+#include "../list/list.h"
+#include "../iniparser/iniparser.h"
+#include "../ircprotocol/ircprotocol.h"
+
+int wHeight;
+int wWidth;
 
 HINSTANCE hInstance_Main;
+TCHAR wTitle[IRC_SIZE_LITTLE];
 
 HWND hWnd_MenuBar;
 HWND hWnd_ButtonConnect;
@@ -44,23 +53,9 @@ HCURSOR hOldCursor;
 
 MMRESULT LEDtimer;
 
-#include "resource.h"
-#include "irc.h"
-#include "../buffer/buffer.h"
-#include "../network/network.h"
-#include "../list/list.h"
-#include "../iniparser/iniparser.h"
-#include "../ircprotocol/ircprotocol.h"
-#include "tab_manager.h"
-
-HANDLE thread;
-HANDLE open_handle;
-int open_state;
-
-TCHAR szTitle[IRC_SIZE_LITTLE];
-
-wchar_t alertsound[IRC_SIZE_LITTLE];
-char configfile[IRC_SIZE_LITTLE];
+HANDLE receiverThread;
+HANDLE receiverThreadEvent;
+int receiverActive;
 
 wchar_t wdestination[IRC_SIZE_LITTLE];
 char tdestination[IRC_SIZE_LITTLE];
@@ -73,7 +68,10 @@ wchar_t wwritebuffer[IRC_SIZE_MEDIUM];
 irc_t irc;
 ircconfig_t config;
 int connected;
+wchar_t alertsound[IRC_SIZE_LITTLE];
+char configfile[IRC_SIZE_LITTLE];
 
+#include "tab_manager.h"
 #include "functions.h"
 #include "dialogs.h"
 #include "gui_functions.h"
@@ -82,10 +80,10 @@ int connected;
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow){
    hInstance_Main = hInstance;
    MSG msg;
-   TCHAR szWindowClass[IRC_SIZE_LITTLE];
-   LoadString(hInstance, IDS_APP_TITLE, szTitle, IRC_SIZE_LITTLE);
-   LoadString(hInstance, IDS_WNDCLASS_IRC, szWindowClass, IRC_SIZE_LITTLE);
-   HWND hWnd_Main = FindWindow(szWindowClass, szTitle);   
+   TCHAR wClass[IRC_SIZE_LITTLE];
+   LoadString(hInstance, IDS_APP_TITLE, wTitle, IRC_SIZE_LITTLE);
+   LoadString(hInstance, IDS_WNDCLASS_IRC, wClass, IRC_SIZE_LITTLE);
+   HWND hWnd_Main = FindWindow(wClass, wTitle);   
    if(hWnd_Main){
       SetForegroundWindow((HWND)((ULONG) hWnd_Main | 0x00000001));
       return 0;
@@ -102,11 +100,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
    wc.hCursor = 0;
    wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
    wc.lpszMenuName = 0;
-   wc.lpszClassName = szWindowClass;
+   wc.lpszClassName = wClass;
    if(!RegisterClass(&wc)){
       return FALSE;
    }
-   hWnd_Main = CreateWindowEx(0, szWindowClass, szTitle, WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL,(HMENU)0, hInstance, NULL);
+   hWnd_Main = CreateWindowEx(0, wClass, wTitle, WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL,(HMENU)0, hInstance, NULL);
    if(!hWnd_Main){
       return 0;
    }
@@ -123,15 +121,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
    return (int) msg.wParam;
 }
 
-LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM param_id){
-   switch (event_id){
+LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
+   switch(uMsg){
       case WM_CREATE_TAB:{
-         wchar_t *tab_name=(wchar_t*)param_id;
-         tab_create(hWnd,hWnd_TabControlChat,tab_name,(TAB_TYPE)element_id);
+         wchar_t *tab_name=(wchar_t*)lParam;
+         tab_create(hWnd,hWnd_TabControlChat,tab_name,(TAB_TYPE)wParam);
          break;
       }
       case WM_DESTROY_TAB:{
-         wchar_t *tab_name=(wchar_t*)param_id;
+         wchar_t *tab_name=(wchar_t*)lParam;
          tab_delete_name(hWnd_TabControlChat,tab_name);
          break;
       }
@@ -161,9 +159,9 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
       }
 
       case WM_NOTIFY:{
-         switch(LOWORD(element_id)){
+         switch(LOWORD(wParam)){
             case TAB_CONTROL:{
-               switch(((LPNMHDR)param_id)->code){
+               switch(((LPNMHDR)lParam)->code){
                   case TCN_SELCHANGING:{
                      tab_refresh(hWnd_TabControlChat,HIDE);
                      break;
@@ -183,9 +181,9 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
          break;
       }
       case WM_COMMAND:{
-         int wmEvent = HIWORD(element_id);
-         HWND controlHwnd = (HWND)param_id;
-         switch (LOWORD(element_id)){
+         int wmEvent = HIWORD(wParam);
+         HWND control_hWnd = (HWND)lParam;
+         switch (LOWORD(wParam)){
             case BUTTON_CONNECT:{
                if(connecting(hWnd)!=0){
                   MessageBox(hWnd,L"Error connecting to server.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
@@ -195,7 +193,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
             case TALK_BOX:{
                switch(wmEvent){
                   case EN_KILLFOCUS:{
-                     SendMessage(controlHwnd,WM_COPY,0,0);
+                     SendMessage(control_hWnd,WM_COPY,0,0);
                      break;
                   }
                }
@@ -203,8 +201,8 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
             }
             case LIST_BOX:{
                if(wmEvent==LBN_DBLCLK){
-                  int element = ListBox_GetCurSel(controlHwnd);
-                  ListBox_GetText(controlHwnd,element,wtextprocess);
+                  int element = ListBox_GetCurSel(control_hWnd);
+                  ListBox_GetText(control_hWnd,element,wtextprocess);
                   if(wcslen(wtextprocess)!=0){
                      SendMessage(hWnd,WM_CREATE_TAB,STATUS,(LPARAM)wtextprocess);
                      tab_select_name(hWnd_TabControlChat,wtextprocess);
@@ -370,34 +368,34 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
       case WM_SIZE:{
          RECT rect;
          GetWindowRect(hWnd, &rect);
-         width = rect.right;
-         height = rect.bottom;
-         height -= rect.top*2;
-         MoveWindow(hWnd_ButtonConnect,BUTTONCONNECT_LEFT*width,BUTTONCONNECT_TOP*height,BUTTONCONNECT_WIDTH*width,BUTTONCONNECT_HEIGHT*height,TRUE);
-         MoveWindow(hWnd_StaticConnecting,STATICCONNECTING_LEFT*width,STATICCONNECTING_TOP*height,STATICCONNECTING_WIDTH*width,STATICCONNECTING_HEIGHT*height,TRUE);
-         MoveWindow(hWnd_EditChat,EDITCHAT_LEFT*width,EDITCHAT_TOP*height,EDITCHAT_WIDTH*width,EDITCHAT_HEIGHT*height,TRUE);
-         MoveWindow(hWnd_ButtonChat,BUTTONCHAT_LEFT*width,BUTTONCHAT_TOP*height,BUTTONCHAT_WIDTH*width,BUTTONCHAT_HEIGHT*height,TRUE);
-         MoveWindow(hWnd_TabControlChat,TABCONTROLCHAT_LEFT*width,TABCONTROLCHAT_TOP*height,TABCONTROLCHAT_WIDTH*width,TABCONTROLCHAT_HEIGHT*height,TRUE);
-         MoveWindow(hWnd_CloseTab,CLOSETAB_LEFT*width,CLOSETAB_TOP*height,CLOSETAB_WIDTH*width,CLOSETAB_HEIGHT*height,TRUE);
+         wWidth = rect.right;
+         wHeight = rect.bottom;
+         wHeight -= rect.top*2;
+         MoveWindow(hWnd_ButtonConnect,BUTTONCONNECT_LEFT*wWidth,BUTTONCONNECT_TOP*wHeight,BUTTONCONNECT_WIDTH*wWidth,BUTTONCONNECT_HEIGHT*wHeight,TRUE);
+         MoveWindow(hWnd_StaticConnecting,STATICCONNECTING_LEFT*wWidth,STATICCONNECTING_TOP*wHeight,STATICCONNECTING_WIDTH*wWidth,STATICCONNECTING_HEIGHT*wHeight,TRUE);
+         MoveWindow(hWnd_EditChat,EDITCHAT_LEFT*wWidth,EDITCHAT_TOP*wHeight,EDITCHAT_WIDTH*wWidth,EDITCHAT_HEIGHT*wHeight,TRUE);
+         MoveWindow(hWnd_ButtonChat,BUTTONCHAT_LEFT*wWidth,BUTTONCHAT_TOP*wHeight,BUTTONCHAT_WIDTH*wWidth,BUTTONCHAT_HEIGHT*wHeight,TRUE);
+         MoveWindow(hWnd_TabControlChat,TABCONTROLCHAT_LEFT*wWidth,TABCONTROLCHAT_TOP*wHeight,TABCONTROLCHAT_WIDTH*wWidth,TABCONTROLCHAT_HEIGHT*wHeight,TRUE);
+         MoveWindow(hWnd_CloseTab,CLOSETAB_LEFT*wWidth,CLOSETAB_TOP*wHeight,CLOSETAB_WIDTH*wWidth,CLOSETAB_HEIGHT*wHeight,TRUE);
          tab_resize_all(hWnd_TabControlChat);
          break;
       }
       case WM_ACTIVATE:{
          SHACTIVATEINFO s_sai;
-         SHHandleWMActivate(hWnd, element_id, param_id, &s_sai, FALSE);
+         SHHandleWMActivate(hWnd, wParam, lParam, &s_sai, FALSE);
          break;
       }
       case WM_SETTINGCHANGE:{
          SHACTIVATEINFO s_sai;
-         SHHandleWMSettingChange(hWnd, element_id, param_id, &s_sai);
-         switch(element_id){
+         SHHandleWMSettingChange(hWnd, wParam, lParam, &s_sai);
+         switch(wParam){
             case SPI_SETSIPINFO:{
                SIPINFO si;
                memset(&si,0,sizeof(si));
                si.cbSize=sizeof(si);
                if(SHSipInfo(SPI_GETSIPINFO,0,&si,0)){
                   RECT rect = si.rcVisibleDesktop;
-                  if(rect.bottom>height){
+                  if(rect.bottom>wHeight){
                      MoveWindow(hWnd,rect.left,rect.top,rect.right,rect.bottom-rect.top,TRUE);
                   }else{
                      MoveWindow(hWnd,rect.left,rect.top,rect.right,rect.bottom,TRUE);
@@ -411,9 +409,9 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
       case WM_CREATE:{
          RECT rect;
          GetWindowRect(hWnd, &rect);
-         width = rect.right;
-         height = rect.bottom;
-         height -= rect.top*2;
+         wWidth = rect.right;
+         wHeight = rect.bottom;
+         wHeight -= rect.top*2;
          if(init(hWnd)!=0){
             PostQuitMessage(0);
          }
@@ -433,19 +431,19 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARAM 
          break;
       }
    }
-   return DefWindowProc(hWnd, event_id, element_id, param_id);
+   return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
-void *thread_procedure(void *inused){
+void *receiverThreadProc(void *inused){
    HWND hWnd = (HWND)inused;
    SYSTEMTIME systime_now;
    wchar_t timestamp[11];
    int tchar_size;
    char *tchar_buffer[IRC_RECV_MAX_TOKENS];
-   wchar_t wchar_buffer[IRC_RECV_MAX_TOKENS][IRC_SIZE_MEDIUM];
+   wchar_t wchar_buffer[10][IRC_SIZE_MEDIUM];
    int recv_result;
-   while(open_state==1){
-      if(WaitForSingleObject(open_handle,INFINITE)!=WAIT_OBJECT_0){
+   while(receiverActive==1){
+      if(WaitForSingleObject(receiverThreadEvent,INFINITE)!=WAIT_OBJECT_0){
          recv_result = 0;
       }else{
          recv_result = 1;
@@ -487,7 +485,7 @@ void *thread_procedure(void *inused){
                      sn.grfFlags = SHNF_DISPLAYON|SHNF_SILENT;
                      sn.hwndSink = hWnd;
                      sn.pszHTML = L"<html><body>You have received a message on IRC.</body></html>";
-                     sn.pszTitle = szTitle;
+                     sn.pszTitle = wTitle;
                      sn.rgskn[0].pszTitle = L"Dismiss";
                      sn.rgskn[0].skc.wpCmd = 100; //should be NOTIF_SOFTKEY_FLAGS_DISMISS, but that doesn't work...
                      SHNotificationAdd(&sn);
@@ -676,15 +674,15 @@ void *thread_procedure(void *inused){
 
 int init(HWND hWnd){
    connected = 0;
-   open_state = 1;
-   open_handle = CreateEvent(NULL,FALSE,FALSE,NULL);
-   if(open_handle==NULL){
+   receiverActive = 1;
+   receiverThreadEvent = CreateEvent(NULL,FALSE,FALSE,NULL);
+   if(receiverThreadEvent==NULL){
        MessageBox(NULL,L"Critical error: CreateEvent() failed.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
       return -1;
    }
-   thread = CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)thread_procedure,(void*)hWnd,0,NULL);
-   if(thread==NULL){
-      CloseHandle(open_handle);
+   receiverThread = CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)receiverThreadProc,(void*)hWnd,0,NULL);
+   if(receiverThread==NULL){
+      CloseHandle(receiverThreadEvent);
       MessageBox(NULL,L"Critical error: CreateThread() failed.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
       return -1;
    }
@@ -707,7 +705,7 @@ int init(HWND hWnd){
 }
 
 void destroy(HWND hWnd){
-   open_state = 0;
+   receiverActive = 0;
    if(connected==1){
       connected = 0;
       irc_disconnect(&irc,NULL);
@@ -720,10 +718,10 @@ void destroy(HWND hWnd){
       deactivate_led(LEDtimer,0,NULL,NULL,NULL);
    }
    destroy_menu_bar(hWnd);
-   SetEvent(open_handle);
-   WaitForSingleObject(thread,INFINITE);
-   CloseHandle(open_handle);
-   CloseHandle(thread);
+   SetEvent(receiverThreadEvent);
+   WaitForSingleObject(receiverThread,INFINITE);
+   CloseHandle(receiverThreadEvent);
+   CloseHandle(receiverThread);
    irc_destroy(&irc);
    ircconfig_destroy(&config);
 }
@@ -747,7 +745,7 @@ int connecting(HWND hWnd){
    init_chat_screen(hWnd);
    tab_create(hWnd,hWnd_TabControlChat,L".status",STATUS);
    connected = 1;
-   SetEvent(open_handle);
+   SetEvent(receiverThreadEvent);
    return 0;
 }
 
@@ -780,7 +778,7 @@ int reconnecting(HWND hWnd){
    }
    tab_connect(hWnd_TabControlChat);
    destroy_loading_screen(hWnd);
-   SetEvent(open_handle);
+   SetEvent(receiverThreadEvent);
    return 0;
 }
 

@@ -33,7 +33,7 @@ void destroy_menu_bar(HWND hWnd){
 }
 
 void init_login_menu(HWND hWnd){
-   hWnd_ButtonConnect = CreateWindowEx(0,L"button",TEXT("Connect"),WS_CHILD|WS_VISIBLE|WS_BORDER,BUTTONCONNECT_LEFT*width,BUTTONCONNECT_TOP*height,BUTTONCONNECT_WIDTH*width,BUTTONCONNECT_HEIGHT*height,hWnd,(HMENU)BUTTON_CONNECT,hInstance_Main,NULL);
+   hWnd_ButtonConnect = CreateWindowEx(0,L"button",TEXT("Connect"),WS_CHILD|WS_VISIBLE|WS_BORDER,BUTTONCONNECT_LEFT*wWidth,BUTTONCONNECT_TOP*wHeight,BUTTONCONNECT_WIDTH*wWidth,BUTTONCONNECT_HEIGHT*wHeight,hWnd,(HMENU)BUTTON_CONNECT,hInstance_Main,NULL);
    UpdateWindow(hWnd);
 }
 
@@ -44,7 +44,7 @@ void destroy_login_menu(HWND hWnd){
 
 void init_loading_screen(HWND hWnd){
    SendMessage(hWnd,WM_LOAD_CURSOR,0,0);
-   hWnd_StaticConnecting = CreateWindowEx(0,L"static",TEXT("CONNECTING...."),WS_CHILD|WS_VISIBLE|SS_CENTER,STATICCONNECTING_LEFT*width,STATICCONNECTING_TOP*height,STATICCONNECTING_WIDTH*width,STATICCONNECTING_HEIGHT*height,hWnd,(HMENU)BUTTON_CONNECT,hInstance_Main,NULL);
+   hWnd_StaticConnecting = CreateWindowEx(0,L"static",TEXT("CONNECTING...."),WS_CHILD|WS_VISIBLE|SS_CENTER,STATICCONNECTING_LEFT*wWidth,STATICCONNECTING_TOP*wHeight,STATICCONNECTING_WIDTH*wWidth,STATICCONNECTING_HEIGHT*wHeight,hWnd,(HMENU)BUTTON_CONNECT,hInstance_Main,NULL);
    UpdateWindow(hWnd);
 }
 
@@ -71,7 +71,7 @@ LRESULT CALLBACK SendTextProc(HWND hWnd, UINT event_id, WPARAM element_id, LPARA
 
 void init_chat_screen(HWND hWnd){
    INITCOMMONCONTROLSEX icex;
-   hWnd_EditChat = CreateWindowEx(0,L"edit", NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|ES_AUTOHSCROLL|ES_NOHIDESEL,EDITCHAT_LEFT*width,EDITCHAT_TOP*height,EDITCHAT_WIDTH*width,EDITCHAT_HEIGHT*height,hWnd,NULL,hInstance_Main,NULL);
+   hWnd_EditChat = CreateWindowEx(0,L"edit", NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|ES_AUTOHSCROLL|ES_NOHIDESEL,EDITCHAT_LEFT*wWidth,EDITCHAT_TOP*wHeight,EDITCHAT_WIDTH*wWidth,EDITCHAT_HEIGHT*wHeight,hWnd,NULL,hInstance_Main,NULL);
    
    hWnd_SendText = hWnd;
    old_SendTextProc = (WNDPROC)GetWindowLong(hWnd_EditChat,GWL_WNDPROC);
@@ -79,12 +79,12 @@ void init_chat_screen(HWND hWnd){
    
    Edit_LineLength(hWnd_EditChat,200);
    Edit_LimitText(hWnd_EditChat,200);
-   hWnd_ButtonChat = CreateWindowEx(0,L"button",TEXT("Send"),WS_VISIBLE|WS_CHILD|BS_DEFPUSHBUTTON|BS_CENTER|BS_VCENTER,BUTTONCHAT_LEFT*width,BUTTONCHAT_TOP*height,BUTTONCHAT_WIDTH*width,BUTTONCHAT_HEIGHT*height,hWnd,(HMENU)BUTTON_SEND,hInstance_Main,NULL);
+   hWnd_ButtonChat = CreateWindowEx(0,L"button",TEXT("Send"),WS_VISIBLE|WS_CHILD|BS_DEFPUSHBUTTON|BS_CENTER|BS_VCENTER,BUTTONCHAT_LEFT*wWidth,BUTTONCHAT_TOP*wHeight,BUTTONCHAT_WIDTH*wWidth,BUTTONCHAT_HEIGHT*wHeight,hWnd,(HMENU)BUTTON_SEND,hInstance_Main,NULL);
    icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
    icex.dwICC = ICC_TAB_CLASSES;
    InitCommonControlsEx(&icex);
-   hWnd_TabControlChat = CreateWindowEx(0,WC_TABCONTROL,NULL,WS_CHILD|WS_VISIBLE|TCS_FOCUSNEVER|TCS_BUTTONS|TCS_FLATBUTTONS,TABCONTROLCHAT_LEFT*width,TABCONTROLCHAT_TOP*height,TABCONTROLCHAT_WIDTH*width,TABCONTROLCHAT_HEIGHT*height,hWnd,(HMENU)TAB_CONTROL,hInstance_Main,NULL);
-   hWnd_CloseTab = CreateWindowEx(0,L"button",TEXT("x"),WS_VISIBLE|WS_CHILD|BS_CENTER|BS_VCENTER,CLOSETAB_LEFT*width,CLOSETAB_TOP*height,CLOSETAB_WIDTH*width,CLOSETAB_HEIGHT*height,hWnd,(HMENU)BUTTON_CLOSE,hInstance_Main,NULL);
+   hWnd_TabControlChat = CreateWindowEx(0,WC_TABCONTROL,NULL,WS_CHILD|WS_VISIBLE|TCS_FOCUSNEVER|TCS_BUTTONS|TCS_FLATBUTTONS,TABCONTROLCHAT_LEFT*wWidth,TABCONTROLCHAT_TOP*wHeight,TABCONTROLCHAT_WIDTH*wWidth,TABCONTROLCHAT_HEIGHT*wHeight,hWnd,(HMENU)TAB_CONTROL,hInstance_Main,NULL);
+   hWnd_CloseTab = CreateWindowEx(0,L"button",TEXT("x"),WS_VISIBLE|WS_CHILD|BS_CENTER|BS_VCENTER,CLOSETAB_LEFT*wWidth,CLOSETAB_TOP*wHeight,CLOSETAB_WIDTH*wWidth,CLOSETAB_HEIGHT*wHeight,hWnd,(HMENU)BUTTON_CLOSE,hInstance_Main,NULL);
    hWnd_TapAndHold = CreateWindowEx(0,WC_SIPPREF,L"",WS_CHILD,0,0,0,0,hWnd,NULL,hInstance_Main,NULL);
    UpdateWindow(hWnd);
 }
