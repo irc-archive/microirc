@@ -21,19 +21,19 @@ typedef struct list_t{
    char *list;
 }list_t;
 
-__declspec(dllexport) int list_init(list_t*, int);
-__declspec(dllexport) void list_destroy(list_t*);
+export int list_init(list_t*, int);
+export void list_destroy(list_t*);
 
-__declspec(dllexport) void *list_add(list_t*, void*);
-__declspec(dllexport) void *list_add_index(list_t*, int, void*);
-__declspec(dllexport) int list_get(list_t*, void*);
-__declspec(dllexport) void *list_get_index(list_t*, int, void*, int);
-__declspec(dllexport) int list_remove(list_t*, void*);
-__declspec(dllexport) int list_remove_index(list_t*, int, void*, int);
-__declspec(dllexport) int list_size(list_t*);
+export void *list_add(list_t*, void*);
+export void *list_add_index(list_t*, int, void*);
+export int list_get(list_t*, void*);
+export void *list_get_index(list_t*, int, void*, int);
+export int list_remove(list_t*, void*);
+export int list_remove_index(list_t*, int, void*, int);
+export int list_size(list_t*);
 
-__declspec(dllexport) int list_array_data(list_t*,void**);
-__declspec(dllexport) int list_array_references(list_t*,void**);
-__declspec(dllexport) void list_array_destroy(void*);
+export int list_array_data(list_t*,void**);
+export int list_array_references(list_t*,void**);
+export void list_array_destroy(void*);
 
 #endif

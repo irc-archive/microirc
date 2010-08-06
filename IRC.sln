@@ -8,6 +8,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IRC", "IRC\IRC.vcproj", "{B
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "buffer", "buffer\buffer.vcproj", "{AA4380CA-BED3-4C36-92BE-7CD86D6E4447}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2149EDAE-FC99-4ABF-95AE-714044FE8410} = {2149EDAE-FC99-4ABF-95AE-714044FE8410}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "network", "network\network.vcproj", "{919BC60F-7CD6-4DCD-8374-D2B81028867F}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -20,11 +23,16 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ircprotocol", "ircprotocol\
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "list", "list\list.vcproj", "{5138426D-FE54-4510-B712-5F609CE7540B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2149EDAE-FC99-4ABF-95AE-714044FE8410} = {2149EDAE-FC99-4ABF-95AE-714044FE8410}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "iniparser", "iniparser\iniparser.vcproj", "{8D5D20FC-68EA-4A1E-898C-0CF26DAE556A}"
 	ProjectSection(ProjectDependencies) = postProject
 		{5138426D-FE54-4510-B712-5F609CE7540B} = {5138426D-FE54-4510-B712-5F609CE7540B}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "util", "util\util.vcproj", "{2149EDAE-FC99-4ABF-95AE-714044FE8410}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -106,6 +114,18 @@ Global
 		{8D5D20FC-68EA-4A1E-898C-0CF26DAE556A}.Release|Windows Mobile 6 Professional.ActiveCfg = Release|Windows Mobile 6 Professional SDK (ARMV4I)
 		{8D5D20FC-68EA-4A1E-898C-0CF26DAE556A}.Release|Windows Mobile 6 Professional.Build.0 = Release|Windows Mobile 6 Professional SDK (ARMV4I)
 		{8D5D20FC-68EA-4A1E-898C-0CF26DAE556A}.Release|Windows Mobile 6 Professional.Deploy.0 = Release|Windows Mobile 6 Professional SDK (ARMV4I)
+		{2149EDAE-FC99-4ABF-95AE-714044FE8410}.Debug|Windows Mobile 5.0 Pocket.ActiveCfg = Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
+		{2149EDAE-FC99-4ABF-95AE-714044FE8410}.Debug|Windows Mobile 5.0 Pocket.Build.0 = Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
+		{2149EDAE-FC99-4ABF-95AE-714044FE8410}.Debug|Windows Mobile 5.0 Pocket.Deploy.0 = Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
+		{2149EDAE-FC99-4ABF-95AE-714044FE8410}.Debug|Windows Mobile 6 Professional.ActiveCfg = Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
+		{2149EDAE-FC99-4ABF-95AE-714044FE8410}.Debug|Windows Mobile 6 Professional.Build.0 = Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
+		{2149EDAE-FC99-4ABF-95AE-714044FE8410}.Debug|Windows Mobile 6 Professional.Deploy.0 = Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
+		{2149EDAE-FC99-4ABF-95AE-714044FE8410}.Release|Windows Mobile 5.0 Pocket.ActiveCfg = Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
+		{2149EDAE-FC99-4ABF-95AE-714044FE8410}.Release|Windows Mobile 5.0 Pocket.Build.0 = Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
+		{2149EDAE-FC99-4ABF-95AE-714044FE8410}.Release|Windows Mobile 5.0 Pocket.Deploy.0 = Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
+		{2149EDAE-FC99-4ABF-95AE-714044FE8410}.Release|Windows Mobile 6 Professional.ActiveCfg = Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
+		{2149EDAE-FC99-4ABF-95AE-714044FE8410}.Release|Windows Mobile 6 Professional.Build.0 = Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
+		{2149EDAE-FC99-4ABF-95AE-714044FE8410}.Release|Windows Mobile 6 Professional.Deploy.0 = Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -440,6 +440,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\gui.PNG"
+				>
+			</File>
+			<File
 				RelativePath=".\menu.rc"
 				>
 			</File>
@@ -458,6 +462,10 @@
 			</File>
 			<File
 				RelativePath=".\options_default.ini"
+				>
+			</File>
+			<File
+				RelativePath=".\paypal.txt"
 				>
 			</File>
 			<File

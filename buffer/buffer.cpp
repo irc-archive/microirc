@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "../util/util.h"
 #include "buffer.h"
 
 int grow(buffer_t *buffer, int needed_size, int start_new_size, int n_times){
@@ -49,7 +50,7 @@ int buffer_grow_shrink(buffer_t *buffer, int n_size){
    }
 }
 
-__declspec(dllexport) int buffer_init(buffer_t *buffer, char *d_split, int s_split, int max_size){
+export int buffer_init(buffer_t *buffer, char *d_split, int s_split, int max_size){
    memset(buffer,0,sizeof(buffer_t));
    if(max_size<=0){
       max_size = BUFFER_DEFAULT_SIZE;
@@ -70,13 +71,13 @@ __declspec(dllexport) int buffer_init(buffer_t *buffer, char *d_split, int s_spl
    return 0;
 }
 
-__declspec(dllexport) void buffer_destroy(buffer_t *buffer){
+export void buffer_destroy(buffer_t *buffer){
    free(buffer->data);
    free(buffer->d_split);
    memset(buffer,0,sizeof(buffer_t));
 }
 
-__declspec(dllexport) void buffer_print(buffer_t *buffer){
+export void buffer_print(buffer_t *buffer){
    int i;
    char *data = buffer_read_avaiable_data_buffer(buffer);
    int size = buffer_read_avaiable_data_size(buffer);
@@ -87,7 +88,7 @@ __declspec(dllexport) void buffer_print(buffer_t *buffer){
    printf(".\n");
 }
 
-__declspec(dllexport) int buffer_line_len(buffer_t *buffer, char *optional_data, int optional_size){
+export int buffer_line_len(buffer_t *buffer, char *optional_data, int optional_size){
    int start = 0;
    if(optional_data==NULL || optional_size==0){
       optional_data = buffer->data;
@@ -100,15 +101,15 @@ __declspec(dllexport) int buffer_line_len(buffer_t *buffer, char *optional_data,
    return start;
 }
 
-__declspec(dllexport) int buffer_read_avaiable_write_size(buffer_t *buffer){
+export int buffer_read_avaiable_write_size(buffer_t *buffer){
    return (buffer->actual_size)-(buffer->size);
 }
 
-__declspec(dllexport) char *buffer_read_avaiable_write_buffer(buffer_t *buffer){
+export char *buffer_read_avaiable_write_buffer(buffer_t *buffer){
    return (buffer->data)+(buffer->size);
 }
 
-__declspec(dllexport) int buffer_read_avaiable_data_size(buffer_t *buffer){
+export int buffer_read_avaiable_data_size(buffer_t *buffer){
    int retval = buffer_line_len(buffer, NULL, 0);
    if(retval <= (buffer->size-buffer->s_split)){
       retval += buffer->s_split;
@@ -118,18 +119,18 @@ __declspec(dllexport) int buffer_read_avaiable_data_size(buffer_t *buffer){
    }
 }
 
-__declspec(dllexport) char *buffer_read_avaiable_data_buffer(buffer_t *buffer){
+export char *buffer_read_avaiable_data_buffer(buffer_t *buffer){
    return buffer->data;
 }
 
-__declspec(dllexport) int buffer_write_size_before(buffer_t *buffer, int size){
+export int buffer_write_size_before(buffer_t *buffer, int size){
    if(buffer_grow_shrink(buffer,size)<0){
       return -1;
    }
    return buffer_read_avaiable_data_size(buffer);
 }
 
-__declspec(dllexport) int buffer_write_data(buffer_t *buffer, char *d_data, int s_data){
+export int buffer_write_data(buffer_t *buffer, char *d_data, int s_data){
    if(buffer_grow_shrink(buffer,s_data)<0){
       return -1;
    }
@@ -138,13 +139,13 @@ __declspec(dllexport) int buffer_write_data(buffer_t *buffer, char *d_data, int 
    return buffer_read_avaiable_data_size(buffer);
 }
 
-__declspec(dllexport) int buffer_write_size_after(buffer_t *buffer, int size){
+export int buffer_write_size_after(buffer_t *buffer, int size){
    buffer->size = buffer->size + size;
    buffer_grow_shrink(buffer,0);
    return buffer_read_avaiable_data_size(buffer);
 }
 
-__declspec(dllexport) int buffer_read_data(buffer_t *buffer){
+export int buffer_read_data(buffer_t *buffer){
    int retval = buffer_read_avaiable_data_size(buffer);
    if(retval>0){
       memcpy(buffer->data,buffer->data+retval,buffer->size-retval);
@@ -154,7 +155,7 @@ __declspec(dllexport) int buffer_read_data(buffer_t *buffer){
    return retval;
 }
 
-__declspec(dllexport) int buffer_read_get_data(buffer_t *buffer, char *data, int size){
+export int buffer_read_get_data(buffer_t *buffer, char *data, int size){
    int retval = buffer_read_avaiable_data_size(buffer);
    if(retval>size){
       return -1;

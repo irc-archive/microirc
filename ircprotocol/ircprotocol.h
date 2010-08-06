@@ -88,15 +88,15 @@ typedef struct irc_t{
    int connected;
 }irc_t;
 
-__declspec(dllexport) int irc_init(irc_t*, char*, char*, char*, char*, char*, char*, char*, int);
-__declspec(dllexport) void irc_destroy(irc_t*);
+export int irc_init(irc_t*, char*, char*, char*, char*, char*, char*, char*, int);
+export void irc_destroy(irc_t*);
 
-__declspec(dllexport) int irc_connect(irc_t*);
-__declspec(dllexport) void irc_disconnect(irc_t*, char*);
-__declspec(dllexport) int irc_recv_message(irc_t*, char**, int*);
-__declspec(dllexport) int irc_send_message(irc_t*, int, char**, int);
-__declspec(dllexport) int irc_validate_channel(irc_t*, char*);
-__declspec(dllexport) int irc_validate_nick(irc_t*, char*);
-__declspec(dllexport) void irc_tokenize_nicklist(irc_t*, char*, char**, int*);
+export int irc_connect(irc_t*);
+export void irc_disconnect(irc_t*, char*);
+export int irc_recv_message(irc_t*, char**, int*);
+export int irc_send_message(irc_t*, int, char**, int);
+export int irc_validate_channel(irc_t*, char*);
+export int irc_validate_nick(irc_t*, char*);
+export void irc_tokenize_nicklist(irc_t*, char*, char**, int*);
 
 #endif

@@ -27,6 +27,7 @@
 
 #include "resource.h"
 #include "irc.h"
+#include "../util/util.h"
 #include "../buffer/buffer.h"
 #include "../network/network.h"
 #include "../list/list.h"

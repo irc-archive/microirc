@@ -10,7 +10,8 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include "list.h"
+#include "../util/util.h"
+#include "../list/list.h"
 #include "iniparser.h"
 
 char *iniparser_rightstrip(char *s){
@@ -43,18 +44,12 @@ char *iniparser_find_any_chars(char *s, char *d_chars, int s_chars){
    return (char*)s;
 }
 
-char *iniparser_strncpy0(char *dest, char *src, size_t size){
-    strncpy(dest, src, size);
-    dest[size - 1] = '\0';
-    return dest;
-}
-
 int iniparser_add_node(iniparser_t *iniparser, int index, int opcode, char *key, char *value){
    iniparsenode_t node;
    memset(&node,0,sizeof(iniparsenode_t));
    node.type = opcode;
-   iniparser_strncpy0(node.key,key,INIPARSER_MAX_KEY);
-   iniparser_strncpy0(node.value,value,INIPARSER_MAX_VALUE);
+   strncpy0(node.key,key,INIPARSER_MAX_KEY);
+   strncpy0(node.value,value,INIPARSER_MAX_VALUE);
    if(index>=0){
       if(list_add_index(&iniparser->list,index,&node)==NULL){
          return -1;
@@ -110,7 +105,7 @@ int iniparser_get_index(iniparser_t *iniparser, int opcode, char *data){
    return -1;
 }
 
-__declspec(dllexport) int iniparser_init(iniparser_t *iniparser){
+export int iniparser_init(iniparser_t *iniparser){
    memset(iniparser,0,sizeof(iniparser_t));
    if(list_init(&iniparser->list,sizeof(iniparsenode_t))==-1){
       return -1;
@@ -118,12 +113,12 @@ __declspec(dllexport) int iniparser_init(iniparser_t *iniparser){
    return 0;
 }
 
-__declspec(dllexport) void iniparser_destroy(iniparser_t *iniparser){
+export void iniparser_destroy(iniparser_t *iniparser){
    list_destroy(&iniparser->list);
    memset(iniparser,0,sizeof(iniparser_t));
 }
 
-__declspec(dllexport) int iniparser_load(iniparser_t *iniparser, char *filename){
+export int iniparser_load(iniparser_t *iniparser, char *filename){
    FILE *file = fopen(filename, "r");
    if(file==NULL){
       list_destroy(&iniparser->list);
@@ -143,7 +138,7 @@ __declspec(dllexport) int iniparser_load(iniparser_t *iniparser, char *filename)
          end = iniparser_find_any_chars(start+1, "];",2);
          if(*end == ']'){
             *end = '\0';
-            iniparser_strncpy0(section, start+1, INIPARSER_MAX_SECTION);
+            strncpy0(section, start+1, INIPARSER_MAX_SECTION);
             iniparser_add_node(iniparser,-1,INIPARSER_TYPE_SECTION,start+1,"");
          }else{
             *section = '\0';
@@ -176,7 +171,7 @@ __declspec(dllexport) int iniparser_load(iniparser_t *iniparser, char *filename)
    return 0;
 }
 
-__declspec(dllexport) int iniparser_store(iniparser_t *iniparser, char *filename){
+export int iniparser_store(iniparser_t *iniparser, char *filename){
    FILE *file = fopen(filename, "w");
    if(file==NULL){
       return -1;
@@ -202,7 +197,7 @@ __declspec(dllexport) int iniparser_store(iniparser_t *iniparser, char *filename
    return 0;
 }
 
-__declspec(dllexport) char *iniparser_getstring(iniparser_t *iniparser, char *section, char *key, char *def){
+export char *iniparser_getstring(iniparser_t *iniparser, char *section, char *key, char *def){
    iniparsenode_t *result = iniparser_get_node(iniparser,section,key);
    if(result==NULL){
       return def;
@@ -211,14 +206,14 @@ __declspec(dllexport) char *iniparser_getstring(iniparser_t *iniparser, char *se
    }
 }
 
-__declspec(dllexport) int iniparser_setstring(iniparser_t *iniparser, char *section, char *key, char *value){
+export int iniparser_setstring(iniparser_t *iniparser, char *section, char *key, char *value){
    iniparsenode_t *result = iniparser_get_node(iniparser,section,key);
    if(result==NULL){
       iniparsenode_t nodekeyvalue;
       memset(&nodekeyvalue,0,sizeof(iniparsenode_t));
       nodekeyvalue.type = INIPARSER_TYPE_KEYVALUE;
-      iniparser_strncpy0(nodekeyvalue.key,key,INIPARSER_MAX_KEY);
-      iniparser_strncpy0(nodekeyvalue.value,value,INIPARSER_MAX_VALUE);
+      strncpy0(nodekeyvalue.key,key,INIPARSER_MAX_KEY);
+      strncpy0(nodekeyvalue.value,value,INIPARSER_MAX_VALUE);
       int index = iniparser_get_index(iniparser,INIPARSER_TYPE_SECTION,section);
       if(index!=-1){
          return iniparser_add_node(iniparser, index+1, INIPARSER_TYPE_KEYVALUE, key, value);
@@ -232,12 +227,12 @@ __declspec(dllexport) int iniparser_setstring(iniparser_t *iniparser, char *sect
          }
       }
    }else{
-      iniparser_strncpy0(result->value,value,INIPARSER_MAX_VALUE);
+      strncpy0(result->value,value,INIPARSER_MAX_VALUE);
    }
    return 0;
 }
 
-__declspec(dllexport) int iniparser_getint(iniparser_t *iniparser, char *section, char *key, int def){
+export int iniparser_getint(iniparser_t *iniparser, char *section, char *key, int def){
    char *retval = iniparser_getstring(iniparser, section, key, NULL);
    if(retval==NULL){
       return def;
@@ -247,13 +242,13 @@ __declspec(dllexport) int iniparser_getint(iniparser_t *iniparser, char *section
    return result;
 }
 
-__declspec(dllexport) int iniparser_setint(iniparser_t *iniparser, char *section, char *key, int val){
+export int iniparser_setint(iniparser_t *iniparser, char *section, char *key, int val){
    char value[INIPARSER_MAX_VALUE];
    sprintf(value,"%d",val);
    return iniparser_setstring(iniparser,section,key,value);
 }
 
-__declspec(dllexport) double iniparser_getdouble(iniparser_t *iniparser, char *section, char *key, double def){
+export double iniparser_getdouble(iniparser_t *iniparser, char *section, char *key, double def){
    char *retval = iniparser_getstring(iniparser, section, key, NULL);
    if(retval==NULL){
       return def;
@@ -263,7 +258,7 @@ __declspec(dllexport) double iniparser_getdouble(iniparser_t *iniparser, char *s
    return result;
 }
 
-__declspec(dllexport) int iniparser_setdouble(iniparser_t *iniparser, char *section, char *key, double val){
+export int iniparser_setdouble(iniparser_t *iniparser, char *section, char *key, double val){
    char value[INIPARSER_MAX_VALUE];
    sprintf(value,"%f",val);
    return iniparser_setstring(iniparser,section,key,value);

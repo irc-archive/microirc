@@ -32,17 +32,17 @@ typedef struct iniparsenode_t{
    char value[INIPARSER_MAX_VALUE];
 }iniparsenode_t;
 
-__declspec(dllexport) int iniparser_init(iniparser_t*);
-__declspec(dllexport) void iniparser_destroy(iniparser_t*);
+export int iniparser_init(iniparser_t*);
+export void iniparser_destroy(iniparser_t*);
 
-__declspec(dllexport) int iniparser_load(iniparser_t*, char*);
-__declspec(dllexport) int iniparser_store(iniparser_t*, char*);
+export int iniparser_load(iniparser_t*, char*);
+export int iniparser_store(iniparser_t*, char*);
 
-__declspec(dllexport) char *iniparser_getstring(iniparser_t*, char*, char*, char*);
-__declspec(dllexport) int iniparser_setstring(iniparser_t*, char*, char*, char*);
-__declspec(dllexport) int iniparser_getint(iniparser_t*, char*, char*, int);
-__declspec(dllexport) int iniparser_setint(iniparser_t*, char*, char*, int);
-__declspec(dllexport) double iniparser_getdouble(iniparser_t*, char*, char*, double);
-__declspec(dllexport) int iniparser_setdouble(iniparser_t*, char*, char*, double);
+export char *iniparser_getstring(iniparser_t*, char*, char*, char*);
+export int iniparser_setstring(iniparser_t*, char*, char*, char*);
+export int iniparser_getint(iniparser_t*, char*, char*, int);
+export int iniparser_setint(iniparser_t*, char*, char*, int);
+export double iniparser_getdouble(iniparser_t*, char*, char*, double);
+export int iniparser_setdouble(iniparser_t*, char*, char*, double);
 
 #endif

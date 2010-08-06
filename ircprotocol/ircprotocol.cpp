@@ -12,9 +12,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
-#include "buffer.h"
-#include "network.h"
-#include "list.h"
+#include "../util/util.h"
+#include "../buffer/buffer.h"
+#include "../network/network.h"
+#include "../list/list.h"
 #include "ircprotocol.h"
 
 char *tokens_required(char *str, char character, int n_tokens, char **d_tokens, int *s_tokens){
@@ -95,7 +96,7 @@ int verify_buffer(char **messages, int size){
    return 0;
 }
 
-__declspec(dllexport) int irc_init(irc_t *irc, char *host, char *port, char *user, char *name, char *nick, char *perform, char *channels, int delay){
+export int irc_init(irc_t *irc, char *host, char *port, char *user, char *name, char *nick, char *perform, char *channels, int delay){
    memset(irc,0,sizeof(irc_t));
    if(strlen(host)==0 || strlen(port)==0 || strlen(user)==0 || strlen(name)==0 || strlen(nick)==0 || delay<0){
       return -1;
@@ -117,7 +118,7 @@ __declspec(dllexport) int irc_init(irc_t *irc, char *host, char *port, char *use
    return 0;
 }
 
-__declspec(dllexport) void irc_destroy(irc_t *irc){
+export void irc_destroy(irc_t *irc){
    memset(irc,0,sizeof(irc_t));
 }
 
@@ -127,8 +128,11 @@ VOID CALLBACK timer_procedure(UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_
    close_tcp(&irc->network);
 }
 
-__declspec(dllexport) int irc_connect(irc_t *irc){
+export int irc_connect(irc_t *irc){
    if(buffer_init(&irc->recv_buffer_stream,IRCPROTOCOL_SPLITER_DATA,IRCPROTOCOL_SPLITER_SIZE,IRCPROTOCOL_SIZE_LARGE)!=0){
+      return -1;
+   }
+   if(WSAinit_tcp()!=0){
       return -1;
    }
    if(connect_tcp(&irc->network,irc->host,irc->port)!=0){
@@ -200,7 +204,7 @@ __declspec(dllexport) int irc_connect(irc_t *irc){
       return -1;
 }
 
-__declspec(dllexport) void irc_disconnect(irc_t *irc, char *message){
+export void irc_disconnect(irc_t *irc, char *message){
    irc->connected=0;
    char *sendrecv[1];
    sendrecv[0] = message;
@@ -214,7 +218,7 @@ __declspec(dllexport) void irc_disconnect(irc_t *irc, char *message){
    DeleteCriticalSection(&irc->send_buffer_critical_section);
 }
 
-__declspec(dllexport) int irc_recv_message(irc_t *irc, char **d_result, int *s_result){
+export int irc_recv_message(irc_t *irc, char **d_result, int *s_result){
    while(irc->connected){
       if(gettext_tcp(&irc->network,&irc->recv_buffer_stream)<=0){
          return -1;
@@ -381,7 +385,7 @@ __declspec(dllexport) int irc_recv_message(irc_t *irc, char **d_result, int *s_r
    return -1;
 }
 
-__declspec(dllexport) int irc_send_message(irc_t *irc, int opcode, char **messages, int size){
+export int irc_send_message(irc_t *irc, int opcode, char **messages, int size){
    switch(opcode){
       case SEND_CTCP:{
          if(size!=2 || messages[0]==NULL || messages[1]==NULL){
@@ -501,7 +505,7 @@ __declspec(dllexport) int irc_send_message(irc_t *irc, int opcode, char **messag
    return send_result;
 }
 
-__declspec(dllexport) int irc_validate_channel(irc_t *irc, char *channel){
+export int irc_validate_channel(irc_t *irc, char *channel){
    if(strlen(channel)>irc->channellen || strlen(channel)<2){
       return -1;
    }
@@ -511,7 +515,7 @@ __declspec(dllexport) int irc_validate_channel(irc_t *irc, char *channel){
    return 0;
 }
 
-__declspec(dllexport) int irc_validate_nick(irc_t *irc, char *nick){
+export int irc_validate_nick(irc_t *irc, char *nick){
    if(strlen(nick)>irc->nicklen || strlen(nick)>irc->maxnicklen || strlen(nick)<1){
       return -1;
    }
@@ -522,6 +526,6 @@ __declspec(dllexport) int irc_validate_nick(irc_t *irc, char *nick){
    return temp - irc->prefix_char;
 }
 
-__declspec(dllexport) void irc_tokenize_nicklist(irc_t *irc, char *nicklist, char **d_result, int *s_result){
+export void irc_tokenize_nicklist(irc_t *irc, char *nicklist, char **d_result, int *s_result){
    tokens_required(nicklist,CHAR_SPACE,IRCPROTOCOL_MAX_NICKS_PER_MESSAGE,d_result,s_result);
 }

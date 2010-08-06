@@ -9,27 +9,6 @@
 * This code is licenced under the GPL version 2. For details see COPYING.txt file.
 */
 
-char *strstri(char *t, char *s){//lstrcmpi
-   int i, j;
-   for(i=0; t[i] != '\0'; i++){
-      for(j=0; s[j] != '\0'; j++){
-         if(toupper(s[j])==toupper(t[i+j])){
-            continue; 
-         }else{
-            break;
-         }
-      }
-      if (s[j] == '\0'){
-         break;
-      }
-   }
-   if (s[j] == '\0'){
-      return (i+t);
-   }else{
-      return '\0';
-   }
-}
-
 void set_led(int led_num, int state){
    NLED_SETTINGS_INFO settings;
    settings.LedNum=led_num;
