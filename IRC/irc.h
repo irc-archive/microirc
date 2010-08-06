@@ -12,8 +12,6 @@
 #define IRC_SIZE_SMALL 256
 #define IRC_SIZE_MEDIUM 1024
 
-#define IRC_MAX_NICKS_PER_MESSAGE 100
-
 #define IRC_RECONNECT_TIMEOUT_START 3000
 #define IRC_RECONNECT_TIMEOUT_MULTIPLIER 2
 
@@ -89,5 +87,3 @@ void destroy(HWND hWnd);
 int connecting(HWND hWnd);
 int reconnecting(HWND hWnd);
 void disconnecting(HWND hWnd);
-
-char *tokens_required(char*, char, int, char**, int*);

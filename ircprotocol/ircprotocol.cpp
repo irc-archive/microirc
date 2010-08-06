@@ -500,3 +500,28 @@ __declspec(dllexport) int irc_send_message(irc_t *irc, int opcode, char **messag
    LeaveCriticalSection(&irc->send_buffer_critical_section);
    return send_result;
 }
+
+__declspec(dllexport) int irc_validate_channel(irc_t *irc, char *channel){
+   if(strlen(channel)>irc->channellen || strlen(channel)<2){
+      return -1;
+   }
+   if(strchr(irc->chantypes,channel[0])==NULL){
+      return -1;
+   }
+   return 0;
+}
+
+__declspec(dllexport) int irc_validate_nick(irc_t *irc, char *nick){
+   if(strlen(nick)>irc->nicklen || strlen(nick)>irc->maxnicklen || strlen(nick)<1){
+      return -1;
+   }
+   char *temp = strchr(irc->prefix_char,nick[0]);
+   if(temp==NULL){
+      return -1;
+   }
+   return temp - irc->prefix_char;
+}
+
+__declspec(dllexport) void irc_tokenize_nicklist(irc_t *irc, char *nicklist, char **d_result, int *s_result){
+   tokens_required(nicklist,CHAR_SPACE,IRCPROTOCOL_MAX_NICKS_PER_MESSAGE,d_result,s_result);
+}

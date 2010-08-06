@@ -237,7 +237,9 @@ int tab_write_index(HWND tab_control, int tab_index, wchar_t *text, TAB_TEXT_TYP
       }
    }else if(window==NICK){
       if(operation==APPEND){
-         if(wcsncmp(L"@",text,1)==0 || wcsncmp(L"+",text,1)==0 || wcsncmp(L"!",text,1)==0 || wcsncmp(L"%",text,1)==0){//MISSING..
+         char nick[IRC_SIZE_SMALL];
+         WideCharToMultiByte(config.encoding,0,text,-1,nick,IRC_SIZE_SMALL,NULL,NULL);
+         if(irc_validate_nick(&irc,nick)!=-1){
             wcscpy(text,text+1);
          }
          SendMessage(write_tab->nick,LB_ADDSTRING,0,(LPARAM)text);

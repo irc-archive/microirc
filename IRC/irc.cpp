@@ -216,7 +216,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
                tab_get_name_current(tabcontrol_chatview_handle,wtab_close,IRC_SIZE_SMALL);
                WideCharToMultiByte(config.encoding,0,wtab_close,-1,tab_close,IRC_SIZE_SMALL,NULL,NULL);
                if(memcmp(tab_close,".status",7)!=0){
-                  if(memcmp(tab_close,"#",1)==0){
+                  if(irc_validate_channel(&irc,tab_close)==0){
                      irc_send_message(&irc,SEND_PART,send,1);
                   }
                   tab_delete_current(tabcontrol_chatview_handle);
@@ -334,14 +334,14 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
                   break;
                }
                wchar_t wchannel[IRC_SIZE_SMALL];
+               char channel[IRC_SIZE_SMALL];
                tab_get_name_current(tabcontrol_chatview_handle,wchannel,IRC_SIZE_SMALL);
-               if(wcsncmp(wchannel,L"#",1)!=0){
+               WideCharToMultiByte(config.encoding,0,wchannel,-1,channel,IRC_SIZE_SMALL,NULL,NULL);
+               if(irc_validate_channel(&irc,channel)!=0){
                   break;
                }
                char topic[IRC_SIZE_SMALL];
-               char channel[IRC_SIZE_SMALL];
                WideCharToMultiByte(config.encoding,0,wtopic,-1,topic,IRC_SIZE_SMALL,NULL,NULL);
-               WideCharToMultiByte(config.encoding,0,wchannel,-1,channel,IRC_SIZE_SMALL,NULL,NULL);
                char *send[2]={channel,topic};
                irc_send_message(&irc,SEND_SET_TOPIC,send,2);
                break;
@@ -351,12 +351,12 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
                   break;
                }
                wchar_t wchannel[IRC_SIZE_SMALL];
+               char channel[IRC_SIZE_SMALL];
                tab_get_name_current(tabcontrol_chatview_handle,wchannel,IRC_SIZE_SMALL);
-               if(wcsncmp(wchannel,L"#",1)!=0){
+               WideCharToMultiByte(config.encoding,0,wchannel,-1,channel,IRC_SIZE_SMALL,NULL,NULL);
+               if(irc_validate_channel(&irc,channel)!=0){
                   break;
                }
-               char channel[IRC_SIZE_SMALL];
-               WideCharToMultiByte(config.encoding,0,wchannel,-1,channel,IRC_SIZE_SMALL,NULL,NULL);
                char *send[1]={channel};
                irc_send_message(&irc,SEND_GET_TOPIC,send,1);
                break;
@@ -514,7 +514,7 @@ void *receiverThreadProc(void *window_handle){
                }else if(recv_result==RECV_NOTICE){
                   swprintf(wresult,L"\r\n%s %s: %s",wtimestamp,recv_buffer[0],recv_buffer[4]);
                }
-               if(recv_buffer_ptr[3][0]=='#'){
+               if(irc_validate_channel(&irc,recv_buffer_ptr[3])==0){
                   SendMessage(hWnd,WM_CREATE_TAB,CHAT,(LPARAM)recv_buffer[3]);
                   tab_write_name(tabcontrol_chatview_handle,recv_buffer[3],wresult,TEXT,APPEND);
                }else{
@@ -568,12 +568,12 @@ void *receiverThreadProc(void *window_handle){
                   break;
                }
                char *nicks = recv_buffer_ptr[2];
-               char *d_tokens[IRC_MAX_NICKS_PER_MESSAGE];
+               char *d_tokens[IRCPROTOCOL_MAX_NICKS_PER_MESSAGE];
                int s_tokens=0;
-               tokens_required(nicks,CHAR_SPACE,IRC_MAX_NICKS_PER_MESSAGE,d_tokens,&s_tokens);
+               irc_tokenize_nicklist(&irc,nicks,d_tokens,&s_tokens);
                for(i=0;i<s_tokens;i++){
-                  MultiByteToWideChar(config.encoding,0,d_tokens[i],-1,recv_buffer[5],IRC_SIZE_MEDIUM);
-                  tab_write_name(tabcontrol_chatview_handle,recv_buffer[1],recv_buffer[5],NICK,APPEND);
+                  MultiByteToWideChar(config.encoding,0,d_tokens[i],-1,wresult,IRC_SIZE_MEDIUM);
+                  tab_write_name(tabcontrol_chatview_handle,recv_buffer[1],wresult,NICK,APPEND);
                }
                break;
             }

@@ -51,6 +51,7 @@
 #define CHAR_CTCP 1
 #define CHAR_TERMINATOR 0
 
+#define IRCPROTOCOL_MAX_NICKS_PER_MESSAGE 256
 #define IRCPROTOCOL_CONFIG_MAX_TOKENS 10
 #define IRCPROTOCOL_RECV_MAX_TOKENS 15
 #define IRCPROTOCOL_REGISTER_TIMEOUT 30000
@@ -94,5 +95,8 @@ __declspec(dllexport) int irc_connect(irc_t*);
 __declspec(dllexport) void irc_disconnect(irc_t*, char*);
 __declspec(dllexport) int irc_recv_message(irc_t*, char**, int*);
 __declspec(dllexport) int irc_send_message(irc_t*, int, char**, int);
+__declspec(dllexport) int irc_validate_channel(irc_t*, char*);
+__declspec(dllexport) int irc_validate_nick(irc_t*, char*);
+__declspec(dllexport) void irc_tokenize_nicklist(irc_t*, char*, char**, int*);
 
 #endif
