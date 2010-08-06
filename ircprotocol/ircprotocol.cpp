@@ -101,19 +101,19 @@ export int irc_init(irc_t *irc, char *host, char *port, char *user, char *name, 
    if(strlen(host)==0 || strlen(port)==0 || strlen(user)==0 || strlen(name)==0 || strlen(nick)==0 || delay<0){
       return -1;
    }
-   strncpy(irc->prefix_mode,"ov",IRCPROTOCOL_SIZE_SMALL);
-   strncpy(irc->prefix_char,"@+",IRCPROTOCOL_SIZE_SMALL);
-   strncpy(irc->chantypes,"#",IRCPROTOCOL_SIZE_SMALL);
+   strncpy0(irc->prefix_mode,"ov",IRCPROTOCOL_SIZE_SMALL);
+   strncpy0(irc->prefix_char,"@+",IRCPROTOCOL_SIZE_SMALL);
+   strncpy0(irc->chantypes,"#",IRCPROTOCOL_SIZE_SMALL);
    irc->channellen = 200;
    irc->nicklen = 16;
    irc->maxnicklen = 16;
-   strncpy(irc->host,host,IRCPROTOCOL_SIZE_SMALL);
-   strncpy(irc->port,port,IRCPROTOCOL_SIZE_SMALL);
-   strncpy(irc->user,user,IRCPROTOCOL_SIZE_SMALL);
-   strncpy(irc->name,name,IRCPROTOCOL_SIZE_SMALL);
-   strncpy(irc->nick,nick,IRCPROTOCOL_SIZE_SMALL);
-   strncpy(irc->perform,perform,IRCPROTOCOL_SIZE_MEDIUM);
-   strncpy(irc->autojoin_channels,channels,IRCPROTOCOL_SIZE_MEDIUM);
+   strncpy0(irc->host,host,IRCPROTOCOL_SIZE_SMALL);
+   strncpy0(irc->port,port,IRCPROTOCOL_SIZE_SMALL);
+   strncpy0(irc->user,user,IRCPROTOCOL_SIZE_SMALL);
+   strncpy0(irc->name,name,IRCPROTOCOL_SIZE_SMALL);
+   strncpy0(irc->nick,nick,IRCPROTOCOL_SIZE_SMALL);
+   strncpy0(irc->perform,perform,IRCPROTOCOL_SIZE_MEDIUM);
+   strncpy0(irc->autojoin_channels,channels,IRCPROTOCOL_SIZE_MEDIUM);
    irc->autojoin_delay = delay;
    return 0;
 }
@@ -130,9 +130,6 @@ VOID CALLBACK timer_procedure(UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_
 
 export int irc_connect(irc_t *irc){
    if(buffer_init(&irc->recv_buffer_stream,IRCPROTOCOL_SPLITER_DATA,IRCPROTOCOL_SPLITER_SIZE,IRCPROTOCOL_SIZE_LARGE)!=0){
-      return -1;
-   }
-   if(WSAinit_tcp()!=0){
       return -1;
    }
    if(connect_tcp(&irc->network,irc->host,irc->port)!=0){
@@ -163,7 +160,7 @@ export int irc_connect(irc_t *irc){
       switch(result){
          case RECV_WELCOME:{
             timeKillEvent(timer);
-            strncpy(irc->nick,sendrecv[1],IRCPROTOCOL_SIZE_SMALL);
+            strncpy0(irc->nick,sendrecv[1],IRCPROTOCOL_SIZE_SMALL);
             char *d_tokens[IRCPROTOCOL_CONFIG_MAX_TOKENS];
             int s_tokens=0;
             int i;
@@ -248,7 +245,7 @@ export int irc_recv_message(irc_t *irc, char **d_result, int *s_result){
             d_result[*s_result] = next;
             (*s_result)++;
             return RECV_JOIN;
-         }else if(!memcmp(dresult[1],"KICK",4) && next!=NULL){//nick user host channel victim message
+         }else if(!memcmp(dresult[1],"KICK",4) && next!=NULL){//nick user host channel victim [message OR null]
             char *message = tokens_required(next,CHAR_SPACE,2,d_result,s_result);
             if(message!=NULL){
                message = strignorechar(message,CHAR_TRAIL);
@@ -256,18 +253,28 @@ export int irc_recv_message(irc_t *irc, char **d_result, int *s_result){
                (*s_result)++;
             }
             return RECV_KICK;
-         }else if(!memcmp(dresult[1],"MODE",4) && next!=NULL){//nick user host channel modes nicklist
-            //char *nicklist = tokens_required(next,CHAR_SPACE,2,d_result,s_result);
-            //d_result[*s_result] = nicklist;
-            //(*s_result)++;
-            //return RECV_NICK_LIST;
-            return RECV_OTHER;
+         }else if(!memcmp(dresult[1],"MODE",4) && next!=NULL){//[host OR nick user host] channel modes [arguments OR null]
+            char *modes = tokens_required(next,CHAR_SPACE,1,d_result,s_result);
+            if(irc_validate_channel(irc,d_result[(*s_result)-1])==0){
+               char *nicklist = tokens_required(modes,CHAR_SPACE,1,d_result,s_result);
+               if(nicklist!=NULL){
+                  nicklist = strignorechar(nicklist,CHAR_TRAIL);
+                  d_result[*s_result] = nicklist;
+                  (*s_result)++;
+               }
+               return RECV_CHANNEL_MODE;
+            }else{//nick nick modes
+               modes = strignorechar(modes,CHAR_TRAIL);
+               d_result[*s_result] = modes;
+               (*s_result)++;
+               return RECV_NICK_MODE;
+            }
          }else if(!memcmp(dresult[1],"NICK",4) && next!=NULL){//nick user host newnick
             next = strignorechar(next,CHAR_TRAIL);
             d_result[*s_result] = next;
             (*s_result)++;
             if(strcmp(d_result[0],irc->nick)==0){
-               strncpy(irc->nick,d_result[3],IRCPROTOCOL_SIZE_SMALL);
+               strncpy0(irc->nick,d_result[3],IRCPROTOCOL_SIZE_SMALL);
             }
             return RECV_NICK;
          }else if(!memcmp(dresult[1],"NOTICE",6) && next!=NULL){//nick user host destination message
@@ -276,7 +283,7 @@ export int irc_recv_message(irc_t *irc, char **d_result, int *s_result){
             d_result[*s_result] = message;
             (*s_result)++;
             return RECV_NOTICE;
-         }else if(!memcmp(dresult[1],"PART",4) && next!=NULL){//nick user host channel message
+         }else if(!memcmp(dresult[1],"PART",4) && next!=NULL){//nick user host channel [message OR null]
             char *message = tokens_required(next,CHAR_SPACE,1,d_result,s_result);
             if(message!=NULL){
                message = strignorechar(message,CHAR_TRAIL);
@@ -294,11 +301,12 @@ export int irc_recv_message(irc_t *irc, char **d_result, int *s_result){
                (*s_result)++;
                return RECV_CTCP;
             }else{
+               message = strignorechar(message,CHAR_TRAIL);
                d_result[*s_result] = message;
                (*s_result)++;
                return RECV_PRIVMSG;
             }
-         }else if(!memcmp(dresult[1],"QUIT",4)){//nick user host message
+         }else if(!memcmp(dresult[1],"QUIT",4)){//nick user host [message OR null]
             if(next!=NULL){
                next = strignorechar(next,CHAR_TRAIL);
                d_result[*s_result] = next;
@@ -311,7 +319,7 @@ export int irc_recv_message(irc_t *irc, char **d_result, int *s_result){
             d_result[*s_result] = message;
             (*s_result)++;
             return RECV_TOPIC_CHANGED;
-         }else if(!memcmp(dresult[1],"001",3) && next!=NULL){//host nick message
+         }else if(!memcmp(dresult[1],"001",3) && next!=NULL){//host nick [message OR null]
             char *message = tokens_required(next,CHAR_SPACE,1,d_result,s_result);
             if(message!=NULL){
                message = strignorechar(message,CHAR_TRAIL);
@@ -331,7 +339,7 @@ export int irc_recv_message(irc_t *irc, char **d_result, int *s_result){
                   *separator='\0';
                   *separator++;
                   if(memcmp("CHANTYPES",d_tokens[i],9)==0){
-                     strncpy(irc->chantypes,separator,IRCPROTOCOL_SIZE_SMALL);
+                     strncpy0(irc->chantypes,separator,IRCPROTOCOL_SIZE_SMALL);
                   }else if(memcmp("PREFIX",d_tokens[i],6)==0){
                      *separator++;
                      char *newseparator = strchr(separator,CHAR_PREFIXDELIMITER);
@@ -339,8 +347,8 @@ export int irc_recv_message(irc_t *irc, char **d_result, int *s_result){
                         *newseparator='\0';
                         *newseparator++;
                         if(strlen(separator)==strlen(newseparator)){
-                           strncpy(irc->prefix_mode,separator,IRCPROTOCOL_SIZE_SMALL);
-                           strncpy(irc->prefix_char,newseparator,IRCPROTOCOL_SIZE_SMALL);
+                           strncpy0(irc->prefix_mode,separator,IRCPROTOCOL_SIZE_SMALL);
+                           strncpy0(irc->prefix_char,newseparator,IRCPROTOCOL_SIZE_SMALL);
                         }
                      }
                   }else if(memcmp("CHANNELLEN",d_tokens[i],10)==0){
@@ -366,7 +374,7 @@ export int irc_recv_message(irc_t *irc, char **d_result, int *s_result){
             d_result[*s_result] = nicks;
             (*s_result)++;
             return RECV_NICK_LIST;
-         }else if(!memcmp(dresult[1],"433",3) && next!=NULL){//host actualnick failednick message
+         }else if(!memcmp(dresult[1],"433",3) && next!=NULL){//host actualnick failednick [message OR null]
             char *message = tokens_required(next,CHAR_SPACE,2,d_result,s_result);
             if(message!=NULL){
                message = strignorechar(message,CHAR_TRAIL);
@@ -387,7 +395,19 @@ export int irc_recv_message(irc_t *irc, char **d_result, int *s_result){
 
 export int irc_send_message(irc_t *irc, int opcode, char **messages, int size){
    switch(opcode){
-      case SEND_CTCP:{
+      case SEND_CHANNEL_MODE:{//channel modes [arguments OR null]
+         if((size<2 || size>3) && verify_buffer(messages,size)!=0){
+            return -1;
+         }
+         EnterCriticalSection(&irc->send_buffer_critical_section);
+         if(size==2){
+            sprintf(irc->send_buffer,"MODE %s %s",messages[0],messages[1]);
+         }else{
+            sprintf(irc->send_buffer,"MODE %s %s %s",messages[0],messages[1],messages[2]);
+         }
+         break;
+      }
+      case SEND_CTCP:{//destination message
          if(size!=2 || messages[0]==NULL || messages[1]==NULL){
             return -1;
          }
@@ -419,7 +439,7 @@ export int irc_send_message(irc_t *irc, int opcode, char **messages, int size){
          sprintf(irc->send_buffer,"KICK %s %s :%s",messages[0],messages[1],messages[2]);
          break;
       }
-      case SEND_NICK:{//nick or null
+      case SEND_NICK:{//[nick or null]
          if((size<0 || size>1) && verify_buffer(messages,size)!=0){
             return -1;
          }
@@ -432,7 +452,15 @@ export int irc_send_message(irc_t *irc, int opcode, char **messages, int size){
          }
          break;
       }
-      case SEND_PART:{//channel
+      case SEND_NICK_MODE:{//modes
+         if(size!=1 || messages[0]==NULL){
+            return -1;
+         }
+         EnterCriticalSection(&irc->send_buffer_critical_section);
+         sprintf(irc->send_buffer,"MODE %s %s",irc->nick,messages[0]);
+         break;
+      }
+      case SEND_PART:{//channel [message or null]
          if((size<1 || size>2) && verify_buffer(messages,size)!=0){
             return -1;
          }
@@ -460,7 +488,7 @@ export int irc_send_message(irc_t *irc, int opcode, char **messages, int size){
          sprintf(irc->send_buffer,"PRIVMSG %s :%s",messages[0],messages[1]);
          break;
       }
-      case SEND_QUIT:{//message
+      case SEND_QUIT:{//[message or null]
          if((size<0 || size>1) && verify_buffer(messages,size)!=0){
             return -1;
          }
@@ -472,7 +500,7 @@ export int irc_send_message(irc_t *irc, int opcode, char **messages, int size){
          }
          break;
       }
-      case SEND_RAW:{
+      case SEND_RAW:{//rawmessage
          if(size!=1 || messages[0]==NULL){
             return -1;
          }
@@ -488,7 +516,7 @@ export int irc_send_message(irc_t *irc, int opcode, char **messages, int size){
          sprintf(irc->send_buffer,"TOPIC %s :%s",messages[0],messages[1]);
          break;
       }
-      case SEND_USER:{//user and user
+      case SEND_USER:{//user name
          if(size!=2 || messages[0]==NULL || messages[1]==NULL){
             return -1;
          }

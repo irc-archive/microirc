@@ -27,6 +27,8 @@
 #define RECV_NOTICE 62
 #define RECV_TOPIC 63
 #define RECV_TOPIC_CHANGED 64
+#define RECV_CHANNEL_MODE 65
+#define RECV_NICK_MODE 66
 
 #define SEND_PRIVMSG 80
 #define SEND_JOIN 81
@@ -40,6 +42,8 @@
 #define SEND_CTCP 89
 #define SEND_SET_TOPIC 90
 #define SEND_GET_TOPIC 91
+#define SEND_CHANNEL_MODE 92
+#define SEND_NICK_MODE 93
 
 #define CHAR_SPACE ' '
 #define CHAR_TRAIL ':'

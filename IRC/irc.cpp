@@ -662,6 +662,9 @@ void *receiverThreadProc(void *window_handle){
 }
 
 int init(HWND hWnd){
+   if(WSAinit_tcp()!=0){
+      return -1;
+   }
    connected = 0;
    receiver_active = 1;
    receiver_thread_event = CreateEvent(NULL,FALSE,FALSE,NULL);
@@ -713,6 +716,7 @@ void destroy(HWND hWnd){
    }
    irc_destroy(&irc);
    ircconfig_destroy(&config);
+   WSAdestroy_tcp();
 }
 
 int connecting(HWND hWnd){

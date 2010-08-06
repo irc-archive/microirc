@@ -38,7 +38,7 @@ export int list_init(list_t *list, int data_size){
 
 export void list_destroy(list_t *list){
    int i;
-   char *element;
+   void *element;
    for(i=0;i<list->size;i++){
       memcpy(&element,(list->list)+(i*sizeof(char*)),sizeof(char*));
       free(element);
@@ -136,7 +136,7 @@ export int list_array_data(list_t *list, void **datas){
    }
    *datas = temp;
    int i;
-   char *element;
+   void *element;
    for(i=0;i<list->size;i++){
       memcpy(&element,(list->list)+(i*sizeof(char*)),sizeof(char*));
       memcpy(temp,element,list->data_size);
