@@ -9,13 +9,13 @@
 * This code is licenced under the GPL version 2. For details see COPYING.txt file.
 */
 
-void init_menu_bar(HWND hWnd){
+void init_menu_bar(HWND hWnd, int barId){
    SHACTIVATEINFO s_sai;
    SHMENUBARINFO mbi;
    memset(&mbi, 0, sizeof(SHMENUBARINFO));
    mbi.cbSize = sizeof(SHMENUBARINFO);
    mbi.hwndParent = hWnd;
-   mbi.nToolBarId = IDR_MAIN_MENU;
+   mbi.nToolBarId = barId;
    mbi.hInstRes = app_instance;
    if (!SHCreateMenuBar(&mbi)){
       menu_bar_handle = NULL;

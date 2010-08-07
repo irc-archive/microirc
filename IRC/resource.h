@@ -8,9 +8,10 @@
 #define IDC_SIP1                        102
 #define IDC_SIP2                        103
 #define IDC_IRC                         104
-#define IDR_MAIN_MENU                   201
-#define IDR_PREFERENCES_MENU            202
-#define IDR_CHATBOX_MENU                203
+#define IDR_MAIN_MENU_OFFLINE           201
+#define IDR_MAIN_MENU_ONLINE            202
+#define IDR_PREFERENCES_MENU            203
+#define IDR_CHATBOX_MENU                204
 #define IDS_OPENURL                     301
 #define IDS_OPTIONS                     302
 #define IDS_OK                          303

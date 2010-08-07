@@ -133,9 +133,21 @@ IDI_IRC                 ICON                    "microirc.ico"
 // Menu
 //
 
-IDR_MAIN_MENU MENU 
+IDR_MAIN_MENU_OFFLINE MENU 
 BEGIN
-    POPUP "Options"
+    POPUP "Offline"
+    BEGIN
+        MENUITEM "About",                       IDM_OPTIONS_ABOUT
+        MENUITEM "Help",                        IDM_OPTIONS_HELP
+        MENUITEM SEPARATOR
+        MENUITEM "Exit",                        IDM_OPTIONS_EXIT
+        MENUITEM "Preferences",                 IDM_OPTIONS_PREFERENCES
+    END
+END
+
+IDR_MAIN_MENU_ONLINE MENU 
+BEGIN
+    POPUP "Online"
     BEGIN
         MENUITEM "About",                       IDM_OPTIONS_ABOUT
         MENUITEM "Help",                        IDM_OPTIONS_HELP

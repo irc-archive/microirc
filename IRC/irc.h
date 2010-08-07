@@ -79,6 +79,7 @@ typedef struct ircconfig_t{
    int ledinterval;
 }ircconfig_t;
 
+int init_process(wchar_t *command_line);
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow);
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 void *receiverThreadProc(void *window_handle);
