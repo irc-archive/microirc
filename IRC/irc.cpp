@@ -772,7 +772,7 @@ int reconnecting(HWND hWnd){
 void disconnecting(HWND hWnd){
    if(connected==1){
       connected = 0;
-      irc_disconnect(&irc,NULL);
+      irc_disconnect(&irc,"NO REASON");
       //irc_destroy(&irc);
       //ircconfig_destroy(&config);
       destroy_menu_bar(hWnd);

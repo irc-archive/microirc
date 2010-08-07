@@ -173,7 +173,7 @@ BEGIN
         MENUITEM "Ban",                         IDM_CHATBOX_BAN
         MENUITEM SEPARATOR
         MENUITEM "Whois",                       IDM_CHATBOX_WHOIS
-        MENUITEM "Copy Nick",                   IDM_OPTIONS_SETTOPIC
+        MENUITEM "Copy Nick",                   IDM_CHATBOX_COPYNICK
     END
 END
 

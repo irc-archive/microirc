@@ -111,27 +111,52 @@ LRESULT CALLBACK ChatViewNickProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
          int wmEvent = HIWORD(wParam);
          switch (LOWORD(wParam)){
             case IDM_CHATBOX_KICK:{
-               wchar_t wnick[IRC_SIZE_MEDIUM];
-               wchar_t wchannel[IRC_SIZE_MEDIUM];
-               char nick[IRC_SIZE_MEDIUM];
-               char channel[IRC_SIZE_MEDIUM];
+               wchar_t wnick[IRC_SIZE_SMALL];
+               wchar_t wchannel[IRC_SIZE_SMALL];
+               char nick[IRC_SIZE_SMALL];
+               char channel[IRC_SIZE_SMALL];
                int element = ListBox_GetCurSel(hWnd);
                ListBox_GetText(hWnd,element,wnick);
                if(wcslen(wnick)!=0){
                   tab_get_name_current(tabcontrol_chatview_handle,wchannel,IRC_SIZE_MEDIUM);
                   WideCharToMultiByte(config.encoding,0,wchannel,-1,channel,IRC_SIZE_MEDIUM,NULL,NULL);
                   WideCharToMultiByte(config.encoding,0,wnick,-1,nick,IRC_SIZE_MEDIUM,NULL,NULL);
-                  char *send[3] = {channel,nick,"no reason"};
+                  char *send[3] = {channel,nick,"NO REASON"};
                   irc_send_message(&irc,SEND_KICK,send,3);
                }
                break;
             }
             case IDM_CHATBOX_KICKBAN:{
-               MessageBox(NULL,L"not done",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               wchar_t wnick[IRC_SIZE_SMALL];
+               wchar_t wchannel[IRC_SIZE_SMALL];
+               char nick[IRC_SIZE_SMALL];
+               char channel[IRC_SIZE_SMALL];
+               int element = ListBox_GetCurSel(hWnd);
+               ListBox_GetText(hWnd,element,wnick);
+               if(wcslen(wnick)!=0){
+                  tab_get_name_current(tabcontrol_chatview_handle,wchannel,IRC_SIZE_MEDIUM);
+                  WideCharToMultiByte(config.encoding,0,wchannel,-1,channel,IRC_SIZE_MEDIUM,NULL,NULL);
+                  WideCharToMultiByte(config.encoding,0,wnick,-1,nick,IRC_SIZE_MEDIUM,NULL,NULL);
+                  char *send[6] = {channel,nick,"NO REASON",channel,"+b",nick};
+                  irc_send_message(&irc,SEND_KICK,send,3);
+                  irc_send_message(&irc,SEND_CHANNEL_MODE,&send[3],3);
+               }
                break;
             }
             case IDM_CHATBOX_BAN:{
-               MessageBox(NULL,L"not done",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               wchar_t wnick[IRC_SIZE_SMALL];
+               wchar_t wchannel[IRC_SIZE_SMALL];
+               char nick[IRC_SIZE_SMALL];
+               char channel[IRC_SIZE_SMALL];
+               int element = ListBox_GetCurSel(hWnd);
+               ListBox_GetText(hWnd,element,wnick);
+               if(wcslen(wnick)!=0){
+                  tab_get_name_current(tabcontrol_chatview_handle,wchannel,IRC_SIZE_MEDIUM);
+                  WideCharToMultiByte(config.encoding,0,wchannel,-1,channel,IRC_SIZE_MEDIUM,NULL,NULL);
+                  WideCharToMultiByte(config.encoding,0,wnick,-1,nick,IRC_SIZE_MEDIUM,NULL,NULL);
+                  char *send[3] = {channel,"+b",nick};
+                  irc_send_message(&irc,SEND_CHANNEL_MODE,send,3);
+               }
                break;
             }
             case IDM_CHATBOX_WHOIS:{
@@ -139,7 +164,19 @@ LRESULT CALLBACK ChatViewNickProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                break;
             }
             case IDM_CHATBOX_COPYNICK:{
-               MessageBox(NULL,L"not done",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               wchar_t wnick[IRC_SIZE_SMALL];
+               int element = ListBox_GetCurSel(hWnd);
+               ListBox_GetText(hWnd,element,wnick);
+               if(wcslen(wnick)!=0){
+                  wchar_t wtext[IRC_SIZE_MEDIUM];
+                  Edit_GetText(edit_chatinput_handle,wtext,IRC_SIZE_MEDIUM);
+                  wcscat(wtext,wnick);
+                  wcscat(wtext,L" ");
+                  Edit_SetText(edit_chatinput_handle,wtext);
+                  SetFocus(edit_chatinput_handle);
+                  element = Edit_GetTextLength(edit_chatinput_handle);
+                  SendMessage(edit_chatinput_handle, EM_SETSEL, element, element);
+               }
                break;
             }
          }
@@ -226,11 +263,11 @@ int tab_write_index(HWND tab_control, int tab_index, wchar_t *text, TAB_TEXT_TYP
    }
    if(window==TEXT){
       if(operation==APPEND){
-         if(SendMessage(write_tab->text,EM_GETLIMITTEXT,0,0)-Edit_GetTextLength(write_tab->text)<DELETE_TEXT_MARGIN){
-            SendMessage(write_tab->text, EM_SETSEL, 0, DELETE_TEXT_MARGIN);
+         if(SendMessage(write_tab->text,EM_GETLIMITTEXT,0,0)-Edit_GetTextLength(write_tab->text)<EDITCHATVIEWTEXT_DELETE){
+            SendMessage(write_tab->text, EM_SETSEL, 0, EDITCHATVIEWTEXT_DELETE);
             SendMessage(write_tab->text, EM_REPLACESEL, 0, (LPARAM)"");
          }
-         int len = GetWindowTextLength(write_tab->text);
+         int len = Edit_GetTextLength(write_tab->text);
          SendMessage(write_tab->text, EM_SETSEL, len, len);
          SendMessage(write_tab->text, EM_REPLACESEL, 0, (LPARAM)text);
          SendMessage(write_tab->text, EM_SCROLLCARET, 0, 0);

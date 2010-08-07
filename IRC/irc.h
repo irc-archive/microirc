@@ -33,7 +33,8 @@
 #define LIST_CHATVIEW_NICK 206
 #define BUBBLE_NOTIFICATION 208
 
-#define DELETE_TEXT_MARGIN 2048
+#define EDITCHATVIEWTEXT_DELETE 2048
+#define EDITCHATINPUT_LIMIT 256
 
 #define BORDER 0.005 //this value can be changed and all the controls got automaticaly resized
 #define SCROLLPAGE_HEIGHT 0.80

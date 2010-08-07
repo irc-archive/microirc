@@ -75,8 +75,8 @@ void init_chat_screen(HWND hWnd){
    old_ChatSendProc = (WNDPROC)GetWindowLong(edit_chatinput_handle,GWL_WNDPROC);
    SetWindowLong(edit_chatinput_handle,GWL_WNDPROC,(LONG)ChatSendProc);
    
-   Edit_LineLength(edit_chatinput_handle,200);
-   Edit_LimitText(edit_chatinput_handle,200);
+   Edit_LineLength(edit_chatinput_handle,EDITCHATINPUT_LIMIT);
+   Edit_LimitText(edit_chatinput_handle,EDITCHATINPUT_LIMIT);
    button_chatsend_handle = CreateWindowEx(0,L"button",TEXT("Send"),WS_VISIBLE|WS_CHILD|BS_DEFPUSHBUTTON|BS_CENTER|BS_VCENTER,BUTTONCHAT_LEFT*window_width,BUTTONCHAT_TOP*window_height,BUTTONCHAT_WIDTH*window_width,BUTTONCHAT_HEIGHT*window_height,hWnd,(HMENU)BUTTON_CHATSEND,app_instance,NULL);
    icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
    icex.dwICC = ICC_TAB_CLASSES;
