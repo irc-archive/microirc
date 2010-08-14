@@ -44,6 +44,7 @@
 #define SEND_GET_TOPIC 91
 #define SEND_CHANNEL_MODE 92
 #define SEND_NICK_MODE 93
+#define SEND_NAMES 94
 
 #define CHAR_SPACE ' '
 #define CHAR_TRAIL ':'
@@ -100,7 +101,7 @@ export void irc_disconnect(irc_t*, char*);
 export int irc_recv_message(irc_t*, char**, int*);
 export int irc_send_message(irc_t*, int, char**, int);
 export int irc_validate_channel(irc_t*, char*);
-export int irc_validate_nick(irc_t*, char*);
+export char *irc_get_nick(irc_t*, char*);
 export void irc_tokenize_nicklist(irc_t*, char*, char**, int*);
 
 #endif

@@ -439,6 +439,14 @@ export int irc_send_message(irc_t *irc, int opcode, char **messages, int size){
          sprintf(irc->send_buffer,"KICK %s %s :%s",messages[0],messages[1],messages[2]);
          break;
       }
+      case SEND_NAMES:{//channel
+         if(size!=1 || messages[0]==NULL){
+            return -1;
+         }
+         EnterCriticalSection(&irc->send_buffer_critical_section);
+         sprintf(irc->send_buffer,"NAMES %s",messages[0]);
+         break;
+      }
       case SEND_NICK:{//[nick or null]
          if((size<0 || size>1) && verify_buffer(messages,size)!=0){
             return -1;
@@ -543,15 +551,16 @@ export int irc_validate_channel(irc_t *irc, char *channel){
    return 0;
 }
 
-export int irc_validate_nick(irc_t *irc, char *nick){
+export char *irc_get_nick(irc_t *irc, char *nick){
    if(strlen(nick)>irc->nicklen || strlen(nick)>irc->maxnicklen || strlen(nick)<1){
-      return -1;
+      return NULL;
    }
-   char *temp = strchr(irc->prefix_char,nick[0]);
-   if(temp==NULL){
-      return -1;
+   char *d_current = strchr(irc->prefix_char,*nick);
+   while(d_current!=NULL){
+      nick++;
+      d_current = strchr(irc->prefix_char,*nick);
    }
-   return temp - irc->prefix_char;
+   return nick;
 }
 
 export void irc_tokenize_nicklist(irc_t *irc, char *nicklist, char **d_result, int *s_result){

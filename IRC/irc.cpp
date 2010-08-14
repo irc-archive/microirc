@@ -70,8 +70,8 @@ wchar_t wchat_nick[IRC_SIZE_SMALL];
 wchar_t wchat_return[IRC_SIZE_MEDIUM];
 
 #include "ircconfig.h"
-#include "tab_manager.h"
 #include "functions.h"
+#include "tab_manager.h"
 #include "dialogs_functions.h"
 #include "gui_functions.h"
 
@@ -201,13 +201,21 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
             }
             case LIST_CHATVIEW_NICK:{
                if(wmEvent==LBN_DBLCLK){
-                  int element_index = ListBox_GetCurSel(control_handler);
-                  wchar_t welement_text[IRC_SIZE_SMALL];
-                  ListBox_GetText(control_handler,element_index,welement_text);
-                  if(wcslen(welement_text)!=0){
-                     SendMessage(hWnd,WM_CREATE_TAB,STATUS,(LPARAM)welement_text);
-                     tab_select_name(tabcontrol_chatview_handle,welement_text);
+                  wchar_t wnick[IRC_SIZE_SMALL];
+                  char nick[IRC_SIZE_SMALL];
+                  int element = ListBox_GetCurSel(control_handler);
+                  ListBox_GetText(control_handler,element,wnick);
+                  if(wcslen(wnick)<1){
+                     break;
                   }
+                  WideCharToMultiByte(config.encoding,0,wnick,-1,nick,IRC_SIZE_MEDIUM,NULL,NULL);
+                  char *nick_ptr = irc_get_nick(&irc,nick);
+                  if(nick_ptr==NULL){
+                     break;
+                  }
+                  MultiByteToWideChar(config.encoding,0,nick_ptr,-1,wnick,IRC_SIZE_SMALL);
+                  SendMessage(hWnd,WM_CREATE_TAB,STATUS,(LPARAM)wnick);
+                  tab_select_name(tabcontrol_chatview_handle,wnick);
                }
                break;
             }
@@ -457,6 +465,33 @@ void *receiverThreadProc(void *window_handle){
             }
          }
          switch(recv_result){
+            case RECV_CHANNEL_MODE:{//[host OR nick user host] channel modes [arguments OR null]
+               if(recv_buffer_size<5){
+                  if(recv_buffer_size==3){
+                     swprintf(wresult,L"\r\n%s %s sets modes: %s",wtimestamp,recv_buffer[0],recv_buffer[2]);
+                  }else{
+                     swprintf(wresult,L"\r\n%s %s sets modes: %s %s",wtimestamp,recv_buffer[0],recv_buffer[2],recv_buffer[3]);
+                  }
+                  tab_write_name(tabcontrol_chatview_handle,recv_buffer[1],wresult,TEXT,APPEND);
+               }else if(recv_buffer_size<7){
+                  char *modes = recv_buffer_ptr[4];
+                  while(*modes!='\0'){
+                     if(strchr(irc.prefix_mode,*modes)!=NULL){
+                        char *send[1]={recv_buffer_ptr[3]};
+                        irc_send_message(&irc,SEND_NAMES,send,1);
+                        break;
+                     }
+                     modes++;
+                  }
+                  if(recv_buffer_size==5){
+                     swprintf(wresult,L"\r\n%s %s sets modes: %s",wtimestamp,recv_buffer[0],recv_buffer[4]);
+                  }else{
+                     swprintf(wresult,L"\r\n%s %s sets modes: %s %s",wtimestamp,recv_buffer[0],recv_buffer[4],recv_buffer[5]);
+                  }
+                  tab_write_name(tabcontrol_chatview_handle,recv_buffer[3],wresult,TEXT,APPEND);
+               }
+               break;
+            }
             case RECV_CTCP:{//nick user host destination message
                if(recv_buffer_size<5){
                   break;
@@ -558,13 +593,21 @@ void *receiverThreadProc(void *window_handle){
                char *d_tokens[IRCPROTOCOL_MAX_NICKS_PER_MESSAGE];
                int s_tokens=0;
                irc_tokenize_nicklist(&irc,nicks,d_tokens,&s_tokens);
-               for(i=0;i<s_tokens;i++){
-                  MultiByteToWideChar(config.encoding,0,d_tokens[i],-1,wresult,IRC_SIZE_MEDIUM);
-                  tab_write_name(tabcontrol_chatview_handle,recv_buffer[1],wresult,NICK,APPEND);
+               tab_refresh_nicklist(tabcontrol_chatview_handle,recv_buffer[1],d_tokens,s_tokens);
+               break;
+            }
+            case RECV_NICK_MODE:{//nick nick modes
+               if(recv_buffer_size<3){
+                  break;
                }
+               swprintf(wresult,L"\r\n%s %s sets modes: %s %s",wtimestamp,recv_buffer[0],recv_buffer[2],recv_buffer[1]);
+               tab_write_name(tabcontrol_chatview_handle,L".status",wresult,TEXT,APPEND);
                break;
             }
             case RECV_NICK_TAKEN:{//host actualnick failednick [message OR null]
+               if(recv_buffer_size<4){
+                  break;
+               }
                swprintf(wresult,L"\r\n%s nick already in use",wtimestamp);
                tab_write_current(tabcontrol_chatview_handle,wresult,TEXT,APPEND);
                break;
