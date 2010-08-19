@@ -265,8 +265,12 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
 INT_PTR CALLBACK InputBoxProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam){
    switch (uMsg){
       case WM_INITDIALOG:{
-         SetWindowText(hDlg,(LPCWSTR)lParam);
+         wchar_t **titletext = (wchar_t**)lParam;
+         SetWindowText(hDlg,(LPCWSTR)titletext[0]);
          HWND edit = GetDlgItem(hDlg,IDC_EDIT1);
+         Edit_SetText(edit,titletext[1]);
+         int element = Edit_GetTextLength(edit);
+         SendMessage(edit, EM_SETSEL, element, element);
          SetFocus(edit);
          return FALSE;
       }

@@ -81,7 +81,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
    LoadString(hInstance, IDS_APP_TITLE, window_title, IRC_SIZE_SMALL);
    LoadString(hInstance, IDS_WNDCLASS_IRC, window_class, IRC_SIZE_SMALL);
    app_instance = hInstance;
-   init_process(lpCmdLine);
    HWND hWnd_Main = FindWindow(window_class, window_title);   
    if(hWnd_Main!=NULL){
       SetForegroundWindow((HWND)((ULONG) hWnd_Main | 0x00000001));
@@ -91,7 +90,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
    SHInitExtraControls();
    WNDCLASS wc;
    wc.style = CS_HREDRAW|CS_VREDRAW;
-   wc.lpfnWndProc = WindowProc;
    wc.cbClsExtra = 0;
    wc.cbWndExtra = 0;
    wc.hInstance = hInstance;
@@ -100,10 +98,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
    wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
    wc.lpszMenuName = 0;
    wc.lpszClassName = window_class;
+   if(wcslen(lpCmdLine)==0){
+      wc.lpfnWndProc = WindowProcClient;//WindowProcManager;
+   }else{
+      wc.lpfnWndProc = WindowProcClient;
+   }
    if(!RegisterClass(&wc)){
       return 0;
    }
-   hWnd_Main = CreateWindowEx(0, window_class, window_title, WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL,(HMENU)0, hInstance, NULL);
+   hWnd_Main = CreateWindowEx(0, window_class, window_title, WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL,(HMENU)0, hInstance, lpCmdLine);
    if(!hWnd_Main){
       return 0;
    }
@@ -121,7 +124,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
    return (int) msg.wParam;
 }
 
-LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
+LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
    switch(uMsg){
       case WM_CREATE_TAB:{
          wchar_t *tab_name=(wchar_t*)lParam;
@@ -142,17 +145,17 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
          break;
       }
       case WM_CONNECTING:{
-         if(connecting(hWnd)!=0){
+         if(guiclient_connecting(hWnd)!=0){
             MessageBox(hWnd,L"Error connecting to server.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
          }
          break;
       }
       case WM_DISCONNECTING:{
-         disconnecting(hWnd);
+         guiclient_disconnecting(hWnd);
          break;
       }
       case WM_RECONNECTING:{
-         if(reconnecting(hWnd)!=0){
+         if(guiclient_reconnecting(hWnd)!=0){
             MessageBox(hWnd,L"Error reconnecting to server.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
          }
          break;
@@ -185,7 +188,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
          HWND control_handler = (HWND)lParam;
          switch (LOWORD(wParam)){
             case BUTTON_CONNECT:{
-               if(connecting(hWnd)!=0){
+               if(guiclient_connecting(hWnd)!=0){
                   MessageBox(hWnd,L"Error connecting to server.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                }
                break;
@@ -233,7 +236,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
                }else{
                   switch (MessageBox(hWnd,L"Do you really want to quit?",L"Quit",MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2|MB_APPLMODAL|MB_SETFOREGROUND)){
                      case IDYES:{
-                        disconnecting(hWnd);
+                        guiclient_disconnecting(hWnd);
                         break;
                      }
                      case IDNO:{
@@ -271,7 +274,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
             }
             case IDM_OPTIONS_OPENPRIVATE:{
                wchar_t wresult_text[IRC_SIZE_SMALL];
-               if(open_input_box(hWnd, L"Open Private", wresult_text, IRC_SIZE_SMALL)!=0){
+               if(open_input_box(hWnd, L"Open Private", L"", wresult_text, IRC_SIZE_SMALL)!=0){
                   break;
                }
                if(!*wresult_text){
@@ -283,7 +286,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
             }
             case IDM_OPTIONS_JOINCHANNEL:{
                wchar_t wresult_text[IRC_SIZE_SMALL];
-               if(open_input_box(hWnd, L"Join Channel", wresult_text, IRC_SIZE_SMALL)!=0){
+               if(open_input_box(hWnd, L"Join Channel", L"#", wresult_text, IRC_SIZE_SMALL)!=0){
                   break;
                }
                if(!*wresult_text){
@@ -297,7 +300,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
             }
             case IDM_OPENURL:{
                wchar_t wresult_text[IRC_SIZE_SMALL];
-               if(open_input_box(hWnd, L"Open URL", wresult_text, IRC_SIZE_SMALL)!=0){
+               if(open_input_box(hWnd, L"Open URL", L"http://", wresult_text, IRC_SIZE_SMALL)!=0){
                   break;
                }
                if(!*wresult_text){
@@ -328,7 +331,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
             }
             case IDM_OPTIONS_SETTOPIC:{
                wchar_t wtopic[IRC_SIZE_SMALL];
-               if(open_input_box(hWnd, L"Set Topic", wtopic, IRC_SIZE_SMALL)!=0){
+               if(open_input_box(hWnd, L"Set Topic", L"", wtopic, IRC_SIZE_SMALL)!=0){
                   break;
                }
                if(!*wtopic){
@@ -417,7 +420,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
          window_width = window_sizes.right;
          window_height = window_sizes.bottom;
          window_height -= window_sizes.top*2;
-         if(init(hWnd)!=0){
+         if(guiclient_init(hWnd)!=0){
             PostQuitMessage(0);
          }
          break;
@@ -431,7 +434,82 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
       case WM_CLOSE:{
       }
       case WM_DESTROY:{
-         destroy(hWnd);
+         guiclient_destroy(hWnd);
+         PostQuitMessage(0);
+         break;
+      }
+   }
+   return DefWindowProc(hWnd, uMsg, wParam, lParam);
+}
+
+LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
+   switch(uMsg){
+      case WM_COMMAND:{
+         int wmEvent = HIWORD(wParam);
+         HWND control_handler = (HWND)lParam;
+         switch (LOWORD(wParam)){
+            case NULL:{//BOTOES
+               break;
+            }
+         }
+         break;
+      }
+      case WM_SIZE:{
+         RECT window_sizes;
+         GetWindowRect(hWnd, &window_sizes);
+         window_width = window_sizes.right;
+         window_height = window_sizes.bottom;
+         window_height -= window_sizes.top*2;
+         //FAZER
+         break;
+      }
+      case WM_ACTIVATE:{
+         //SHACTIVATEINFO s_sai;
+         //SHHandleWMActivate(hWnd, wParam, lParam, &s_sai, FALSE);
+         break;
+      }
+      case WM_SETTINGCHANGE:{
+         //SHACTIVATEINFO s_sai;
+         //SHHandleWMSettingChange(hWnd, wParam, lParam, &s_sai);
+         switch(wParam){
+            case SPI_SETSIPINFO:{
+               SIPINFO si;
+               memset(&si,0,sizeof(si));
+               si.cbSize=sizeof(si);
+               if(SHSipInfo(SPI_GETSIPINFO,0,&si,0)){
+                  RECT rect = si.rcVisibleDesktop;
+                  if(rect.bottom>window_height){
+                     MoveWindow(hWnd,rect.left,rect.top,rect.right,rect.bottom-rect.top,TRUE);
+                  }else{
+                     MoveWindow(hWnd,rect.left,rect.top,rect.right,rect.bottom,TRUE);
+                  }
+               }
+               break;
+            }
+         }
+         break;
+      }
+      case WM_CREATE:{
+         RECT window_sizes;
+         GetWindowRect(hWnd, &window_sizes);
+         window_width = window_sizes.right;
+         window_height = window_sizes.bottom;
+         window_height -= window_sizes.top*2;
+         if(guiclient_init(hWnd)!=0){
+            PostQuitMessage(0);
+         }
+         break;
+      }
+      case WM_QUIT:{
+         //called on PostQuitMessage(0);
+         break;
+      }
+      case WM_HIBERNATE:{
+      }
+      case WM_CLOSE:{
+      }
+      case WM_DESTROY:{
+         guiclient_destroy(hWnd);
          PostQuitMessage(0);
          break;
       }
@@ -690,11 +768,7 @@ void *receiverThreadProc(void *window_handle){
    return NULL;
 }
 
-int init_process(wchar_t *cmdline){
-   return 0;
-}
-
-int init(HWND hWnd){
+int guiclient_init(HWND hWnd){
    if(WSAinit_tcp()!=0){
       return -1;
    }
@@ -729,7 +803,7 @@ int init(HWND hWnd){
    return 0;
 }
 
-void destroy(HWND hWnd){
+void guiclient_destroy(HWND hWnd){
    receiver_active = 0;
    if(connected==1){
       connected = 0;
@@ -752,7 +826,7 @@ void destroy(HWND hWnd){
    WSAdestroy_tcp();
 }
 
-int connecting(HWND hWnd){
+int guiclient_connecting(HWND hWnd){
    if(connected!=0){
       return -1;
    }
@@ -777,7 +851,7 @@ int connecting(HWND hWnd){
    return 0;
 }
 
-int reconnecting(HWND hWnd){
+int guiclient_reconnecting(HWND hWnd){
    if(connected!=1){
       return -1;
    }
@@ -812,7 +886,7 @@ int reconnecting(HWND hWnd){
    return 0;
 }
 
-void disconnecting(HWND hWnd){
+void guiclient_disconnecting(HWND hWnd){
    if(connected==1){
       connected = 0;
       irc_disconnect(&irc,"NO REASON");

@@ -197,9 +197,9 @@ LRESULT CALLBACK ChatViewNickProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                wcscat(wtext,wnick);
                wcscat(wtext,L" ");
                Edit_SetText(edit_chatinput_handle,wtext);
-               SetFocus(edit_chatinput_handle);
                element = Edit_GetTextLength(edit_chatinput_handle);
                SendMessage(edit_chatinput_handle, EM_SETSEL, element, element);
+               SetFocus(edit_chatinput_handle);
                break;
             }
          }
