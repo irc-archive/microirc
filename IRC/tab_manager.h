@@ -127,7 +127,7 @@ LRESULT CALLBACK ChatViewNickProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                }
                tab_get_name_current(tabcontrol_chatview_handle,wchannel,IRC_SIZE_MEDIUM);
                WideCharToMultiByte(config.encoding,0,wchannel,-1,channel,IRC_SIZE_MEDIUM,NULL,NULL);
-               char *send[3] = {channel,nick_ptr,"NO REASON"};
+               char *send[3] = {channel,nick_ptr,config.kick};
                irc_send_message(&irc,SEND_KICK,send,3);
                break;
             }
@@ -148,7 +148,7 @@ LRESULT CALLBACK ChatViewNickProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                }
                tab_get_name_current(tabcontrol_chatview_handle,wchannel,IRC_SIZE_MEDIUM);
                WideCharToMultiByte(config.encoding,0,wchannel,-1,channel,IRC_SIZE_MEDIUM,NULL,NULL);
-               char *send[6] = {channel,nick_ptr,"NO REASON",channel,"+b",nick_ptr};
+               char *send[6] = {channel,nick_ptr,config.kick,channel,"+b",nick_ptr};
                irc_send_message(&irc,SEND_KICK,send,3);
                irc_send_message(&irc,SEND_CHANNEL_MODE,&send[3],3);
                break;

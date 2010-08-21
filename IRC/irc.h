@@ -36,8 +36,11 @@
 #define EDITCHATVIEWTEXT_DELETE 2048
 #define EDITCHATINPUT_LIMIT 256
 
+#define SCROLL_PREFERENCES_MIN_POSITIONS 1
+#define SCROLL_PREFERENCES_MAX_POSITIONS 8
+#define SCROLL_PREFERENCES_HEIGHT 260
+
 #define BORDER 0.005 //this value can be changed and all the controls got automaticaly resized
-#define SCROLLPAGE_HEIGHT 0.80
 #define BUTTONCONNECT_WIDTH 0.80
 #define BUTTONCONNECT_HEIGHT 0.10
 #define STATICCONNECTING_WIDTH 1
@@ -74,7 +77,11 @@
 
 typedef struct ircconfig_t{
    int reconnect;
+   char part[IRC_SIZE_SMALL];
+   char kick[IRC_SIZE_SMALL];
+   char quit[IRC_SIZE_SMALL];
    int encoding;
+   int bubble;
    int sounds;
    int lednumber;
    int ledinterval;

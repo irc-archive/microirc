@@ -30,31 +30,3 @@ void activate_led(){
       set_led(config.lednumber,1);
    }
 }
-
-void settext_fromstr(HWND hDlg, int control, char *edittext){
-   wchar_t wedittext[IRCPROTOCOL_SIZE_MEDIUM];
-   MultiByteToWideChar(IRC_CONFIG_FILE_ENCODING,0,edittext,-1,wedittext,IRCPROTOCOL_SIZE_MEDIUM);
-   HWND edithwnd = GetDlgItem(hDlg,control);
-   Edit_SetText(edithwnd,wedittext);
-}
-
-void settext_fromint(HWND hDlg, int control, int edittext){
-   wchar_t wedittext[IRCPROTOCOL_SIZE_SMALL];
-   wsprintf(wedittext,L"%d",edittext);
-   HWND edithwnd = GetDlgItem(hDlg,control);
-   Edit_SetText(edithwnd,wedittext);
-}
-
-void gettext_tostr(HWND hDlg, int control, char *edittext, int size){
-   wchar_t wedittext[IRCPROTOCOL_SIZE_MEDIUM];
-   HWND edithwnd = GetDlgItem(hDlg,control);
-   Edit_GetText(edithwnd,wedittext,IRCPROTOCOL_SIZE_MEDIUM);
-   WideCharToMultiByte(IRC_CONFIG_FILE_ENCODING,0,wedittext,-1,edittext,size,NULL,NULL);
-}
-
-int gettext_toint(HWND hDlg, int control){
-   wchar_t wedittext[IRCPROTOCOL_SIZE_SMALL];
-   HWND edithwnd = GetDlgItem(hDlg,control);
-   Edit_GetText(edithwnd,wedittext,IRCPROTOCOL_SIZE_SMALL);
-   return wcstol(wedittext,L'\0',10);
-}

@@ -225,12 +225,12 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
             case BUTTON_CLOSETAB:{
                wchar_t wtab_close[IRC_SIZE_SMALL];
                char tab_close[IRC_SIZE_SMALL];
-               char *send[1] = {tab_close};
+               char *send[2] = {tab_close,config.part};
                tab_get_name_current(tabcontrol_chatview_handle,wtab_close,IRC_SIZE_SMALL);
                WideCharToMultiByte(config.encoding,0,wtab_close,-1,tab_close,IRC_SIZE_SMALL,NULL,NULL);
                if(memcmp(tab_close,".status",7)!=0){
                   if(irc_validate_channel(&irc,tab_close)==0){
-                     irc_send_message(&irc,SEND_PART,send,1);
+                     irc_send_message(&irc,SEND_PART,send,2);
                   }
                   tab_delete_current(tabcontrol_chatview_handle);
                }else{
@@ -597,7 +597,7 @@ void *receiverThreadProc(void *window_handle){
                      sn.cbStruct = sizeof(sn);
                      sn.dwID = BUBBLE_NOTIFICATION;
                      sn.npPriority = SHNP_INFORM;
-                     sn.csDuration = 15; //make configurable
+                     sn.csDuration = config.bubble;
                      sn.grfFlags = SHNF_DISPLAYON|SHNF_SILENT;
                      sn.hwndSink = hWnd;
                      sn.pszHTML = L"<html><body>You have received a message on IRC.</body></html>";
@@ -795,7 +795,7 @@ int guiclient_init(HWND hWnd){
       wcscpy(wcsrchr(buffer,92)+1,L"options.ini");
    }
    WideCharToMultiByte(CP_ACP,0,buffer,-1,file_config,IRC_SIZE_SMALL,NULL,NULL);
-   if(irc_and_ircconfig_init(&irc,&config,file_config)!=0){
+   if(irc_config_init(&irc,&config,file_config)!=0){
       MessageBox(NULL,L"Config file is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
       return -1;
    }
@@ -821,8 +821,7 @@ void guiclient_destroy(HWND hWnd){
       timeKillEvent(timer_led);
       deactivate_led(timer_led,0,NULL,NULL,NULL);
    }
-   irc_destroy(&irc);
-   ircconfig_destroy(&config);
+   irc_config_destroy(&irc,&config);
    WSAdestroy_tcp();
 }
 
@@ -830,7 +829,7 @@ int guiclient_connecting(HWND hWnd){
    if(connected!=0){
       return -1;
    }
-   if(irc_and_ircconfig_init(&irc,&config,file_config)!=0){
+   if(irc_config_reload(&irc,&config,file_config)!=0){
       MessageBox(NULL,L"Config file is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
       return -1;
    }
@@ -857,7 +856,7 @@ int guiclient_reconnecting(HWND hWnd){
    }
    irc_disconnect(&irc,NULL);
    tab_disconnect(tabcontrol_chatview_handle);
-   if(irc_and_ircconfig_init(&irc,&config,file_config)!=0){
+   if(irc_config_reload(&irc,&config,file_config)!=0){
       MessageBox(NULL,L"Config file is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
       return -1;
    }
@@ -868,11 +867,10 @@ int guiclient_reconnecting(HWND hWnd){
       Sleep(sleep);
       sleep *= IRC_RECONNECT_TIMEOUT_MULTIPLIER;
       trys--;
-      if(trys==0){
+      if(trys<=0){
          destroy_loading_screen(hWnd);
          connected = 0;
-         //irc_destroy(&irc);
-         //ircconfig_destroy(&config);
+         //irc_config_destroy(&config,&irc);
          destroy_menu_bar(hWnd);
          init_menu_bar(hWnd,IDR_MAIN_MENU_OFFLINE);
          destroy_chat_screen(hWnd);
@@ -889,9 +887,8 @@ int guiclient_reconnecting(HWND hWnd){
 void guiclient_disconnecting(HWND hWnd){
    if(connected==1){
       connected = 0;
-      irc_disconnect(&irc,"NO REASON");
-      //irc_destroy(&irc);
-      //ircconfig_destroy(&config);
+      irc_disconnect(&irc,config.quit);
+      //irc_config_destroy(&config,&irc);
       destroy_menu_bar(hWnd);
       init_menu_bar(hWnd,IDR_MAIN_MENU_OFFLINE);
       destroy_chat_screen(hWnd);

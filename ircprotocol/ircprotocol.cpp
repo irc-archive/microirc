@@ -476,7 +476,7 @@ export int irc_send_message(irc_t *irc, int opcode, char **messages, int size){
          if(size==1){
             sprintf(irc->send_buffer,"PART %s",messages[0]);
          }else{
-            sprintf(irc->send_buffer,"PART %s :s",messages[0],messages[1]);
+            sprintf(irc->send_buffer,"PART %s :%s",messages[0],messages[1]);
          }
          break;
       }

@@ -37,6 +37,14 @@ INT_PTR CALLBACK AboutProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam){
 INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam){
    switch(uMsg){
       case WM_VSCROLL:{
+         RECT window_size;
+         memset(&window_size,0,sizeof(RECT));
+         window_size.bottom=SCROLL_PREFERENCES_HEIGHT;
+         MapDialogRect(hDlg,&window_size);
+         int dialog_height = window_size.bottom;
+         GetWindowRect(hDlg,&window_size);
+         dialog_height -= (window_size.bottom-(window_size.top*5));
+
          SCROLLINFO info;
          memset(&info,0,sizeof(SCROLLINFO));
          info.cbSize = sizeof(SCROLLINFO);
@@ -47,12 +55,12 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
             }
             case SB_THUMBPOSITION:{
                int pos = HIWORD(wParam);
-               if(info.nPos==1 && pos==2){
+               if(pos>info.nPos && pos<=SCROLL_PREFERENCES_MAX_POSITIONS){
                   SetScrollPos(hDlg,SB_VERT,pos,TRUE);
-                  ScrollWindowEx(hDlg,0,SCROLLPAGE_HEIGHT*-window_height,NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN);
-               }else if(info.nPos==2 && pos==1){
+                  ScrollWindowEx(hDlg,0,-(((dialog_height)/(SCROLL_PREFERENCES_MAX_POSITIONS-1))*(pos-info.nPos)),NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN);
+               }else if(pos<info.nPos && pos>=SCROLL_PREFERENCES_MIN_POSITIONS){
                   SetScrollPos(hDlg,SB_VERT,pos,TRUE);
-                  ScrollWindowEx(hDlg,0,SCROLLPAGE_HEIGHT*window_height,NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN);
+                  ScrollWindowEx(hDlg,0,(((dialog_height)/(SCROLL_PREFERENCES_MAX_POSITIONS-1))*(info.nPos-pos)),NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN);
                }
                break;
             }
@@ -61,9 +69,11 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
             case SB_PAGEUP:{
             }
             case SB_LINEUP:{
-               if(info.nPos != 1){
-                  SetScrollPos(hDlg,SB_VERT,1,TRUE);
-                  ScrollWindowEx(hDlg,0,SCROLLPAGE_HEIGHT*window_height,NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN);
+               int pos = info.nPos;
+               if(pos > SCROLL_PREFERENCES_MIN_POSITIONS){
+                  pos--;
+                  SetScrollPos(hDlg,SB_VERT,pos,TRUE);
+                  ScrollWindowEx(hDlg,0,((dialog_height)/(SCROLL_PREFERENCES_MAX_POSITIONS-1)),NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN);
                }
                break;
             }
@@ -72,13 +82,19 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
             case SB_PAGEDOWN:{
             }
             case SB_LINEDOWN:{
-               if(info.nPos != 2){
-                  SetScrollPos(hDlg,SB_VERT,2,TRUE);
-                  ScrollWindowEx(hDlg,0,SCROLLPAGE_HEIGHT*-window_height,NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN);
+               int pos = info.nPos;
+               if(pos < SCROLL_PREFERENCES_MAX_POSITIONS){
+                  pos++;
+                  SetScrollPos(hDlg,SB_VERT,pos,TRUE);
+                  ScrollWindowEx(hDlg,0,-((dialog_height)/(SCROLL_PREFERENCES_MAX_POSITIONS-1)),NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN);
                }
                break;
             }
          }
+         break;
+      }
+      case WM_SETTINGCHANGE:{
+         SendMessage(GetParent(hDlg),WM_SETTINGCHANGE,wParam,lParam);
          break;
       }
       case WM_INITDIALOG:{
@@ -102,7 +118,7 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
          s_sai.cbSize = sizeof (s_sai);
          UpdateWindow(hDlg);
 
-         SetScrollRange(hDlg,SB_VERT,1,2,TRUE);
+         SetScrollRange(hDlg,SB_VERT,SCROLL_PREFERENCES_MIN_POSITIONS,SCROLL_PREFERENCES_MAX_POSITIONS,TRUE);
 
          iniparser_t iniparser;
          if(iniparser_init(&iniparser)!=0){
@@ -121,6 +137,9 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
          settext_fromstr(hDlg,IDC_EDIT7,iniparser_getstring(&iniparser, "autojoin", "channels", "#microirc"));
          settext_fromint(hDlg,IDC_EDIT8,iniparser_getint(&iniparser, "autojoin", "delay", 5000));
          settext_fromint(hDlg,IDC_EDIT9,config.reconnect);
+         settext_fromstr(hDlg,IDC_EDIT10,config.part);
+         settext_fromstr(hDlg,IDC_EDIT11,config.kick);
+         settext_fromstr(hDlg,IDC_EDIT12,config.quit);
 
          HWND combo = GetDlgItem(hDlg,IDC_COMBO1);
          ComboBox_AddString(combo,L"Local");
@@ -131,15 +150,18 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
             ComboBox_SetCurSel(combo,0);
          }
 
+         settext_fromint(hDlg,IDC_EDIT13,config.bubble);
+
          HWND check = GetDlgItem(hDlg,IDC_CHECK1);
-         if(config.sounds){
+         if(config.sounds != 0){
             Button_SetCheck(check,BST_CHECKED);
          }else{
             Button_SetCheck(check,BST_UNCHECKED);
          }
 
-         settext_fromint(hDlg,IDC_EDIT10,config.lednumber);
-         settext_fromint(hDlg,IDC_EDIT11,config.ledinterval);
+         settext_fromint(hDlg,IDC_EDIT14,config.lednumber);
+         settext_fromint(hDlg,IDC_EDIT15,config.ledinterval);
+         iniparser_destroy(&iniparser);
          return TRUE;
       }
       case WM_COMMAND:{
@@ -211,14 +233,30 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
             iniparser_setint(&iniparser, "autoreconnect", "retries", tempint);
             config.reconnect = tempint;
 
+            gettext_tostr(hDlg, IDC_EDIT10, tempstr, IRCPROTOCOL_SIZE_MEDIUM);
+            iniparser_setstring(&iniparser, "messages", "part", tempstr);
+            strncpy0(config.part,tempstr,IRC_SIZE_SMALL);
+
+            gettext_tostr(hDlg, IDC_EDIT11, tempstr, IRCPROTOCOL_SIZE_MEDIUM);
+            iniparser_setstring(&iniparser, "messages", "kick", tempstr);
+            strncpy0(config.kick,tempstr,IRC_SIZE_SMALL);
+
+            gettext_tostr(hDlg, IDC_EDIT12, tempstr, IRCPROTOCOL_SIZE_MEDIUM);
+            iniparser_setstring(&iniparser, "messages", "quit", tempstr);
+            strncpy0(config.quit,tempstr,IRC_SIZE_SMALL);
+
             HWND combo = GetDlgItem(hDlg,IDC_COMBO1);
             tempint = ComboBox_GetCurSel(combo);
             iniparser_setint(&iniparser, "options", "encoding", tempint);
-            if(tempint){
+            if(tempint != 0){
                config.encoding = CP_UTF8;
             }else{
                config.encoding = CP_ACP;
             }
+
+            tempint = gettext_toint(hDlg,IDC_EDIT13);
+            iniparser_setint(&iniparser, "options", "bubble", tempint);
+            config.bubble = tempint;
 
             HWND check = GetDlgItem(hDlg,IDC_CHECK1);
             if(Button_GetCheck(check)==BST_CHECKED){
@@ -229,11 +267,11 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
             iniparser_setint(&iniparser, "options", "sounds", tempint);
             config.sounds = tempint;
 
-            tempint = gettext_toint(hDlg,IDC_EDIT10);
+            tempint = gettext_toint(hDlg,IDC_EDIT14);
             iniparser_setint(&iniparser, "options", "lednumber", tempint);
             config.lednumber = tempint;
 
-            tempint = gettext_toint(hDlg,IDC_EDIT11);
+            tempint = gettext_toint(hDlg,IDC_EDIT15);
             if(tempint < 0){
                MessageBox(hDlg,L"Led Interval is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                return FALSE;
