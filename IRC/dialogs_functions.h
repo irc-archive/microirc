@@ -99,12 +99,12 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
       }
       case WM_INITDIALOG:{
          SHINITDLGINFO shidi;
+         memset(&shidi, 0, sizeof(SHINITDLGINFO));
          shidi.dwMask = SHIDIM_FLAGS;
          shidi.dwFlags = SHIDIF_DONEBUTTON |SHIDIF_SIZEDLGFULLSCREEN | SHIDIF_SIPDOWN | SHIDIF_EMPTYMENU;
          shidi.hDlg = hDlg;
          SHInitDialog(&shidi);
 
-         SHACTIVATEINFO s_sai;
          SHMENUBARINFO mbi;
          memset(&mbi, 0, sizeof(SHMENUBARINFO));
          mbi.cbSize = sizeof(SHMENUBARINFO);
@@ -114,11 +114,8 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
          if (!SHCreateMenuBar(&mbi)){
             return FALSE;
          }
-         memset(&s_sai, 0, sizeof (s_sai));
-         s_sai.cbSize = sizeof (s_sai);
-         UpdateWindow(hDlg);
-
          SetScrollRange(hDlg,SB_VERT,SCROLL_PREFERENCES_MIN_POSITIONS,SCROLL_PREFERENCES_MAX_POSITIONS,TRUE);
+         UpdateWindow(hDlg);
 
          iniparser_t iniparser;
          if(iniparser_init(&iniparser)!=0){

@@ -86,9 +86,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
       SetForegroundWindow((HWND)((ULONG) hWnd_Main | 0x00000001));
       return 0;
    }
-   InitCommonControls();
+   INITCOMMONCONTROLSEX icex;
+   memset(&icex, 0, sizeof(INITCOMMONCONTROLSEX));
+   icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
+   icex.dwICC = ICC_BAR_CLASSES|ICC_TAB_CLASSES;
+   InitCommonControlsEx(&icex);
    SHInitExtraControls();
    WNDCLASS wc;
+   memset(&wc, 0, sizeof(WNDCLASS));
    wc.style = CS_HREDRAW|CS_VREDRAW;
    wc.cbClsExtra = 0;
    wc.cbWndExtra = 0;
@@ -113,8 +118,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
    ShowWindow(hWnd_Main, nCmdShow);
    UpdateWindow(hWnd_Main);
    MSG msg;
-   HACCEL hAccelTable;
-   hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_IRC));
+   HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_IRC));
    while (GetMessage(&msg, NULL, 0, 0)){
       if(!TranslateAccelerator(msg.hwnd, hAccelTable, &msg)){
          TranslateMessage(&msg);
@@ -588,13 +592,14 @@ void *receiverThreadProc(void *window_handle){
                if(recv_buffer_size<5){
                   break;
                }
-               if(strstri(recv_buffer_ptr[4],irc.nick)!=NULL){//StrCmpI
+               if(strstri(recv_buffer_ptr[4],irc.nick)!=NULL){
                   if(config.sounds!=0)
                      PlaySound(sound_alert,NULL,SND_ASYNC|SND_FILENAME);
                   if(config.lednumber>=0)
                      activate_led();
                   if(GetForegroundWindow()!=hWnd){
-                     SHNOTIFICATIONDATA sn = {0};
+                     SHNOTIFICATIONDATA sn;
+                     memset(&sn, 0, sizeof(SHNOTIFICATIONDATA));
                      sn.cbStruct = sizeof(sn);
                      sn.dwID = BUBBLE_NOTIFICATION;
                      sn.npPriority = SHNP_INFORM;

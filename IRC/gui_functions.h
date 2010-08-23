@@ -10,7 +10,6 @@
 */
 
 void init_menu_bar(HWND hWnd, int barId){
-   SHACTIVATEINFO s_sai;
    SHMENUBARINFO mbi;
    memset(&mbi, 0, sizeof(SHMENUBARINFO));
    mbi.cbSize = sizeof(SHMENUBARINFO);
@@ -22,8 +21,6 @@ void init_menu_bar(HWND hWnd, int barId){
    }else{
       menu_bar_handle = mbi.hwndMB;
    }
-   memset(&s_sai, 0, sizeof (s_sai));
-   s_sai.cbSize = sizeof (s_sai);
    UpdateWindow(hWnd);
 }
 
@@ -69,7 +66,6 @@ LRESULT CALLBACK ChatSendProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 }
 
 void init_chat_screen(HWND hWnd){
-   INITCOMMONCONTROLSEX icex;
    edit_chatinput_handle = CreateWindowEx(0,L"edit", NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|ES_AUTOHSCROLL|ES_NOHIDESEL,EDITCHAT_LEFT*window_width,EDITCHAT_TOP*window_height,EDITCHAT_WIDTH*window_width,EDITCHAT_HEIGHT*window_height,hWnd,(HMENU)NULL,app_instance,NULL);
    
    old_ChatSendProc = (WNDPROC)GetWindowLong(edit_chatinput_handle,GWL_WNDPROC);
@@ -78,9 +74,6 @@ void init_chat_screen(HWND hWnd){
    Edit_LineLength(edit_chatinput_handle,EDITCHATINPUT_LIMIT);
    Edit_LimitText(edit_chatinput_handle,EDITCHATINPUT_LIMIT);
    button_chatsend_handle = CreateWindowEx(0,L"button",TEXT("Send"),WS_VISIBLE|WS_CHILD|BS_DEFPUSHBUTTON|BS_CENTER|BS_VCENTER,BUTTONCHAT_LEFT*window_width,BUTTONCHAT_TOP*window_height,BUTTONCHAT_WIDTH*window_width,BUTTONCHAT_HEIGHT*window_height,hWnd,(HMENU)BUTTON_CHATSEND,app_instance,NULL);
-   icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
-   icex.dwICC = ICC_TAB_CLASSES;
-   InitCommonControlsEx(&icex);
    tabcontrol_chatview_handle = CreateWindowEx(0,WC_TABCONTROL,NULL,WS_CHILD|WS_VISIBLE|TCS_FOCUSNEVER|TCS_BUTTONS|TCS_FLATBUTTONS,TABCONTROLCHAT_LEFT*window_width,TABCONTROLCHAT_TOP*window_height,TABCONTROLCHAT_WIDTH*window_width,TABCONTROLCHAT_HEIGHT*window_height,hWnd,(HMENU)TABCONTROL_CHATVIEW,app_instance,NULL);
    button_closetab_handle = CreateWindowEx(0,L"button",TEXT("x"),WS_VISIBLE|WS_CHILD|BS_CENTER|BS_VCENTER,CLOSETAB_LEFT*window_width,CLOSETAB_TOP*window_height,CLOSETAB_WIDTH*window_width,CLOSETAB_HEIGHT*window_height,hWnd,(HMENU)BUTTON_CLOSETAB,app_instance,NULL);
    loadcursor_handle = CreateWindowEx(0,WC_SIPPREF,L"",WS_CHILD,0,0,0,0,hWnd,(HMENU)NULL,app_instance,NULL);

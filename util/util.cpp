@@ -19,10 +19,21 @@ char *strncpy0(char *destination, const char *source, size_t num){
    return destination;
 }
 
+int strcmpi(const char *str1, const char *str2){
+   while(toupper(*str1)==toupper(*str2)){
+      if(*str1 == '\0'){
+         return 0;
+      }
+      str1++;
+      str2++;
+   }
+   return toupper(*(unsigned const char *)str1)-toupper(*(unsigned const char *)(str2));
+}
+
 char *strstri(char *str1, const char *str2){
-   int i, j;
+   int i;
    for(i=0; str1[i] != '\0'; i++){
-      if(strstr(str1+i,str2)!=NULL){
+      if(strcmpi(str1+i,str2)==0){
          return str1+i;
       }
    }
