@@ -38,7 +38,7 @@
 
 #define SCROLL_PREFERENCES_MIN_POSITIONS 1
 #define SCROLL_PREFERENCES_MAX_POSITIONS 8
-#define SCROLL_PREFERENCES_HEIGHT 260
+#define SCROLL_PREFERENCES_HEIGHT 320
 
 #define BORDER 0.005 //this value can be changed and all the controls got automaticaly resized
 #define BUTTONCONNECT_WIDTH 0.80

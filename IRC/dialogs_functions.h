@@ -43,7 +43,7 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
          MapDialogRect(hDlg,&window_size);
          int dialog_height = window_size.bottom;
          GetWindowRect(hDlg,&window_size);
-         dialog_height -= (window_size.bottom-(window_size.top*5));
+         dialog_height -= window_size.bottom-window_size.top*4;//2 for menus(up/down), 2 for input panel
 
          SCROLLINFO info;
          memset(&info,0,sizeof(SCROLLINFO));
@@ -98,6 +98,7 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
          break;
       }
       case WM_INITDIALOG:{
+         //SHInitExtraControls();////////todo
          SHINITDLGINFO shidi;
          memset(&shidi, 0, sizeof(SHINITDLGINFO));
          shidi.dwMask = SHIDIM_FLAGS;
