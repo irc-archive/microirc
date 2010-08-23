@@ -580,6 +580,7 @@ void *receiverThreadProc(void *window_handle){
                   break;
                }
                recv_buffer_ptr[4]+=7;
+               MultiByteToWideChar(config.encoding,0,recv_buffer_ptr[4],-1,recv_buffer[4],IRC_SIZE_MEDIUM);
             }
             case RECV_PRIVMSG:{//nick user host destination message
             }

@@ -22,20 +22,9 @@ char *strncpy0(char *destination, const char *source, size_t num){
 char *strstri(char *str1, const char *str2){
    int i, j;
    for(i=0; str1[i] != '\0'; i++){
-      for(j=0; str2[j] != '\0'; j++){
-         if(toupper(str2[j])==toupper(str1[i+j])){
-            continue; 
-         }else{
-            break;
-         }
-      }
-      if (str2[j] == '\0'){
-         break;
+      if(strstr(str1+i,str2)!=NULL){
+         return str1+i;
       }
    }
-   if (str2[j] == '\0'){
-      return (i+str1);
-   }else{
-      return '\0';
-   }
+   return NULL;
 }
