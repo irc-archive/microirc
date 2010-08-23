@@ -293,8 +293,8 @@ export int irc_recv_message(irc_t *irc, char **d_result, int *s_result){
             return RECV_PART;
          }else if(!memcmp(dresult[1],"PRIVMSG",7) && next!=NULL){//nick user host destination message
             char *message = tokens_required(next,CHAR_SPACE,1,d_result,s_result);
-            message = strignorechar(message,CHAR_TRAIL);
             if(message[0]==CHAR_CTCP){
+               message = strignorechar(message,CHAR_TRAIL);
                message = strignorechar(message,CHAR_CTCP);
                message[strlen(message)-1] = CHAR_TERMINATOR;
                d_result[*s_result] = message;
