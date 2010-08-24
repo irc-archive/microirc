@@ -93,12 +93,11 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
          }
          break;
       }
-      case WM_SETTINGCHANGE:{
+      /*case WM_SETTINGCHANGE:{
          SendMessage(GetParent(hDlg),WM_SETTINGCHANGE,wParam,lParam);
          break;
-      }
+      }*/
       case WM_INITDIALOG:{
-         //SHInitExtraControls();////////todo
          SHINITDLGINFO shidi;
          memset(&shidi, 0, sizeof(SHINITDLGINFO));
          shidi.dwMask = SHIDIM_FLAGS;
