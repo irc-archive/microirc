@@ -813,7 +813,7 @@ void guiclient_destroy(HWND hWnd){
    receiver_active = 0;
    if(connected==1){
       connected = 0;
-      irc_disconnect(&irc,NULL);
+      irc_disconnect(&irc,config.quit);
       destroy_chat_screen(hWnd);
    }else{
       destroy_login_menu(hWnd);
@@ -860,7 +860,7 @@ int guiclient_reconnecting(HWND hWnd){
    if(connected!=1){
       return -1;
    }
-   irc_disconnect(&irc,NULL);
+   irc_disconnect(&irc,config.quit);
    tab_disconnect(tabcontrol_chatview_handle);
    if(irc_config_reload(&irc,&config,file_config)!=0){
       MessageBox(NULL,L"Config file is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);

@@ -293,15 +293,14 @@ export int irc_recv_message(irc_t *irc, char **d_result, int *s_result){
             return RECV_PART;
          }else if(!memcmp(dresult[1],"PRIVMSG",7) && next!=NULL){//nick user host destination message
             char *message = tokens_required(next,CHAR_SPACE,1,d_result,s_result);
+            message = strignorechar(message,CHAR_TRAIL);
             if(message[0]==CHAR_CTCP){
-               message = strignorechar(message,CHAR_TRAIL);
                message = strignorechar(message,CHAR_CTCP);
                message[strlen(message)-1] = CHAR_TERMINATOR;
                d_result[*s_result] = message;
                (*s_result)++;
                return RECV_CTCP;
-            }else{
-               message = strignorechar(message,CHAR_TRAIL);
+            }else{//no trail
                d_result[*s_result] = message;
                (*s_result)++;
                return RECV_PRIVMSG;
@@ -396,7 +395,7 @@ export int irc_recv_message(irc_t *irc, char **d_result, int *s_result){
 export int irc_send_message(irc_t *irc, int opcode, char **messages, int size){
    switch(opcode){
       case SEND_CHANNEL_MODE:{//channel modes [arguments OR null]
-         if((size<2 || size>3) && verify_buffer(messages,size)!=0){
+         if(size<2 || size>3 || verify_buffer(messages,size)!=0){
             return -1;
          }
          EnterCriticalSection(&irc->send_buffer_critical_section);
@@ -448,7 +447,7 @@ export int irc_send_message(irc_t *irc, int opcode, char **messages, int size){
          break;
       }
       case SEND_NICK:{//[nick or null]
-         if((size<0 || size>1) && verify_buffer(messages,size)!=0){
+         if(size<0 || size>1 || verify_buffer(messages,size)!=0){
             return -1;
          }
          EnterCriticalSection(&irc->send_buffer_critical_section);
@@ -469,7 +468,7 @@ export int irc_send_message(irc_t *irc, int opcode, char **messages, int size){
          break;
       }
       case SEND_PART:{//channel [message or null]
-         if((size<1 || size>2) && verify_buffer(messages,size)!=0){
+         if(size<1 || size>2 || verify_buffer(messages,size)!=0){
             return -1;
          }
          EnterCriticalSection(&irc->send_buffer_critical_section);
@@ -497,12 +496,12 @@ export int irc_send_message(irc_t *irc, int opcode, char **messages, int size){
          break;
       }
       case SEND_QUIT:{//[message or null]
-         if((size<0 || size>1) && verify_buffer(messages,size)!=0){
+         if(size<0 || size>1 || verify_buffer(messages,size)!=0){
             return -1;
          }
          EnterCriticalSection(&irc->send_buffer_critical_section);
          if(size==0){
-            sprintf(irc->send_buffer,"QUIT :+q");
+            sprintf(irc->send_buffer,"QUIT");
          }else{
             sprintf(irc->send_buffer,"QUIT :%s",messages[0]);
          }
