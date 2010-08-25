@@ -75,15 +75,15 @@ int irc_config_init(irc_t *irc, ircconfig_t *ircconfig, char *filepath){
    strncpy0(part,iniparser_getstring(&iniparser, "messages", "part", ""),IRC_SIZE_SMALL);
    strncpy0(kick,iniparser_getstring(&iniparser, "messages", "kick", ""),IRC_SIZE_SMALL);
    strncpy0(quit,iniparser_getstring(&iniparser, "messages", "quit", "http://code.google.com/p/microirc/"),IRC_SIZE_SMALL);
-   if(iniparser_getint(&iniparser, "options", "encoding", 1)){
+   if(iniparser_getint(&iniparser, "miscellaneous", "encoding", 1)){
       encoding = CP_UTF8;
    }else{
       encoding = CP_ACP;
    }
-   bubble = iniparser_getint(&iniparser, "options", "bubble", 0);
-   sounds = iniparser_getint(&iniparser, "options", "sounds", 0);
-   lednumber = iniparser_getint(&iniparser, "options", "lednumber", -1);
-   ledinterval = iniparser_getint(&iniparser, "options", "ledinterval", 500);
+   bubble = iniparser_getint(&iniparser, "miscellaneous", "bubble", 0);
+   sounds = iniparser_getint(&iniparser, "miscellaneous", "sounds", 0);
+   lednumber = iniparser_getint(&iniparser, "miscellaneous", "lednumber", -1);
+   ledinterval = iniparser_getint(&iniparser, "miscellaneous", "ledinterval", 500);
    
    iniparser_destroy(&iniparser);
    if(irc_init(irc,host,port,user,name,nick,perform,autojoin_channels,autojoin_delay)!=0){

@@ -244,7 +244,7 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
 
             HWND combo = GetDlgItem(hDlg,IDC_COMBO1);
             tempint = ComboBox_GetCurSel(combo);
-            iniparser_setint(&iniparser, "options", "encoding", tempint);
+            iniparser_setint(&iniparser, "miscellaneous", "encoding", tempint);
             if(tempint != 0){
                config.encoding = CP_UTF8;
             }else{
@@ -252,7 +252,7 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
             }
 
             tempint = gettext_toint(hDlg,IDC_EDIT13);
-            iniparser_setint(&iniparser, "options", "bubble", tempint);
+            iniparser_setint(&iniparser, "miscellaneous", "bubble", tempint);
             config.bubble = tempint;
 
             HWND check = GetDlgItem(hDlg,IDC_CHECK1);
@@ -261,11 +261,11 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
             }else{
                tempint = 0;
             }
-            iniparser_setint(&iniparser, "options", "sounds", tempint);
+            iniparser_setint(&iniparser, "miscellaneous", "sounds", tempint);
             config.sounds = tempint;
 
             tempint = gettext_toint(hDlg,IDC_EDIT14);
-            iniparser_setint(&iniparser, "options", "lednumber", tempint);
+            iniparser_setint(&iniparser, "miscellaneous", "lednumber", tempint);
             config.lednumber = tempint;
 
             tempint = gettext_toint(hDlg,IDC_EDIT15);
@@ -273,7 +273,7 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
                MessageBox(hDlg,L"Led Interval is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                return FALSE;
             }
-            iniparser_setint(&iniparser, "options", "ledinterval", tempint);
+            iniparser_setint(&iniparser, "miscellaneous", "ledinterval", tempint);
             config.ledinterval = tempint;
 
             if(iniparser_store(&iniparser,file_config)!=0){
