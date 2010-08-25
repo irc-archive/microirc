@@ -40,7 +40,6 @@ HINSTANCE app_instance;
 wchar_t window_title[IRC_SIZE_SMALL];
 
 HWND menu_bar_handle;
-HWND button_connect_handle;
 HWND static_connecting_handle;
 
 HWND tabcontrol_chatview_handle;
@@ -150,7 +149,7 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
       }
       case WM_CONNECTING:{
          if(guiclient_connecting(hWnd)!=0){
-            MessageBox(hWnd,L"Error connecting to server.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+            tab_message(tabcontrol_chatview_handle,L"\r\nFAILED TO CONNECT");
          }
          break;
       }
@@ -160,7 +159,7 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
       }
       case WM_RECONNECTING:{
          if(guiclient_reconnecting(hWnd)!=0){
-            MessageBox(hWnd,L"Error reconnecting to server.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+            tab_message(tabcontrol_chatview_handle,L"\r\nFAILED TO RECONNECT");
          }
          break;
       }
@@ -191,12 +190,6 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
          int wmEvent = HIWORD(wParam);
          HWND control_handler = (HWND)lParam;
          switch (LOWORD(wParam)){
-            case BUTTON_CONNECT:{
-               if(guiclient_connecting(hWnd)!=0){
-                  MessageBox(hWnd,L"Error connecting to server.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
-               }
-               break;
-            }
             case EDIT_CHATVIEW_TEXT:{
                switch(wmEvent){
                   case EN_KILLFOCUS:{
@@ -238,12 +231,19 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                   }
                   tab_delete_current(tabcontrol_chatview_handle);
                }else{
-                  switch (MessageBox(hWnd,L"Do you really want to quit?",L"Quit",MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2|MB_APPLMODAL|MB_SETFOREGROUND)){
+                  if(connected==0){
+                     break;
+                  }
+                  switch(MessageBox(hWnd,L"About to disconnect. Do you wish to reconnect?",L"Disconnect",MB_ICONQUESTION|MB_YESNOCANCEL|MB_DEFBUTTON3|MB_APPLMODAL|MB_SETFOREGROUND)){
                      case IDYES:{
-                        guiclient_disconnecting(hWnd);
+                        SendMessage(hWnd, WM_RECONNECTING, 0, 0);
                         break;
                      }
                      case IDNO:{
+                        SendMessage(hWnd, WM_DISCONNECTING, 0, 0);
+                        break;
+                     }
+                     case IDCANCEL:{
                         break;
                      }
                   }
@@ -251,6 +251,9 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                break;
             }
             case BUTTON_CHATSEND:{
+               if(connected==0){
+                  break;
+               }
                SYSTEMTIME timestamp;
                char *send[2]={chat_destination,chat_text};
                GetWindowText(edit_chatinput_handle, wchat_text, IRC_SIZE_MEDIUM);
@@ -259,8 +262,7 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                   tab_get_name_current(tabcontrol_chatview_handle,wchat_destination,IRC_SIZE_SMALL);
                   WideCharToMultiByte(config.encoding,0,wchat_destination,-1,chat_destination,IRC_SIZE_SMALL,NULL,NULL);
                   if(memcmp(chat_destination,".status",7)==0){
-                     send[0]=send[1];
-                     irc_send_message(&irc,SEND_RAW,send,1);
+                     irc_send_message(&irc,SEND_RAW,send+1,1);
                   }else{
                      irc_send_message(&irc,SEND_PRIVMSG,send,2);
                   }
@@ -366,6 +368,11 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                irc_send_message(&irc,SEND_GET_TOPIC,send,1);
                break;
             }
+            case IDM_CONNECT:
+            case IDM_OPTIONS_CONNECT:{
+               SendMessage(hWnd, WM_CONNECTING, 0, 0);
+               break;
+            }
             case IDM_OPTIONS_DISCONNECT:{
                SendMessage(hWnd, WM_DISCONNECTING, 0, 0);
                break;
@@ -383,7 +390,6 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
          window_width = window_sizes.right;
          window_height = window_sizes.bottom;
          window_height -= window_sizes.top*2;
-         MoveWindow(button_connect_handle,BUTTONCONNECT_LEFT*window_width,BUTTONCONNECT_TOP*window_height,BUTTONCONNECT_WIDTH*window_width,BUTTONCONNECT_HEIGHT*window_height,TRUE);
          MoveWindow(static_connecting_handle,STATICCONNECTING_LEFT*window_width,STATICCONNECTING_TOP*window_height,STATICCONNECTING_WIDTH*window_width,STATICCONNECTING_HEIGHT*window_height,TRUE);
          MoveWindow(edit_chatinput_handle,EDITCHAT_LEFT*window_width,EDITCHAT_TOP*window_height,EDITCHAT_WIDTH*window_width,EDITCHAT_HEIGHT*window_height,TRUE);
          MoveWindow(button_chatsend_handle,BUTTONCHAT_LEFT*window_width,BUTTONCHAT_TOP*window_height,BUTTONCHAT_WIDTH*window_width,BUTTONCHAT_HEIGHT*window_height,TRUE);
@@ -666,7 +672,8 @@ void *receiverThreadProc(void *window_handle){
                if(recv_buffer_size<4){
                   break;
                }
-               tab_nickchange(tabcontrol_chatview_handle,wtimestamp,recv_buffer[0],recv_buffer[3]);
+               swprintf(wresult,L"\r\n%s nickchange %s -> %s",wtimestamp,recv_buffer[0],recv_buffer[3]);
+               tab_nickchange(tabcontrol_chatview_handle,recv_buffer[0],recv_buffer[3],wresult);
                break;
             }
             case RECV_NICK_LIST:{//host channel nicklist
@@ -729,10 +736,11 @@ void *receiverThreadProc(void *window_handle){
                   break;
                }
                if(recv_buffer_size==3){
-                  tab_quit(tabcontrol_chatview_handle,wtimestamp,recv_buffer[0],L"");
+                  swprintf(wresult,L"\r\n%s %s quit",wtimestamp,recv_buffer[0]);
                }else{
-                  tab_quit(tabcontrol_chatview_handle,wtimestamp,recv_buffer[0],recv_buffer[3]);
+                  swprintf(wresult,L"\r\n%s %s quit (%s)",wtimestamp,recv_buffer[0],recv_buffer[3]);
                }
+               tab_quit(tabcontrol_chatview_handle,recv_buffer[0],wresult);
                break;
             }
             case RECV_TOPIC:{//host your_nick canal topic
@@ -753,16 +761,15 @@ void *receiverThreadProc(void *window_handle){
             }
          }
       }
-      if(connected==1){
+      if(connected!=0){
          if(config.reconnect==0){
-            switch (MessageBox(hWnd,L"Do you really want to reconnect?",L"Disconnected",MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2|MB_SETFOREGROUND)){
+            SendMessage(hWnd,WM_DISCONNECTING,0,0);
+            switch(MessageBox(hWnd,L"Do you really want to reconnect?",L"Reconnect",MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2|MB_APPLMODAL|MB_SETFOREGROUND)){
                case IDYES:{
-                  SendMessage(hWnd,WM_DISCONNECTING,0,0);
                   SendMessage(hWnd,WM_CONNECTING,0,0);
                   break;
                }
                case IDNO:{
-                  SendMessage(hWnd,WM_DISCONNECTING,0,0);
                   break;
                }
             }
@@ -782,42 +789,49 @@ int guiclient_init(HWND hWnd){
    receiver_active = 1;
    receiver_thread_event = CreateEvent(NULL,FALSE,FALSE,NULL);
    if(receiver_thread_event==NULL){
-       MessageBox(NULL,L"Critical error: CreateEvent() failed.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+      MessageBox(hWnd,L"Critical error: CreateEvent() failed.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
       return -1;
    }
    receiver_thread = CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)receiverThreadProc,(void*)hWnd,0,NULL);
    if(receiver_thread==NULL){
-      CloseHandle(receiver_thread_event);
-      MessageBox(NULL,L"Critical error: CreateThread() failed.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
-      return -1;
+      MessageBox(hWnd,L"Critical error: CreateThread() failed.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+      goto fullerror1;
    }
-   init_menu_bar(hWnd,IDR_MAIN_MENU_OFFLINE);
-   init_login_menu(hWnd);
-   if(GetModuleFileName(NULL,sound_alert,IRC_SIZE_SMALL)!=0){
-      wcscpy(wcsrchr(sound_alert,92)+1,L"alert.wav");
+   if(GetModuleFileName(NULL,sound_alert,IRC_SIZE_SMALL)==0){
+      MessageBox(hWnd,L"Critical error: GetModuleFileName() failed.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+      goto fullerror;
    }
+   wcscpy(wcsrchr(sound_alert,'\\')+1,L"alert.wav");
    wchar_t buffer[IRC_SIZE_SMALL];
-   if(GetModuleFileName(NULL,buffer,IRC_SIZE_SMALL)!=0){
-      wcscpy(wcsrchr(buffer,92)+1,L"options.ini");
+   if(GetModuleFileName(NULL,buffer,IRC_SIZE_SMALL)==0){
+      MessageBox(hWnd,L"Critical error: GetModuleFileName() failed.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+      goto fullerror;
    }
+   wcscpy(wcsrchr(buffer,'\\')+1,L"options.ini");
    WideCharToMultiByte(CP_ACP,0,buffer,-1,file_config,IRC_SIZE_SMALL,NULL,NULL);
    if(irc_config_init(&irc,&config,file_config)!=0){
-      MessageBox(NULL,L"Config file is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
-      return -1;
+      MessageBox(hWnd,L"Config file is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+      goto fullerror;
    }
    timer_led=NULL;
+   init_menu_bar(hWnd,IDR_MAIN_MENU_OFFLINE);
+   init_chat_screen(hWnd);
+   tab_create(hWnd,tabcontrol_chatview_handle,L".status",STATUS);
    return 0;
+   fullerror:
+      CloseHandle(receiver_thread);
+   fullerror1:
+      CloseHandle(receiver_thread_event);
+      return -1;
 }
 
 void guiclient_destroy(HWND hWnd){
    receiver_active = 0;
-   if(connected==1){
+   if(connected!=0){
       connected = 0;
       irc_disconnect(&irc,config.quit);
-      destroy_chat_screen(hWnd);
-   }else{
-      destroy_login_menu(hWnd);
    }
+   destroy_chat_screen(hWnd);
    destroy_menu_bar(hWnd);
    SetEvent(receiver_thread_event);
    WaitForSingleObject(receiver_thread,INFINITE);
@@ -835,69 +849,62 @@ int guiclient_connecting(HWND hWnd){
    if(connected!=0){
       return -1;
    }
+   init_loading_screen(hWnd);
    if(irc_config_reload(&irc,&config,file_config)!=0){
-      MessageBox(NULL,L"Config file is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+      destroy_loading_screen(hWnd);
+      MessageBox(hWnd,L"Config file is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
       return -1;
    }
-   destroy_login_menu(hWnd);
-   init_loading_screen(hWnd);
    if(irc_connect(&irc)<0){
       destroy_loading_screen(hWnd);
-      init_login_menu(hWnd);
       return -1;
    }
-   destroy_loading_screen(hWnd);
-   init_chat_screen(hWnd);
-   tab_create(hWnd,tabcontrol_chatview_handle,L".status",STATUS);
    connected = 1;
-   SetEvent(receiver_thread_event);
+   tab_connect(tabcontrol_chatview_handle,L"\r\nCONNECTED");
    destroy_menu_bar(hWnd);
    init_menu_bar(hWnd,IDR_MAIN_MENU_ONLINE);
+   SetEvent(receiver_thread_event);
+   destroy_loading_screen(hWnd);
    return 0;
 }
 
 int guiclient_reconnecting(HWND hWnd){
-   if(connected!=1){
-      return -1;
-   }
-   irc_disconnect(&irc,config.quit);
-   tab_disconnect(tabcontrol_chatview_handle);
-   if(irc_config_reload(&irc,&config,file_config)!=0){
-      MessageBox(NULL,L"Config file is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+   if(connected==0){
       return -1;
    }
    init_loading_screen(hWnd);
+   connected = 0;
+   irc_disconnect(&irc,config.quit);
+   tab_disconnect(tabcontrol_chatview_handle,L"\r\nDISCONNECTED");
+   if(irc_config_reload(&irc,&config,file_config)!=0){
+      destroy_loading_screen(hWnd);
+      MessageBox(hWnd,L"Config file is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+      return -1;
+   }
    int trys = config.reconnect;
-   int sleep = IRC_RECONNECT_TIMEOUT_START;
    while(irc_connect(&irc)<0){
-      Sleep(sleep);
-      sleep *= IRC_RECONNECT_TIMEOUT_MULTIPLIER;
+      Sleep(IRC_RECONNECT_TIMEOUT);
       trys--;
       if(trys<=0){
-         destroy_loading_screen(hWnd);
-         connected = 0;
-         //irc_config_destroy(&config,&irc);
          destroy_menu_bar(hWnd);
          init_menu_bar(hWnd,IDR_MAIN_MENU_OFFLINE);
-         destroy_chat_screen(hWnd);
-         init_login_menu(hWnd);
+         destroy_loading_screen(hWnd);
          return -1;
       }
    }
-   tab_connect(tabcontrol_chatview_handle);
-   destroy_loading_screen(hWnd);
+   connected = 1;
+   tab_connect(tabcontrol_chatview_handle,L"\r\nCONNECTED");
    SetEvent(receiver_thread_event);
+   destroy_loading_screen(hWnd);
    return 0;
 }
 
 void guiclient_disconnecting(HWND hWnd){
-   if(connected==1){
+   if(connected!=0){
       connected = 0;
       irc_disconnect(&irc,config.quit);
-      //irc_config_destroy(&config,&irc);
+      tab_disconnect(tabcontrol_chatview_handle,L"\r\nDISCONNECTED");
       destroy_menu_bar(hWnd);
       init_menu_bar(hWnd,IDR_MAIN_MENU_OFFLINE);
-      destroy_chat_screen(hWnd);
-      init_login_menu(hWnd);
    }
 }

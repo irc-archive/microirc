@@ -29,19 +29,9 @@ void destroy_menu_bar(HWND hWnd){
    UpdateWindow(hWnd);
 }
 
-void init_login_menu(HWND hWnd){
-   button_connect_handle = CreateWindowEx(0,L"button",TEXT("Connect"),WS_CHILD|WS_VISIBLE|WS_BORDER,BUTTONCONNECT_LEFT*window_width,BUTTONCONNECT_TOP*window_height,BUTTONCONNECT_WIDTH*window_width,BUTTONCONNECT_HEIGHT*window_height,hWnd,(HMENU)BUTTON_CONNECT,app_instance,NULL);
-   UpdateWindow(hWnd);
-}
-
-void destroy_login_menu(HWND hWnd){
-   DestroyWindow(button_connect_handle);
-   UpdateWindow(hWnd);
-}
-
 void init_loading_screen(HWND hWnd){
    SendMessage(hWnd,WM_LOAD_CURSOR,0,0);
-   static_connecting_handle = CreateWindowEx(0,L"static",TEXT("CONNECTING...."),WS_CHILD|WS_VISIBLE|SS_CENTER,STATICCONNECTING_LEFT*window_width,STATICCONNECTING_TOP*window_height,STATICCONNECTING_WIDTH*window_width,STATICCONNECTING_HEIGHT*window_height,hWnd,(HMENU)BUTTON_CONNECT,app_instance,NULL);
+   static_connecting_handle = CreateWindowEx(0,L"static",TEXT("CONNECTING...."),WS_CHILD|WS_VISIBLE|SS_CENTER,STATICCONNECTING_LEFT*window_width,STATICCONNECTING_TOP*window_height,STATICCONNECTING_WIDTH*window_width,STATICCONNECTING_HEIGHT*window_height,hWnd,(HMENU)NULL,app_instance,NULL);
    UpdateWindow(hWnd);
 }
 

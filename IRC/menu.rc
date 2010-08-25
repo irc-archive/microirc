@@ -160,6 +160,7 @@ BEGIN
         MENUITEM "Help",                        IDM_OPTIONS_HELP
         MENUITEM SEPARATOR
         MENUITEM "Exit",                        IDM_OPTIONS_EXIT
+        MENUITEM "Connect",                     IDM_OPTIONS_CONNECT
         MENUITEM "Preferences",                 IDM_OPTIONS_PREFERENCES
     END
 END
@@ -191,7 +192,7 @@ BEGIN
         MENUITEM "Kick-Ban",                    IDM_CHATBOX_KICKBAN
         MENUITEM "Ban",                         IDM_CHATBOX_BAN
         MENUITEM SEPARATOR
-        MENUITEM "Whois",                       IDM_CHATBOX_WHOIS
+        //MENUITEM "Whois",                       IDM_CHATBOX_WHOIS
         MENUITEM "Copy Nick",                   IDM_CHATBOX_COPYNICK
     END
 END
@@ -221,6 +222,7 @@ END
 
 STRINGTABLE 
 BEGIN
+    IDS_CONNECT             "Connect"
     IDS_OPENURL             "Open URL"
     IDS_OPTIONS             "Options"
     IDS_OK                  "OK"

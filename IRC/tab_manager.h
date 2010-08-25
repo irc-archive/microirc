@@ -285,6 +285,9 @@ int tab_write_index(HWND tab_control, int tab_index, wchar_t *text, TAB_TEXT_TYP
       return -1;
    }
    if(window==TEXT){
+      if(write_tab->text==NULL){
+         return -1;
+      }
       if(operation==APPEND){
          if(SendMessage(write_tab->text,EM_GETLIMITTEXT,0,0)-Edit_GetTextLength(write_tab->text)<EDITCHATVIEWTEXT_DELETE){
             SendMessage(write_tab->text, EM_SETSEL, 0, EDITCHATVIEWTEXT_DELETE);
@@ -296,6 +299,9 @@ int tab_write_index(HWND tab_control, int tab_index, wchar_t *text, TAB_TEXT_TYP
          SendMessage(write_tab->text, EM_SCROLLCARET, 0, 0);
       }
    }else if(window==NICK){
+      if(write_tab->nick==NULL){
+         return -1;
+      }
       if(operation==APPEND){
          SendMessage(write_tab->nick,LB_ADDSTRING,0,(LPARAM)text);
       }else if(operation==REMOVE){
@@ -394,61 +400,46 @@ int tab_select_name(HWND tab_control, wchar_t *tab_name){
    return tab_select_index(tab_control,tab_index);
 }
 
-int tab_nickchange(HWND tab_control, wchar_t *timestamp, wchar_t *oldnick, wchar_t *newnick){
-   tab_t *tab;
-   wchar_t buffer[IRC_SIZE_MEDIUM];
+int tab_message(HWND tab_control, wchar_t *message){
    int size = SendMessage(tab_control,TCM_GETITEMCOUNT,0,0);
    for(size--;size>=0;size--){
-      if(tab_get_parameters_index(tab_control,size,&tab)!=-1){
-         if(tab->nick!=NULL){
-            if(tab_write_index(tab_control,size,oldnick,NICK,REMOVE)!=-1){
-               swprintf(buffer,L"\r\n%s nickchange %s -> %s",timestamp,oldnick,newnick);
-               tab_write_index(tab_control,size,buffer,TEXT,APPEND);
-               tab_write_index(tab_control,size,newnick,NICK,APPEND);
-            }
-         }
+      tab_write_index(tab_control,size,message,TEXT,APPEND);
+   }
+   return -1;
+}
+
+int tab_nickchange(HWND tab_control, wchar_t *oldnick, wchar_t *newnick, wchar_t *message){
+   int size = SendMessage(tab_control,TCM_GETITEMCOUNT,0,0);
+   for(size--;size>=0;size--){
+      if(tab_write_index(tab_control,size,oldnick,NICK,REMOVE)!=-1){
+         tab_write_index(tab_control,size,message,TEXT,APPEND);
+         tab_write_index(tab_control,size,newnick,NICK,APPEND);
       }
    }
    return -1;
 }
 
-int tab_quit(HWND tab_control, wchar_t *timestamp, wchar_t *nick, wchar_t *mensagem){
-   tab_t *tab;
-   wchar_t buffer[IRC_SIZE_MEDIUM];
+int tab_quit(HWND tab_control, wchar_t *nick, wchar_t *message){
    int size = SendMessage(tab_control,TCM_GETITEMCOUNT,0,0);
    for(size--;size>=0;size--){
-      if(tab_get_parameters_index(tab_control,size,&tab)!=-1){
-         if(tab->nick!=NULL){
-            if(tab_write_index(tab_control,size,nick,NICK,REMOVE)!=-1){
-               swprintf(buffer,L"\r\n%s %s quit (%s)",timestamp,nick,mensagem);
-               tab_write_index(tab_control,size,buffer,TEXT,APPEND);
-            }
-         }
+      if(tab_write_index(tab_control,size,nick,NICK,REMOVE)!=-1){
+         tab_write_index(tab_control,size,message,TEXT,APPEND);
       }
    }
    return -1;
 }
 
-int tab_disconnect(HWND tab_control){
-   tab_t *tab;
+int tab_disconnect(HWND tab_control, wchar_t *message){
    int size = SendMessage(tab_control,TCM_GETITEMCOUNT,0,0);
    for(size--;size>=0;size--){
-      if(tab_get_parameters_index(tab_control,size,&tab)!=-1){
-         tab_write_index(tab_control,size,L"\r\nDISCONNECTED",TEXT,APPEND);
-         if(tab->nick!=NULL){
-            tab_write_index(tabcontrol_chatview_handle,size,NULL,NICK,REMOVE);
-         }
-      }
+      tab_write_index(tab_control,size,message,TEXT,APPEND);
+      tab_write_index(tab_control,size,NULL,NICK,REMOVE);
    }
    return -1;
 }
 
-int tab_connect(HWND tab_control){
-   int size = SendMessage(tab_control,TCM_GETITEMCOUNT,0,0);
-   for(size--;size>=0;size--){
-      tab_write_index(tab_control,size,L"\r\nCONNECTED",TEXT,APPEND);
-   }
-   return -1;
+int tab_connect(HWND tab_control, wchar_t *message){
+   return tab_message(tab_control,message);
 }
 
 void tab_resize_all(HWND tab_control){
