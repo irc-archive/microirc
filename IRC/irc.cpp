@@ -283,7 +283,7 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                if(open_input_box(hWnd, L"Open Private", L"", wresult_text, IRC_SIZE_SMALL)!=0){
                   break;
                }
-               if(!*wresult_text){
+               if(wcslen(wresult_text)==0){
                   break;
                }
                SendMessage(hWnd,WM_CREATE_TAB,STATUS,(LPARAM)wresult_text);
@@ -295,7 +295,7 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                if(open_input_box(hWnd, L"Join Channel", L"#", wresult_text, IRC_SIZE_SMALL)!=0){
                   break;
                }
-               if(!*wresult_text){
+               if(wcslen(wresult_text)==0){
                   break;
                }
                char result_text[IRC_SIZE_SMALL];
@@ -305,11 +305,18 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                break;
             }
             case IDM_OPENURL:{
+               wchar_t wurl[IRC_SIZE_MEDIUM]=L"http://";
+               tab_t *current_tab;
+               if(tab_get_parameters_current(tabcontrol_chatview_handle,&current_tab)==0){
+                  if(wcslen(current_tab->lasturl)!=0){
+                     wcscpy(wurl,current_tab->lasturl);
+                  }
+               }
                wchar_t wresult_text[IRC_SIZE_SMALL];
-               if(open_input_box(hWnd, L"Open URL", L"http://", wresult_text, IRC_SIZE_SMALL)!=0){
+               if(open_input_box(hWnd, L"Open URL", wurl, wresult_text, IRC_SIZE_SMALL)!=0){
                   break;
                }
-               if(!*wresult_text){
+               if(wcslen(wresult_text)==0){
                   break;
                }
                wchar_t wreturn_text[IRC_SIZE_SMALL];
@@ -340,7 +347,7 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                if(open_input_box(hWnd, L"Set Topic", L"", wtopic, IRC_SIZE_SMALL)!=0){
                   break;
                }
-               if(!*wtopic){
+               if(wcslen(wtopic)==0){
                   break;
                }
                wchar_t wchannel[IRC_SIZE_SMALL];

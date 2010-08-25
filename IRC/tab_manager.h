@@ -19,6 +19,7 @@ enum TAB_TEXT_ACTION{APPEND,REMOVE};
 typedef struct tab_t{
    HWND text;
    HWND nick;
+   wchar_t lasturl[IRC_SIZE_MEDIUM];
 }tab_t;
 
 int tab_get_parameters_index(HWND tab_control, int tab_index, tab_t **result){
@@ -275,6 +276,7 @@ int tab_create(HWND hWnd, HWND tab_control, wchar_t *tab_name, TAB_TYPE type){
       SendMessage(new_tab->nick,LB_SETHORIZONTALEXTENT,150,0);
       ShowWindow(new_tab->nick,SW_HIDE);
    }
+   wcscpy(new_tab->lasturl,L"");
    tab_refresh(tab_control,SHOW);
    return 0;
 }
@@ -297,6 +299,15 @@ int tab_write_index(HWND tab_control, int tab_index, wchar_t *text, TAB_TEXT_TYP
          SendMessage(write_tab->text, EM_SETSEL, len, len);
          SendMessage(write_tab->text, EM_REPLACESEL, 0, (LPARAM)text);
          SendMessage(write_tab->text, EM_SCROLLCARET, 0, 0);
+         wchar_t *start = wcsstr(text,L"http://");
+         if(start!=NULL){
+            wchar_t *end = wcschr(start,' ');
+            if(end==NULL){
+               end = start+wcslen(start);
+            }
+            wcscpy(write_tab->lasturl,L"");
+            wcsncat(write_tab->lasturl,start,end-start);
+         }
       }
    }else if(window==NICK){
       if(write_tab->nick==NULL){
