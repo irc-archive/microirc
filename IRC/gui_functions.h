@@ -66,12 +66,12 @@ void init_chat_screen(HWND hWnd){
    button_chatsend_handle = CreateWindowEx(0,L"button",TEXT("Send"),WS_VISIBLE|WS_CHILD|BS_DEFPUSHBUTTON|BS_CENTER|BS_VCENTER,BUTTONCHAT_LEFT*window_width,BUTTONCHAT_TOP*window_height,BUTTONCHAT_WIDTH*window_width,BUTTONCHAT_HEIGHT*window_height,hWnd,(HMENU)BUTTON_CHATSEND,app_instance,NULL);
    tabcontrol_chatview_handle = CreateWindowEx(0,WC_TABCONTROL,NULL,WS_CHILD|WS_VISIBLE|TCS_FOCUSNEVER|TCS_BUTTONS|TCS_FLATBUTTONS,TABCONTROLCHAT_LEFT*window_width,TABCONTROLCHAT_TOP*window_height,TABCONTROLCHAT_WIDTH*window_width,TABCONTROLCHAT_HEIGHT*window_height,hWnd,(HMENU)TABCONTROL_CHATVIEW,app_instance,NULL);
    button_closetab_handle = CreateWindowEx(0,L"button",TEXT("x"),WS_VISIBLE|WS_CHILD|BS_CENTER|BS_VCENTER,CLOSETAB_LEFT*window_width,CLOSETAB_TOP*window_height,CLOSETAB_WIDTH*window_width,CLOSETAB_HEIGHT*window_height,hWnd,(HMENU)BUTTON_CLOSETAB,app_instance,NULL);
-   loadcursor_handle = CreateWindowEx(0,WC_SIPPREF,L"",WS_CHILD,0,0,0,0,hWnd,(HMENU)NULL,app_instance,NULL);
+   sippref_handle = CreateWindowEx(0,WC_SIPPREF,L"",WS_CHILD,0,0,0,0,hWnd,(HMENU)NULL,app_instance,NULL);
    UpdateWindow(hWnd);
 }
 
 void destroy_chat_screen(HWND hWnd){
-   DestroyWindow(loadcursor_handle);
+   DestroyWindow(sippref_handle);
    DestroyWindow(edit_chatinput_handle);
    DestroyWindow(button_chatsend_handle);
    while(tab_delete_current(tabcontrol_chatview_handle)!=-1);
@@ -80,7 +80,7 @@ void destroy_chat_screen(HWND hWnd){
    UpdateWindow(hWnd);
 }
 
-int open_input_box(HWND parent_window, wchar_t *title, wchar_t *text, wchar_t *result, unsigned result_len){
+int open_input_box(HWND parent_window, wchar_t *title, wchar_t *text, wchar_t *result, unsigned int result_len){
    //result will be null string if DialogBoxParam fails or user provides no text
    wchar_t *titletext[2]={title,text};
    wchar_t *temp = (wchar_t*)DialogBoxParam(app_instance, (LPCTSTR)IDD_INPUTBOX, parent_window, InputBoxProc, (LPARAM)titletext);

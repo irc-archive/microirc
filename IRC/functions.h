@@ -30,3 +30,71 @@ void activate_led(){
       set_led(config.lednumber,1);
    }
 }
+
+int title(wchar_t *window_title, wchar_t *cmd_line){
+   if(wcslen(cmd_line)==0){
+      wcscat(window_title,L" Profile Manager");
+   }else{
+      wchar_t *end = wcsstr(cmd_line,L".ini");
+      if(end==NULL){
+         return -1;
+      }
+      wchar_t *start = wcsrchr(cmd_line,'\\');
+      if(start==NULL){
+         start=cmd_line;
+      }else{
+         start++;
+      }
+      wcscat(window_title,L" ");
+      wcsncat(window_title,start,end-start);
+   }
+   return 0;
+}
+
+int validate_name(wchar_t *str){
+   while(*str!='\0'){
+      if(*str<48 || *str>122){
+         return -1;
+      }
+      if(*str>57 && *str<65){
+         return -1;
+      }
+      if(*str>90 && *str<96){
+         return -1;
+      }
+      str++;
+   }
+   return 0;
+}
+
+void wappend_fullpath(wchar_t *wconfigfile, wchar_t *result){
+   wchar_t wfullpath[IRC_SIZE_SMALL];
+   wcscpy(wfullpath,module_path);
+   wcscpy(wcsrchr(wfullpath,'\\')+1,wconfigfile);
+   wcscpy(result,wfullpath);
+}
+
+void append_fullpath(char *configfile, char *result){
+   char fullpath[IRC_SIZE_SMALL];
+   WideCharToMultiByte(CP_ACP,0,module_path,-1,fullpath,IRC_SIZE_SMALL,NULL,NULL);
+   strcpy(strrchr(fullpath,'\\')+1,configfile);
+   strcpy(result,fullpath);
+}
+
+int winiparser_load(iniparser_t *iniparser, wchar_t *wfilename){
+   wchar_t wfullpath[IRC_SIZE_SMALL];
+   char fullpath[IRC_SIZE_SMALL];
+   wcscpy(wfullpath,module_path);
+   wcscpy(wcsrchr(wfullpath,'\\')+1,wfilename);
+   WideCharToMultiByte(CP_ACP,0,wfullpath,-1,fullpath,IRC_SIZE_SMALL,NULL,NULL);
+   return iniparser_load(iniparser,fullpath);
+}
+
+int winiparser_store(iniparser_t *iniparser, wchar_t *wfilename){
+   wchar_t wfullpath[IRC_SIZE_SMALL];
+   char fullpath[IRC_SIZE_SMALL];
+   wcscpy(wfullpath,module_path);
+   wcscpy(wcsrchr(wfullpath,'\\')+1,wfilename);
+   WideCharToMultiByte(CP_ACP,0,wfullpath,-1,fullpath,IRC_SIZE_SMALL,NULL,NULL);
+   return iniparser_store(iniparser,fullpath);
+}

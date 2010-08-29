@@ -35,12 +35,12 @@ void irc_config_destroy(irc_t *irc, ircconfig_t *ircconfig){
    ircconfig_destroy(ircconfig);
 }
 
-int irc_config_init(irc_t *irc, ircconfig_t *ircconfig, char *filepath){
+int irc_config_init(irc_t *irc, ircconfig_t *ircconfig, wchar_t *filepath){
    iniparser_t iniparser;
    if(iniparser_init(&iniparser)!=0){
       return -1;
    }
-   if(iniparser_load(&iniparser,filepath)!=0){
+   if(winiparser_load(&iniparser,filepath)!=0){
       iniparser_destroy(&iniparser);
       return -1;
    }
@@ -96,13 +96,18 @@ int irc_config_init(irc_t *irc, ircconfig_t *ircconfig, char *filepath){
    return 0;
 }
 
-int irc_config_reload(irc_t *irc, ircconfig_t *ircconfig, char *filepath){
+int irc_config_reload(irc_t *irc, ircconfig_t *ircconfig, wchar_t *filepath){
    return irc_config_init(irc,ircconfig,filepath);
 }
 
 void settext_fromstr(HWND hDlg, int control, char *edittext){
    wchar_t wedittext[IRCPROTOCOL_SIZE_MEDIUM];
    MultiByteToWideChar(IRC_CONFIG_FILE_ENCODING,0,edittext,-1,wedittext,IRCPROTOCOL_SIZE_MEDIUM);
+   HWND edithwnd = GetDlgItem(hDlg,control);
+   Edit_SetText(edithwnd,wedittext);
+}
+
+void settext_fromwstr(HWND hDlg, int control, wchar_t *wedittext){
    HWND edithwnd = GetDlgItem(hDlg,control);
    Edit_SetText(edithwnd,wedittext);
 }
@@ -121,9 +126,52 @@ void gettext_tostr(HWND hDlg, int control, char *edittext, int size){
    WideCharToMultiByte(IRC_CONFIG_FILE_ENCODING,0,wedittext,-1,edittext,size,NULL,NULL);
 }
 
+void gettext_towstr(HWND hDlg, int control, wchar_t *wedittext, int size){
+   HWND edithwnd = GetDlgItem(hDlg,control);
+   Edit_GetText(edithwnd,wedittext,IRCPROTOCOL_SIZE_MEDIUM);
+}
+
 int gettext_toint(HWND hDlg, int control){
    wchar_t wedittext[IRCPROTOCOL_SIZE_SMALL];
    HWND edithwnd = GetDlgItem(hDlg,control);
    Edit_GetText(edithwnd,wedittext,IRCPROTOCOL_SIZE_SMALL);
    return wcstol(wedittext,L'\0',10);
+}
+
+void setcombo_fromint(HWND hDlg, int control, int combovalue){
+   HWND combo = GetDlgItem(hDlg,control);
+   ComboBox_AddString(combo,L"Local");
+   ComboBox_AddString(combo,L"UTF-8");
+   if(combovalue == CP_UTF8){
+      ComboBox_SetCurSel(combo,1);
+   }else{
+      ComboBox_SetCurSel(combo,0);
+   }
+}
+
+int getint_fromcombo(HWND hDlg, int control){
+   HWND combo = GetDlgItem(hDlg,IDC_COMBO1);
+   if(ComboBox_GetCurSel(combo) != 0){
+      return 1;
+   }else{
+      return 0;
+   }
+}
+
+void setcheck_fromint(HWND hDlg, int control, int checkvalue){
+   HWND check = GetDlgItem(hDlg,control);
+   if(checkvalue != 0){
+      Button_SetCheck(check,BST_CHECKED);
+   }else{
+      Button_SetCheck(check,BST_UNCHECKED);
+   }
+}
+
+int getint_fromcheck(HWND hDlg, int control){
+   HWND check = GetDlgItem(hDlg,control);
+   if(Button_GetCheck(check)==BST_CHECKED){
+      return 1;
+   }else{
+      return 0;
+   }
 }

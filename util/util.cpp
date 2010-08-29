@@ -20,6 +20,7 @@ char *strncpy0(char *destination, const char *source, size_t num){
 }
 
 int strcmpi(const char *str1, const char *str2){
+   //_memicmp can be used in microsoft windows...
    while(toupper(*str1)==toupper(*str2)){
       if(*str1 == '\0'){
          return 0;

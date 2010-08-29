@@ -36,7 +36,7 @@
 
 #define SCROLL_PREFERENCES_MIN_POSITIONS 1
 #define SCROLL_PREFERENCES_MAX_POSITIONS 8
-#define SCROLL_PREFERENCES_HEIGHT 320
+#define SCROLL_PREFERENCES_HEIGHT 337
 
 #define BORDER 0.005 //this value can be changed and all the controls got automaticaly resized
 #define STATICCONNECTING_WIDTH 1
@@ -81,6 +81,11 @@ typedef struct ircconfig_t{
    int ledinterval;
 }ircconfig_t;
 
+typedef struct guimanager_t{
+   HWND connect_handles[10];
+   int connect_size;
+}guimanager_t;
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow);
 LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -90,3 +95,9 @@ void guiclient_destroy(HWND hWnd);
 int guiclient_connecting(HWND hWnd);
 int guiclient_reconnecting(HWND hWnd);
 void guiclient_disconnecting(HWND hWnd);
+int title(wchar_t *window_title, wchar_t *cmd_line);
+int guimanager_init(HWND hWnd);
+void guimanager_destroy();
+int guimanager_create(wchar_t *text, HWND hWnd);
+void guimanager_getselected(int *d_result, int *s_result);
+int guimanager_delete(int index);

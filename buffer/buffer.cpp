@@ -148,7 +148,7 @@ export int buffer_write_size_after(buffer_t *buffer, int size){
 export int buffer_read_data(buffer_t *buffer){
    int retval = buffer_read_avaiable_data_size(buffer);
    if(retval>0){
-      memcpy(buffer->data,buffer->data+retval,buffer->size-retval);
+      memmove(buffer->data,buffer->data+retval,buffer->size-retval);
       buffer->size = buffer->size - retval;
       buffer_grow_shrink(buffer,0);
    }
@@ -161,7 +161,7 @@ export int buffer_read_get_data(buffer_t *buffer, char *data, int size){
       return -1;
    }else if(retval>0){
       memcpy(data,buffer->data,retval);
-      memcpy(buffer->data,buffer->data+retval,buffer->size-retval);
+      memmove(buffer->data,buffer->data+retval,buffer->size-retval);
       buffer->size = buffer->size - retval;
       buffer_grow_shrink(buffer,0);
    }
