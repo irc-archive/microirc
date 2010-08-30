@@ -543,13 +543,10 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
          break;
       }
       case WM_ACTIVATE:{
-         //SHACTIVATEINFO s_sai;
-         //SHHandleWMActivate(hWnd, wParam, lParam, &s_sai, FALSE);
+         SHHandleWMActivate(hWnd, wParam, lParam, &s_sai, FALSE);
          break;
       }
       case WM_SETTINGCHANGE:{
-         //SHACTIVATEINFO s_sai;
-         //SHHandleWMSettingChange(hWnd, wParam, lParam, &s_sai);
          switch(wParam){
             case SPI_SETSIPINFO:{
                SIPINFO si;
@@ -557,18 +554,24 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                si.cbSize=sizeof(si);
                if(SHSipInfo(SPI_GETSIPINFO,0,&si,0)){
                   RECT rect = si.rcVisibleDesktop;
-                  if(rect.bottom>window_height){
-                     MoveWindow(hWnd,rect.left,rect.top,rect.right,rect.bottom-rect.top,TRUE);
-                  }else{
+                  if(si.fdwFlags & SIPF_ON){
                      MoveWindow(hWnd,rect.left,rect.top,rect.right,rect.bottom,TRUE);
+                  }else{
+                     MoveWindow(hWnd,rect.left,rect.top,rect.right,rect.bottom-rect.top,TRUE);
                   }
                }
                break;
+            }
+            default:{
+               SHHandleWMSettingChange(hWnd, wParam, lParam, &s_sai);
             }
          }
          break;
       }
       case WM_CREATE:{
+         memset(&s_sai, 0, sizeof(SHACTIVATEINFO));
+         s_sai.cbSize = sizeof(SHACTIVATEINFO);
+
          RECT window_sizes;
          GetWindowRect(hWnd, &window_sizes);
          window_width = window_sizes.right;

@@ -34,6 +34,8 @@
 #include "../iniparser/iniparser.h"
 #include "../ircprotocol/ircprotocol.h"
 
+SHACTIVATEINFO s_sai;
+
 int window_height;
 int window_width;
 HINSTANCE app_instance;
@@ -84,7 +86,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
       return 0;
    }
    //if(title(window_title,lpCmdLine)!=0){
-   if(title(window_title,L"options.ini")!=0){
+   if(title(window_title,L"Client.ini")!=0){
       return 0;
    }
    if(FindWindow(window_class, window_title)!=NULL){
