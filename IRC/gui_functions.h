@@ -16,7 +16,7 @@ void init_menu_bar(HWND hWnd, int barId){
    mbi.hwndParent = hWnd;
    mbi.nToolBarId = barId;
    mbi.hInstRes = app_instance;
-   if (!SHCreateMenuBar(&mbi)){
+   if(!SHCreateMenuBar(&mbi)){
       menu_bar_handle = NULL;
    }else{
       menu_bar_handle = mbi.hwndMB;

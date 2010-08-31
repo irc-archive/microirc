@@ -17,7 +17,7 @@ INT_PTR CALLBACK AboutProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam){
          shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIPDOWN | SHIDIF_SIZEDLGFULLSCREEN | SHIDIF_EMPTYMENU | SHIDIF_WANTSCROLLBAR;
          shidi.hDlg = hDlg;
          SHInitDialog(&shidi);
-         return (INT_PTR)TRUE;
+         return TRUE;
       }
       case WM_COMMAND:{
          if (LOWORD(wParam) == IDOK){
@@ -31,7 +31,7 @@ INT_PTR CALLBACK AboutProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam){
          return TRUE;
       }
    }
-   return (INT_PTR)FALSE;
+   return FALSE;
 }
 
 INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam){
@@ -93,10 +93,6 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
          }
          break;
       }
-      /*case WM_SETTINGCHANGE:{
-         SendMessage(GetParent(hDlg),WM_SETTINGCHANGE,wParam,lParam);
-         break;
-      }*/
       case WM_INITDIALOG:{
          SHINITDLGINFO shidi;
          memset(&shidi, 0, sizeof(SHINITDLGINFO));
@@ -111,21 +107,20 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
          mbi.hwndParent = hDlg;
          mbi.nToolBarId = IDR_PREFERENCES_MENU;
          mbi.hInstRes = app_instance;
-         if (!SHCreateMenuBar(&mbi)){
-            return FALSE;
+         if(!SHCreateMenuBar(&mbi)){
+            break;
          }
          SetScrollRange(hDlg,SB_VERT,SCROLL_PREFERENCES_MIN_POSITIONS,SCROLL_PREFERENCES_MAX_POSITIONS,TRUE);
          UpdateWindow(hDlg);
 
          wchar_t **parameters = (wchar_t**)lParam;//"manager" or "client", profile
-
          iniparser_t iniparser;
          if(iniparser_init(&iniparser)!=0){
-            return FALSE;
+            break;
          }
          if(winiparser_load(&iniparser,parameters[1])!=0){
             iniparser_destroy(&iniparser);
-            return FALSE;
+            break;
          }
          settext_fromwstr(hDlg,IDC_EDIT0,parameters[0]);
          settext_fromwstr(hDlg,IDC_EDIT1,parameters[1]);
@@ -165,11 +160,10 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
          if (LOWORD(wParam) == IDOK){
             iniparser_t iniparser;
             if(iniparser_init(&iniparser)!=0){
-               return FALSE;
+               break;
             }
             wchar_t type[IRC_SIZE_SMALL];
             wchar_t profile[IRC_SIZE_SMALL];
-
             char host[IRCPROTOCOL_SIZE_SMALL];
             char port[IRCPROTOCOL_SIZE_SMALL];
             char user[IRCPROTOCOL_SIZE_SMALL];
@@ -187,10 +181,8 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
             int sounds;
             int lednumber;
             int ledinterval;
-
             gettext_towstr(hDlg,IDC_EDIT0,type,IRC_SIZE_SMALL);
             gettext_towstr(hDlg,IDC_EDIT1,profile,IRC_SIZE_SMALL);
-
             gettext_tostr(hDlg, IDC_EDIT2, host, IRCPROTOCOL_SIZE_SMALL);
             gettext_tostr(hDlg, IDC_EDIT3, port, IRCPROTOCOL_SIZE_SMALL);
             gettext_tostr(hDlg, IDC_EDIT4, user, IRCPROTOCOL_SIZE_SMALL);
@@ -208,40 +200,38 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
             sounds = getint_fromcheck(hDlg,IDC_CHECK1);
             lednumber = gettext_toint(hDlg,IDC_EDIT15);
             ledinterval = gettext_toint(hDlg,IDC_EDIT16);
-
             if(strlen(host)==0){
                MessageBox(hDlg,L"Host is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
-               return FALSE;
+               break;
             }
             if(strlen(port)==0){
                MessageBox(hDlg,L"Port is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
-               return FALSE;
+               break;
             }
             if(strlen(user)==0){
                MessageBox(hDlg,L"User is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
-               return FALSE;
+               break;
             }
             if(strlen(name)==0){
                MessageBox(hDlg,L"Name is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
-               return FALSE;
+               break;
             }
             if(strlen(nick)==0){
                MessageBox(hDlg,L"Nick is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
-               return FALSE;
+               break;
             }
             if(autojoin_delay < 0){
                MessageBox(hDlg,L"Auto-join Delay is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
-               return FALSE;
+               break;
             }
             if(reconnect < 0){
                MessageBox(hDlg,L"Reconnect Retries is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
-               return FALSE;
+               break;
             }
             if(ledinterval < 0){
                MessageBox(hDlg,L"Led Interval is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
-               return FALSE;
+               break;
             }
-
             iniparser_setstring(&iniparser, "server", "host", host);
             iniparser_setstring(&iniparser, "server", "port", port);
             iniparser_setstring(&iniparser, "client", "user", user);
@@ -276,7 +266,7 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
             }
             if(winiparser_store(&iniparser,profile)!=0){
                iniparser_destroy(&iniparser);
-               return FALSE;
+               break;
             }
             iniparser_destroy(&iniparser);
             EndDialog(hDlg, LOWORD(wParam));
@@ -305,7 +295,7 @@ INT_PTR CALLBACK InputBoxProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
          int element = Edit_GetTextLength(edit);
          SendMessage(edit, EM_SETSEL, element, element);
          SetFocus(edit);
-         return FALSE;
+         return TRUE;
       }
       //VK_ENTER, case WM_GETDLGCODE:MessageBox(NULL,L"LOL",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
       case WM_COMMAND:{
@@ -322,7 +312,7 @@ INT_PTR CALLBACK InputBoxProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
          break;
       }
       case WM_CLOSE:{
-         EndDialog(hDlg, uMsg);
+         EndDialog(hDlg, (int)NULL);
          return TRUE;
       }
    }

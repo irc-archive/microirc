@@ -34,8 +34,6 @@
 #include "../iniparser/iniparser.h"
 #include "../ircprotocol/ircprotocol.h"
 
-SHACTIVATEINFO s_sai;
-
 int window_height;
 int window_width;
 HINSTANCE app_instance;
@@ -44,6 +42,7 @@ wchar_t module_path[IRC_SIZE_SMALL];
 HWND menu_bar_handle;
 
 wchar_t profile[IRC_SIZE_SMALL];
+wchar_t sound_alert[IRC_SIZE_SMALL];
 HWND static_connecting_handle;
 HWND tabcontrol_chatview_handle;
 HWND button_closetab_handle;
@@ -58,13 +57,6 @@ int receiver_active;
 irc_t irc;
 ircconfig_t config;
 int connected;
-wchar_t sound_alert[IRC_SIZE_SMALL];
-wchar_t wchat_text[IRC_SIZE_MEDIUM];
-char chat_text[IRC_SIZE_MEDIUM];
-wchar_t wchat_destination[IRC_SIZE_SMALL];
-char chat_destination[IRC_SIZE_SMALL];
-wchar_t wchat_nick[IRC_SIZE_SMALL];
-wchar_t wchat_return[IRC_SIZE_MEDIUM];
 
 guimanager_t manager;
 

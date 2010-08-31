@@ -264,6 +264,7 @@ void *receiverThreadProc(void *window_handle){
 }
 
 LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
+   static SHACTIVATEINFO s_sai;
    switch(uMsg){
       case WM_CREATE_TAB:{
          wchar_t *tab_name=(wchar_t*)lParam;
@@ -387,6 +388,12 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                break;
             }
             case BUTTON_CHATSEND:{
+               static wchar_t wchat_text[IRC_SIZE_MEDIUM];
+               static char chat_text[IRC_SIZE_MEDIUM];
+               static wchar_t wchat_destination[IRC_SIZE_SMALL];
+               static char chat_destination[IRC_SIZE_SMALL];
+               static wchar_t wchat_nick[IRC_SIZE_SMALL];
+               static wchar_t wchat_return[IRC_SIZE_MEDIUM];
                if(connected==0){
                   break;
                }
@@ -529,11 +536,9 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
          break;
       }
       case WM_SIZE:{
-         RECT window_sizes;
-         GetWindowRect(hWnd, &window_sizes);
-         window_width = window_sizes.right;
-         window_height = window_sizes.bottom;
-         window_height -= window_sizes.top*2;
+         window_width=LOWORD(lParam);
+         window_height=HIWORD(lParam);
+
          MoveWindow(static_connecting_handle,STATICCONNECTING_LEFT*window_width,STATICCONNECTING_TOP*window_height,STATICCONNECTING_WIDTH*window_width,STATICCONNECTING_HEIGHT*window_height,TRUE);
          MoveWindow(edit_chatinput_handle,EDITCHAT_LEFT*window_width,EDITCHAT_TOP*window_height,EDITCHAT_WIDTH*window_width,EDITCHAT_HEIGHT*window_height,TRUE);
          MoveWindow(button_chatsend_handle,BUTTONCHAT_LEFT*window_width,BUTTONCHAT_TOP*window_height,BUTTONCHAT_WIDTH*window_width,BUTTONCHAT_HEIGHT*window_height,TRUE);
@@ -547,41 +552,25 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
          break;
       }
       case WM_SETTINGCHANGE:{
-         switch(wParam){
-            case SPI_SETSIPINFO:{
-               SIPINFO si;
-               memset(&si,0,sizeof(si));
-               si.cbSize=sizeof(si);
-               if(SHSipInfo(SPI_GETSIPINFO,0,&si,0)){
-                  RECT rect = si.rcVisibleDesktop;
-                  if(si.fdwFlags & SIPF_ON){
-                     MoveWindow(hWnd,rect.left,rect.top,rect.right,rect.bottom,TRUE);
-                  }else{
-                     MoveWindow(hWnd,rect.left,rect.top,rect.right,rect.bottom-rect.top,TRUE);
-                  }
-               }
-               break;
-            }
-            default:{
-               SHHandleWMSettingChange(hWnd, wParam, lParam, &s_sai);
-            }
-         }
+         SHHandleWMSettingChange(hWnd, wParam, lParam, &s_sai);
          break;
       }
       case WM_CREATE:{
          memset(&s_sai, 0, sizeof(SHACTIVATEINFO));
          s_sai.cbSize = sizeof(SHACTIVATEINFO);
 
-         RECT window_sizes;
-         GetWindowRect(hWnd, &window_sizes);
-         window_width = window_sizes.right;
-         window_height = window_sizes.bottom;
-         window_height -= window_sizes.top*2;
-
          LPCREATESTRUCT create = (LPCREATESTRUCT)lParam;
          wcsncpy(profile,(wchar_t*)create->lpCreateParams,IRC_SIZE_SMALL);
          if(guiclient_init(hWnd)!=0){
             PostQuitMessage(0);
+         }
+         if(menu_bar_handle!=NULL){
+            RECT rcMainWindow;
+            RECT rcMenuBar;
+            GetWindowRect(hWnd, &rcMainWindow);
+            GetWindowRect(menu_bar_handle, &rcMenuBar);
+            rcMainWindow.bottom -= (rcMenuBar.bottom - rcMenuBar.top);
+            MoveWindow(hWnd, rcMainWindow.left, rcMainWindow.top, rcMainWindow.right-rcMainWindow.left, rcMainWindow.bottom-rcMainWindow.top, FALSE);
          }
          break;
       }

@@ -166,6 +166,7 @@ BEGIN
         MENUITEM "Exit",                        IDM_OPTIONS_EXIT
         MENUITEM "Connect",                     IDM_OPTIONS_CONNECT
         MENUITEM "Preferences",                 IDM_OPTIONS_PREFERENCES
+        MENUITEM "DEBUG INPUTBOX",              IDM_OPENURL
     END
 END
 
