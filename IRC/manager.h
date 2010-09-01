@@ -141,9 +141,9 @@ wcsncpy(wprofile_fullpath,fullpath,IRC_SIZE_SMALL);
                if(SHSipInfo(SPI_GETSIPINFO,0,&si,0)){
                   RECT rect = si.rcVisibleDesktop;
                   if(rect.bottom>window_height){
-                     MoveWindow(hWnd,rect.left,rect.top,rect.right,rect.bottom-rect.top,TRUE);
+                     MoveWindow(hWnd,rect.left,rect.top,rect.right,rect.bottom-rect.top,FALSE);
                   }else{
-                     MoveWindow(hWnd,rect.left,rect.top,rect.right,rect.bottom,TRUE);
+                     MoveWindow(hWnd,rect.left,rect.top,rect.right,rect.bottom,FALSE);
                   }
                }
                break;

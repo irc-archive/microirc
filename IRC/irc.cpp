@@ -43,7 +43,6 @@ HWND menu_bar_handle;
 
 wchar_t profile[IRC_SIZE_SMALL];
 wchar_t sound_alert[IRC_SIZE_SMALL];
-HWND static_connecting_handle;
 HWND tabcontrol_chatview_handle;
 HWND button_closetab_handle;
 HWND button_chatsend_handle;

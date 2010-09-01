@@ -75,8 +75,8 @@
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/IRC.pdb"
 				SubSystem="0"
-				StackReserveSize="65536"
-				StackCommitSize="4096"
+				StackReserveSize="131072"
+				StackCommitSize="8192"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
 			/>

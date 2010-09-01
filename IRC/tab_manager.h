@@ -110,12 +110,12 @@ LRESULT CALLBACK ChatViewNickProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
    switch(uMsg){
       case WM_COMMAND:{
          int wmEvent = HIWORD(wParam);
+         wchar_t wnick[IRC_SIZE_SMALL];
+         wchar_t wchannel[IRC_SIZE_SMALL];
+         char nick[IRC_SIZE_SMALL];
+         char channel[IRC_SIZE_SMALL];
          switch (LOWORD(wParam)){
             case IDM_CHATBOX_KICK:{
-               wchar_t wnick[IRC_SIZE_SMALL];
-               wchar_t wchannel[IRC_SIZE_SMALL];
-               char nick[IRC_SIZE_SMALL];
-               char channel[IRC_SIZE_SMALL];
                int element = ListBox_GetCurSel(hWnd);
                ListBox_GetText(hWnd,element,wnick);
                if(wcslen(wnick)<1){
@@ -133,10 +133,6 @@ LRESULT CALLBACK ChatViewNickProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                break;
             }
             case IDM_CHATBOX_KICKBAN:{
-               wchar_t wnick[IRC_SIZE_SMALL];
-               wchar_t wchannel[IRC_SIZE_SMALL];
-               char nick[IRC_SIZE_SMALL];
-               char channel[IRC_SIZE_SMALL];
                int element = ListBox_GetCurSel(hWnd);
                ListBox_GetText(hWnd,element,wnick);
                if(wcslen(wnick)<1){
@@ -155,10 +151,6 @@ LRESULT CALLBACK ChatViewNickProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                break;
             }
             case IDM_CHATBOX_BAN:{
-               wchar_t wnick[IRC_SIZE_SMALL];
-               wchar_t wchannel[IRC_SIZE_SMALL];
-               char nick[IRC_SIZE_SMALL];
-               char channel[IRC_SIZE_SMALL];
                int element = ListBox_GetCurSel(hWnd);
                ListBox_GetText(hWnd,element,wnick);
                if(wcslen(wnick)<1){
@@ -180,8 +172,6 @@ LRESULT CALLBACK ChatViewNickProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                break;
             }
             case IDM_CHATBOX_COPYNICK:{
-               wchar_t wnick[IRC_SIZE_SMALL];
-               char nick[IRC_SIZE_SMALL];
                int element = ListBox_GetCurSel(hWnd);
                ListBox_GetText(hWnd,element,wnick);
                if(wcslen(wnick)<1){
@@ -459,10 +449,10 @@ void tab_resize_all(HWND tab_control){
    for(size--;size>=0;size--){
       if(tab_get_parameters_index(tab_control,size,&tab)!=-1){
          if(tab->nick==NULL){
-            MoveWindow(tab->text,TABTALK_LEFT*window_width,TABTALK_TOP*window_height,TABTALK_STATUS_WIDTH*window_width,TABALL_HEIGHT*window_height,TRUE);
+            MoveWindow(tab->text,TABTALK_LEFT*window_width,TABTALK_TOP*window_height,TABTALK_STATUS_WIDTH*window_width,TABALL_HEIGHT*window_height,FALSE);
          }else{
-            MoveWindow(tab->text,TABTALK_LEFT*window_width,TABTALK_TOP*window_height,TABTALK_CHAT_WIDTH*window_width,TABALL_HEIGHT*window_height,TRUE);
-            MoveWindow(tab->nick,TABNICK_LEFT*window_width,TABNICK_TOP*window_height,TABNICK_CHAT_WIDTH*window_width,TABALL_HEIGHT*window_height,TRUE);
+            MoveWindow(tab->text,TABTALK_LEFT*window_width,TABTALK_TOP*window_height,TABTALK_CHAT_WIDTH*window_width,TABALL_HEIGHT*window_height,FALSE);
+            MoveWindow(tab->nick,TABNICK_LEFT*window_width,TABNICK_TOP*window_height,TABNICK_CHAT_WIDTH*window_width,TABALL_HEIGHT*window_height,FALSE);
          }
       }
    }
