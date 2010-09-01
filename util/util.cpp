@@ -31,10 +31,23 @@ int strcmpi(const char *str1, const char *str2){
    return toupper(*(unsigned const char *)str1)-toupper(*(unsigned const char *)(str2));
 }
 
+int strncmpi(const char *str1, const char *str2, unsigned int size){
+   //_memicmp can be used in microsoft windows...
+   for(;size>0;size--){
+      if(toupper(*str1)!=toupper(*str2)){
+         return toupper(*(unsigned const char *)str1)-toupper(*(unsigned const char *)(str2));
+      }
+      str1++;
+      str2++;
+   }
+   return 0;
+}
+
 char *strstri(char *str1, const char *str2){
+   int str2size = strlen(str2);
    int i;
    for(i=0; str1[i] != '\0'; i++){
-      if(strcmpi(str1+i,str2)==0){
+      if(strncmpi(str1+i,str2,str2size)==0){
          return str1+i;
       }
    }
