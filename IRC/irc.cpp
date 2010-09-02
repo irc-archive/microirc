@@ -34,12 +34,37 @@
 #include "../iniparser/iniparser.h"
 #include "../ircprotocol/ircprotocol.h"
 
-int window_height;
-int window_width;
+unsigned int BORDER;
+unsigned int CLOSETAB_WIDTH;
+unsigned int CLOSETAB_HEIGHT;
+unsigned int BUTTONCHAT_WIDTH;
+unsigned int BUTTONCHAT_HEIGHT;
+unsigned int TABCONTROLCHAT_WIDTH;
+unsigned int TABCONTROLCHAT_HEIGHT;
+unsigned int EDITCHAT_WIDTH;
+unsigned int EDITCHAT_HEIGHT;
+unsigned int TABALL_HEIGHT;
+unsigned int TABTALK_STATUS_WIDTH;
+unsigned int TABNICK_CHAT_WIDTH;
+unsigned int TABTALK_CHAT_WIDTH;
+
+unsigned int CLOSETAB_TOP;
+unsigned int CLOSETAB_LEFT;
+unsigned int BUTTONCHAT_TOP;
+unsigned int BUTTONCHAT_LEFT;
+unsigned int TABCONTROLCHAT_TOP;
+unsigned int TABCONTROLCHAT_LEFT;
+unsigned int EDITCHAT_TOP;
+unsigned int EDITCHAT_LEFT;
+unsigned int TABTALK_TOP;
+unsigned int TABTALK_LEFT;
+unsigned int TABNICK_TOP;
+unsigned int TABNICK_LEFT;
+
 HINSTANCE app_instance;
+HWND menu_bar_handle;
 wchar_t window_title[IRC_SIZE_SMALL];
 wchar_t module_path[IRC_SIZE_SMALL];
-HWND menu_bar_handle;
 
 wchar_t profile[IRC_SIZE_SMALL];
 wchar_t sound_alert[IRC_SIZE_SMALL];

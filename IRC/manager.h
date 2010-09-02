@@ -119,9 +119,9 @@ wcsncpy(wprofile_fullpath,fullpath,IRC_SIZE_SMALL);
       case WM_SIZE:{
          RECT window_sizes;
          GetWindowRect(hWnd, &window_sizes);
-         window_width = window_sizes.right;
-         window_height = window_sizes.bottom;
-         window_height -= window_sizes.top*2;
+//         window_width = window_sizes.right;
+  //       window_height = window_sizes.bottom;
+    //     window_height -= window_sizes.top*2;
          //FAZER
          break;
       }
@@ -133,7 +133,7 @@ wcsncpy(wprofile_fullpath,fullpath,IRC_SIZE_SMALL);
       case WM_SETTINGCHANGE:{
          //SHACTIVATEINFO s_sai;
          //SHHandleWMSettingChange(hWnd, wParam, lParam, &s_sai);
-         switch(wParam){
+         /*switch(wParam){
             case SPI_SETSIPINFO:{
                SIPINFO si;
                memset(&si,0,sizeof(si));
@@ -148,11 +148,11 @@ wcsncpy(wprofile_fullpath,fullpath,IRC_SIZE_SMALL);
                }
                break;
             }
-         }
+         }*/
          break;
       }
       case WM_CREATE:{
-         RECT window_sizes;
+         /*RECT window_sizes;
          GetWindowRect(hWnd, &window_sizes);
          window_width = window_sizes.right;
          window_height = window_sizes.bottom;
@@ -160,7 +160,7 @@ wcsncpy(wprofile_fullpath,fullpath,IRC_SIZE_SMALL);
          if(guimanager_init(hWnd)!=0){
             PostQuitMessage(0);
          }
-         break;
+         break;*/
       }
       case WM_QUIT:{
          //called on PostQuitMessage(0);

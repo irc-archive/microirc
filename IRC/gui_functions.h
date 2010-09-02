@@ -54,16 +54,16 @@ LRESULT CALLBACK ChatSendProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 }
 
 void init_chat_screen(HWND hWnd){
-   edit_chatinput_handle = CreateWindowEx(0,L"edit", NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|ES_AUTOHSCROLL|ES_NOHIDESEL,EDITCHAT_LEFT*window_width,EDITCHAT_TOP*window_height,EDITCHAT_WIDTH*window_width,EDITCHAT_HEIGHT*window_height,hWnd,(HMENU)NULL,app_instance,NULL);
+   edit_chatinput_handle = CreateWindowEx(0,L"edit", NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|ES_AUTOHSCROLL|ES_NOHIDESEL,EDITCHAT_LEFT,EDITCHAT_TOP,EDITCHAT_WIDTH,EDITCHAT_HEIGHT,hWnd,(HMENU)NULL,app_instance,NULL);
    
    old_ChatSendProc = (WNDPROC)GetWindowLong(edit_chatinput_handle,GWL_WNDPROC);
    SetWindowLong(edit_chatinput_handle,GWL_WNDPROC,(LONG)ChatSendProc);
    
    Edit_LineLength(edit_chatinput_handle,EDITCHATINPUT_LIMIT);
    Edit_LimitText(edit_chatinput_handle,EDITCHATINPUT_LIMIT);
-   button_chatsend_handle = CreateWindowEx(0,L"button",TEXT("Send"),WS_VISIBLE|WS_CHILD|BS_DEFPUSHBUTTON|BS_CENTER|BS_VCENTER,BUTTONCHAT_LEFT*window_width,BUTTONCHAT_TOP*window_height,BUTTONCHAT_WIDTH*window_width,BUTTONCHAT_HEIGHT*window_height,hWnd,(HMENU)BUTTON_CHATSEND,app_instance,NULL);
-   tabcontrol_chatview_handle = CreateWindowEx(0,WC_TABCONTROL,NULL,WS_CHILD|WS_VISIBLE|TCS_FOCUSNEVER|TCS_BUTTONS|TCS_FLATBUTTONS,TABCONTROLCHAT_LEFT*window_width,TABCONTROLCHAT_TOP*window_height,TABCONTROLCHAT_WIDTH*window_width,TABCONTROLCHAT_HEIGHT*window_height,hWnd,(HMENU)TABCONTROL_CHATVIEW,app_instance,NULL);
-   button_closetab_handle = CreateWindowEx(0,L"button",TEXT("x"),WS_VISIBLE|WS_CHILD|BS_CENTER|BS_VCENTER,CLOSETAB_LEFT*window_width,CLOSETAB_TOP*window_height,CLOSETAB_WIDTH*window_width,CLOSETAB_HEIGHT*window_height,hWnd,(HMENU)BUTTON_CLOSETAB,app_instance,NULL);
+   button_chatsend_handle = CreateWindowEx(0,L"button",TEXT("Send"),WS_VISIBLE|WS_CHILD|BS_DEFPUSHBUTTON|BS_CENTER|BS_VCENTER,BUTTONCHAT_LEFT,BUTTONCHAT_TOP,BUTTONCHAT_WIDTH,BUTTONCHAT_HEIGHT,hWnd,(HMENU)BUTTON_CHATSEND,app_instance,NULL);
+   tabcontrol_chatview_handle = CreateWindowEx(0,WC_TABCONTROL,NULL,WS_CHILD|WS_VISIBLE|TCS_FOCUSNEVER|TCS_BUTTONS|TCS_FLATBUTTONS,TABCONTROLCHAT_LEFT,TABCONTROLCHAT_TOP,TABCONTROLCHAT_WIDTH,TABCONTROLCHAT_HEIGHT,hWnd,(HMENU)TABCONTROL_CHATVIEW,app_instance,NULL);
+   button_closetab_handle = CreateWindowEx(0,L"button",TEXT("x"),WS_VISIBLE|WS_CHILD|BS_CENTER|BS_VCENTER,CLOSETAB_LEFT,CLOSETAB_TOP,CLOSETAB_WIDTH,CLOSETAB_HEIGHT,hWnd,(HMENU)BUTTON_CLOSETAB,app_instance,NULL);
    sippref_handle = CreateWindowEx(0,WC_SIPPREF,L"",WS_CHILD,0,0,0,0,hWnd,(HMENU)NULL,app_instance,NULL);
    UpdateWindow(hWnd);
 }

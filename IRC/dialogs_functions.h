@@ -285,6 +285,20 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
    return FALSE;
 }
 
+WNDPROC old_EditInputBoxProc;
+LRESULT CALLBACK EditInputBoxProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
+   switch (uMsg){
+      case WM_CHAR:{
+         if(wParam == VK_RETURN){
+            SendMessage(GetParent(hWnd),WM_COMMAND,IDOK,0);
+            return 0;
+         }
+         break;
+      }
+   }
+   return CallWindowProc(old_EditInputBoxProc, hWnd, uMsg, wParam, lParam);
+}
+
 INT_PTR CALLBACK InputBoxProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam){
    switch (uMsg){
       case WM_INITDIALOG:{
@@ -295,9 +309,11 @@ INT_PTR CALLBACK InputBoxProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
          int element = Edit_GetTextLength(edit);
          SendMessage(edit, EM_SETSEL, element, element);
          SetFocus(edit);
+
+         old_EditInputBoxProc = (WNDPROC)GetWindowLong(edit,GWL_WNDPROC);
+         SetWindowLong(edit,GWL_WNDPROC,(LONG)EditInputBoxProc);
          return TRUE;
       }
-      //VK_ENTER, case WM_GETDLGCODE:MessageBox(NULL,L"LOL",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
       case WM_COMMAND:{
          if (LOWORD(wParam) == IDOK){
             HWND edit = GetDlgItem(hDlg,IDC_EDIT1);

@@ -14,6 +14,7 @@
 
 #define IRC_RECONNECT_TIMEOUT 7500
 
+#define IRC_FILE_PATH_ENCODING CP_ACP
 #define IRC_CONFIG_FILE_ENCODING CP_UTF8
 
 #define WM_CREATE_TAB WM_USER+10
@@ -24,12 +25,12 @@
 #define WM_CONNECTING WM_USER+15
 #define WM_RECONNECTING WM_USER+16
 
+#define BUTTON_CLOSETAB 200
 #define BUTTON_CHATSEND 201
-#define TABCONTROL_CHATVIEW 203
-#define BUTTON_CLOSETAB 204
-#define EDIT_CHATVIEW_TEXT 205
-#define LIST_CHATVIEW_NICK 206
-#define BUBBLE_NOTIFICATION 208
+#define TABCONTROL_CHATVIEW 202
+#define EDIT_CHATVIEW_TEXT 204
+#define LIST_CHATVIEW_NICK 205
+#define BUBBLE_NOTIFICATION 206
 
 #define EDITCHATVIEWTEXT_DELETE 2048
 #define EDITCHATINPUT_LIMIT 256
@@ -37,33 +38,6 @@
 #define SCROLL_PREFERENCES_MIN_POSITIONS 1
 #define SCROLL_PREFERENCES_MAX_POSITIONS 8
 #define SCROLL_PREFERENCES_HEIGHT 337
-
-#define BORDER 0.005 //this value can be changed and all the controls got automaticaly resized
-#define CLOSETAB_WIDTH 0.08
-#define CLOSETAB_HEIGHT 0.08
-#define TABCONTROLCHAT_WIDTH (1-(3*BORDER+CLOSETAB_WIDTH))
-#define TABCONTROLCHAT_HEIGHT 0.08
-#define TABALL_HEIGHT (1-(4*BORDER+TABCONTROLCHAT_HEIGHT+EDITCHAT_HEIGHT))
-#define TABTALK_STATUS_WIDTH (1-(2*BORDER))
-#define TABNICK_CHAT_WIDTH 0.25
-#define TABTALK_CHAT_WIDTH (1-(3*BORDER+TABNICK_CHAT_WIDTH))
-#define BUTTONCHAT_WIDTH 0.17
-#define BUTTONCHAT_HEIGHT 0.08
-#define EDITCHAT_WIDTH (1-(3*BORDER+BUTTONCHAT_WIDTH))
-#define EDITCHAT_HEIGHT 0.08
-
-#define TABCONTROLCHAT_TOP BORDER
-#define TABCONTROLCHAT_LEFT BORDER
-#define CLOSETAB_TOP BORDER
-#define CLOSETAB_LEFT (TABCONTROLCHAT_LEFT+TABCONTROLCHAT_WIDTH+BORDER)
-#define TABTALK_TOP (TABCONTROLCHAT_TOP+TABCONTROLCHAT_HEIGHT+BORDER)
-#define TABTALK_LEFT BORDER
-#define TABNICK_TOP (TABCONTROLCHAT_TOP+TABCONTROLCHAT_HEIGHT+BORDER)
-#define TABNICK_LEFT (TABTALK_LEFT+TABTALK_CHAT_WIDTH+BORDER)
-#define EDITCHAT_TOP (TABTALK_TOP+TABALL_HEIGHT+BORDER)
-#define EDITCHAT_LEFT BORDER
-#define BUTTONCHAT_TOP (TABTALK_TOP+TABALL_HEIGHT+BORDER)
-#define BUTTONCHAT_LEFT (EDITCHAT_LEFT+EDITCHAT_WIDTH+BORDER)
 
 typedef struct ircconfig_t{
    int reconnect;
@@ -97,3 +71,55 @@ void guimanager_destroy();
 int guimanager_create(wchar_t *text, HWND hWnd);
 void guimanager_getselected(int *d_result, int *s_result);
 int guimanager_delete(int index);
+
+
+
+
+
+
+const int HIDPI = 96;
+
+int GetScreenCapsX(){
+   HDC hDC = GetDC(NULL);
+   if(hDC == NULL){
+      return -1;
+   }
+   int i = GetDeviceCaps(hDC, LOGPIXELSX);
+   ReleaseDC(NULL, hDC);
+   return i;
+}
+
+int GetScreenCapsY(){
+   HDC hDC = GetDC(NULL);
+   if(hDC == NULL){
+      return -1;
+   }
+   int i = GetDeviceCaps(hDC, LOGPIXELSY);
+   ReleaseDC(NULL, hDC);
+   return i;
+}
+
+inline int HIDPISIGN(int x){
+   return (((x)<0)?-1:1);
+}
+
+inline int HIDPIMulDiv(int x, int y, int z){
+   return ((((abs(x)*(y))+((z)>>1))/(z))*HIDPISIGN(x));
+}
+
+/* nLogPixels should be result of GetScreenCaps */
+inline int SCALEX(int argX, int nLogPixelsX){
+   return HIDPIMulDiv(argX, nLogPixelsX, HIDPI);
+}
+
+inline int SCALEY(int argY, int nLogPixelsY){
+   return HIDPIMulDiv(argY, nLogPixelsY, HIDPI);
+}
+
+inline int UNSCALEX(int argX, int nLogPixelsX){
+   return HIDPIMulDiv(argX, HIDPI, nLogPixelsX);
+}
+
+inline int UNSCALEY(int argY, int nLogPixelsY){
+   return HIDPIMulDiv(argY, HIDPI, nLogPixelsY);
+}

@@ -536,13 +536,12 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
          break;
       }
       case WM_SIZE:{
-         window_width=LOWORD(lParam);
-         window_height=HIWORD(lParam);
+         refresh_sizes(LOWORD(lParam),HIWORD(lParam),GetScreenCapsX(),GetScreenCapsY());
 
-         MoveWindow(edit_chatinput_handle,EDITCHAT_LEFT*window_width,EDITCHAT_TOP*window_height,EDITCHAT_WIDTH*window_width,EDITCHAT_HEIGHT*window_height,FALSE);
-         MoveWindow(button_chatsend_handle,BUTTONCHAT_LEFT*window_width,BUTTONCHAT_TOP*window_height,BUTTONCHAT_WIDTH*window_width,BUTTONCHAT_HEIGHT*window_height,FALSE);
-         MoveWindow(tabcontrol_chatview_handle,TABCONTROLCHAT_LEFT*window_width,TABCONTROLCHAT_TOP*window_height,TABCONTROLCHAT_WIDTH*window_width,TABCONTROLCHAT_HEIGHT*window_height,FALSE);
-         MoveWindow(button_closetab_handle,CLOSETAB_LEFT*window_width,CLOSETAB_TOP*window_height,CLOSETAB_WIDTH*window_width,CLOSETAB_HEIGHT*window_height,FALSE);
+         MoveWindow(edit_chatinput_handle,EDITCHAT_LEFT,EDITCHAT_TOP,EDITCHAT_WIDTH,EDITCHAT_HEIGHT,FALSE);
+         MoveWindow(button_chatsend_handle,BUTTONCHAT_LEFT,BUTTONCHAT_TOP,BUTTONCHAT_WIDTH,BUTTONCHAT_HEIGHT,FALSE);
+         MoveWindow(tabcontrol_chatview_handle,TABCONTROLCHAT_LEFT,TABCONTROLCHAT_TOP,TABCONTROLCHAT_WIDTH,TABCONTROLCHAT_HEIGHT,FALSE);
+         MoveWindow(button_closetab_handle,CLOSETAB_LEFT,CLOSETAB_TOP,CLOSETAB_WIDTH,CLOSETAB_HEIGHT,FALSE);
          tab_resize_all(tabcontrol_chatview_handle);
          break;
       }

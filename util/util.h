@@ -20,6 +20,7 @@
 
 char *strncpy0(char *destination, const char *source, size_t num);
 int strcmpi(const char *str1, const char *str2);
+int strncmpi(const char *str1, const char *str2, unsigned int size);
 char *strstri(char *str1, const char *str2);
 
 #endif
