@@ -305,13 +305,14 @@ INT_PTR CALLBACK InputBoxProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
          wchar_t **titletext = (wchar_t**)lParam;
          SetWindowText(hDlg,(LPCWSTR)titletext[0]);
          HWND edit = GetDlgItem(hDlg,IDC_EDIT1);
+
+         old_EditInputBoxProc = (WNDPROC)GetWindowLong(edit,GWL_WNDPROC);
+         SetWindowLong(edit,GWL_WNDPROC,(LONG)EditInputBoxProc);
+
          Edit_SetText(edit,titletext[1]);
          int element = Edit_GetTextLength(edit);
          SendMessage(edit, EM_SETSEL, element, element);
          SetFocus(edit);
-
-         old_EditInputBoxProc = (WNDPROC)GetWindowLong(edit,GWL_WNDPROC);
-         SetWindowLong(edit,GWL_WNDPROC,(LONG)EditInputBoxProc);
          return TRUE;
       }
       case WM_COMMAND:{
