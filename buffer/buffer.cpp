@@ -38,7 +38,7 @@ int buffer_grow_shrink(buffer_t *buffer, int n_size){
       new_size = buffer->actual_size/2;
       char *new_data = (char*)malloc(new_size);
       if(new_data == NULL){
-         return 0;
+         return -1;
       }
       memcpy(new_data, buffer->data, buffer->size);
       free(buffer->data);
@@ -50,12 +50,23 @@ int buffer_grow_shrink(buffer_t *buffer, int n_size){
    }
 }
 
-export int buffer_init(buffer_t *buffer, char *d_split, int s_split, int max_size){
-   memset(buffer,0,sizeof(buffer_t));
-   if(max_size<=0){
-      max_size = BUFFER_DEFAULT_SIZE;
+int buffer_line_len(buffer_t *buffer){
+   int size = buffer->actual_size - buffer->s_split;
+   char *data = buffer->data;
+   int start = 0;
+   while(memcmp(data,buffer->d_split,buffer->s_split) && start<=size){
+      data++;
+      start++;
    }
-   buffer->data = (char*)malloc(max_size);
+   return start;
+}
+
+export int buffer_init(buffer_t *buffer, char *d_split, int s_split, int initial_size, int max_data_size){
+   memset(buffer,0,sizeof(buffer_t));
+   if(initial_size<=0){
+      initial_size = BUFFER_DEFAULT_SIZE;
+   }
+   buffer->data = (char*)malloc(initial_size);
    if(buffer->data==NULL){
       return -1;
    }
@@ -66,7 +77,8 @@ export int buffer_init(buffer_t *buffer, char *d_split, int s_split, int max_siz
    }
    memcpy(buffer->d_split,d_split,s_split);
    buffer->s_split = s_split;
-   buffer->actual_size = max_size;
+   buffer->actual_size = initial_size;
+   buffer->max_data_size = max_data_size;
    buffer->size = 0;
    return 0;
 }
@@ -79,8 +91,8 @@ export void buffer_destroy(buffer_t *buffer){
 
 export void buffer_print(buffer_t *buffer){
    int i;
-   char *data = buffer_read_avaiable_data_buffer(buffer);
-   int size = buffer_read_avaiable_data_size(buffer);
+   char *data = buffer_get_avaiable_data_buffer(buffer);
+   int size = buffer_get_avaiable_data_size(buffer);
    printf("BUFFER_T size:%d ",size);
    for(i=0;i<size;i++){
       printf("%c",*(data+i));
@@ -88,38 +100,27 @@ export void buffer_print(buffer_t *buffer){
    printf(".\n");
 }
 
-export int buffer_line_len(buffer_t *buffer, char *optional_data, int optional_size){
-   int start = 0;
-   if(optional_data==NULL || optional_size==0){
-      optional_data = buffer->data;
-      optional_size = buffer->actual_size - buffer->s_split;
-   }
-   while(memcmp(optional_data,buffer->d_split,buffer->s_split) && start<=optional_size){
-      optional_data++;
-      start++;
-   }
-   return start;
-}
-
-export int buffer_read_avaiable_write_size(buffer_t *buffer){
+export int buffer_get_avaiable_write_size(buffer_t *buffer){
    return (buffer->actual_size)-(buffer->size);
 }
 
-export char *buffer_read_avaiable_write_buffer(buffer_t *buffer){
+export char *buffer_get_avaiable_write_buffer(buffer_t *buffer){
    return (buffer->data)+(buffer->size);
 }
 
-export int buffer_read_avaiable_data_size(buffer_t *buffer){
-   int retval = buffer_line_len(buffer, NULL, 0);
+export int buffer_get_avaiable_data_size(buffer_t *buffer){
+   int retval = buffer_line_len(buffer);
    if(retval <= (buffer->size-buffer->s_split)){
       retval += buffer->s_split;
       return retval;
+   }else if(buffer->max_data_size > 0 && buffer->size > buffer->max_data_size){
+      return -1;
    }else{
       return 0;
    }
 }
 
-export char *buffer_read_avaiable_data_buffer(buffer_t *buffer){
+export char *buffer_get_avaiable_data_buffer(buffer_t *buffer){
    return buffer->data;
 }
 
@@ -127,7 +128,7 @@ export int buffer_write_size_before(buffer_t *buffer, int size){
    if(buffer_grow_shrink(buffer,size)<0){
       return -1;
    }
-   return buffer_read_avaiable_data_size(buffer);
+   return buffer_get_avaiable_data_size(buffer);
 }
 
 export int buffer_write_data(buffer_t *buffer, char *d_data, int s_data){
@@ -136,17 +137,17 @@ export int buffer_write_data(buffer_t *buffer, char *d_data, int s_data){
    }
    memcpy((buffer->data)+(buffer->size),d_data,s_data);
    buffer->size = buffer->size + s_data;
-   return buffer_read_avaiable_data_size(buffer);
+   return buffer_get_avaiable_data_size(buffer);
 }
 
 export int buffer_write_size_after(buffer_t *buffer, int size){
    buffer->size = buffer->size + size;
    buffer_grow_shrink(buffer,0);
-   return buffer_read_avaiable_data_size(buffer);
+   return buffer_get_avaiable_data_size(buffer);
 }
 
 export int buffer_read_data(buffer_t *buffer){
-   int retval = buffer_read_avaiable_data_size(buffer);
+   int retval = buffer_get_avaiable_data_size(buffer);
    if(retval>0){
       memmove(buffer->data,buffer->data+retval,buffer->size-retval);
       buffer->size = buffer->size - retval;
@@ -156,7 +157,7 @@ export int buffer_read_data(buffer_t *buffer){
 }
 
 export int buffer_read_get_data(buffer_t *buffer, char *data, int size){
-   int retval = buffer_read_avaiable_data_size(buffer);
+   int retval = buffer_get_avaiable_data_size(buffer);
    if(retval>size){
       return -1;
    }else if(retval>0){
@@ -166,4 +167,13 @@ export int buffer_read_get_data(buffer_t *buffer, char *data, int size){
       buffer_grow_shrink(buffer,0);
    }
    return retval;
+}
+
+export int buffer_validate_data(buffer_t *buffer, char *data){
+   int result = strlen(data)+buffer->s_split;
+   if(result > buffer->max_data_size){
+      return -1;
+   }
+   memcpy(data+strlen(data),buffer->d_split,buffer->s_split);
+   return result;
 }

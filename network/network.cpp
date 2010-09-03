@@ -240,12 +240,12 @@ export int getbytes_tcp(network_t *network, data_t *recv_data, int b_malloc){
 
 export int gettext_tcp(network_t *network, buffer_t *buffer){
    int retval=0;
-   int result = buffer_read_avaiable_data_size(buffer);
-   if(result>0){
+   int result = buffer_get_avaiable_data_size(buffer);
+   if(result!=0){
       return result;
    }
    while(retval==0){
-      result = recv(network->socket, buffer_read_avaiable_write_buffer(buffer), buffer_read_avaiable_write_size(buffer), 0);
+      result = recv(network->socket, buffer_get_avaiable_write_buffer(buffer), buffer_get_avaiable_write_size(buffer), 0);
       if(result < 0){
          fprintf(stderr, "recv msg failed: %d\n", get_last_error());
          return -1;
@@ -255,7 +255,7 @@ export int gettext_tcp(network_t *network, buffer_t *buffer){
       }
       retval = buffer_write_size_after(buffer,result);
    }
-   return buffer_read_avaiable_data_size(buffer);
+   return buffer_get_avaiable_data_size(buffer);
 }
 
 export int sendtext_tcp(network_t *network, buffer_t *buffer, char *data, int size){

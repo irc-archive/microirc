@@ -56,6 +56,7 @@
 #define CHAR_CTCP 1
 #define CHAR_TERMINATOR 0
 
+#define IRCPROTOCOL_MAX_MESSAGE_LEN 512
 #define IRCPROTOCOL_MAX_NICKS_PER_MESSAGE 256
 #define IRCPROTOCOL_CONFIG_MAX_TOKENS 10
 #define IRCPROTOCOL_RECV_MAX_TOKENS 15
@@ -63,7 +64,7 @@
 
 #define IRCPROTOCOL_SIZE_SMALL 256
 #define IRCPROTOCOL_SIZE_MEDIUM 1024
-#define IRCPROTOCOL_SIZE_LARGE 16384
+#define IRCPROTOCOL_SIZE_LARGE 8192
 
 #define IRCPROTOCOL_SPLITER_DATA "\r\n"
 #define IRCPROTOCOL_SPLITER_SIZE 2
@@ -86,9 +87,9 @@ typedef struct irc_t{
    int autojoin_delay;
    
    network_t network;
-   char recv_buffer[IRCPROTOCOL_SIZE_MEDIUM];
+   char recv_buffer[IRCPROTOCOL_MAX_MESSAGE_LEN];
    buffer_t recv_buffer_stream;
-   char send_buffer[IRCPROTOCOL_SIZE_MEDIUM];
+   char send_buffer[IRCPROTOCOL_MAX_MESSAGE_LEN];
    CRITICAL_SECTION send_buffer_critical_section;
    int connected;
 }irc_t;
