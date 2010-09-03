@@ -10,27 +10,22 @@
 */
 
 LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
+   static SHACTIVATEINFO s_sai;
    switch(uMsg){
       case WM_COMMAND:{
          int wmEvent = HIWORD(wParam);
          HWND control_handler = (HWND)lParam;
+         wchar_t wprofile_name[IRC_SIZE_SMALL];
          switch (LOWORD(wParam)){
             case IDM_NEW:{
-               wchar_t wprofile_name[IRC_SIZE_SMALL];
                if(open_input_box(hWnd, L"New Profile", L"", wprofile_name, IRC_SIZE_SMALL)!=0){
                   break;
                }
-               if(wcslen(wprofile_name)==0){// || validate_name(wprofile_name)!=0){
+               if(wcslen(wprofile_name)==0 || validate_name(wprofile_name)!=0){
                   MessageBox(hWnd,L"Invalid Profile Name.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                   break;
                }
-               wchar_t wprofile_fullpath[IRC_SIZE_SMALL];
                wcscat(wprofile_name,L".ini");
-//               lololol(wprofile_name,wprofile_fullpath);
-wchar_t fullpath[IRC_SIZE_SMALL];
-wcsncpy(fullpath,module_path,IRC_SIZE_SMALL);
-wcsncpy(wcsrchr(fullpath,'\\')+1,wprofile_name,IRC_SIZE_SMALL);
-wcsncpy(wprofile_fullpath,fullpath,IRC_SIZE_SMALL);
 
                iniparser_t iniparser;
                if(iniparser_init(&iniparser)!=0){
@@ -53,7 +48,7 @@ wcsncpy(wprofile_fullpath,fullpath,IRC_SIZE_SMALL);
                iniparser_setint(&iniparser, "miscellaneous", "sounds", 0);
                iniparser_setint(&iniparser, "miscellaneous", "lednumber", -1);
                iniparser_setint(&iniparser, "miscellaneous", "ledinterval", 500);
-               if(winiparser_store(&iniparser,wprofile_fullpath)!=0){
+               if(winiparser_store(&iniparser,wprofile_name)!=0){
                   iniparser_destroy(&iniparser);
                   break;
                }
@@ -65,34 +60,29 @@ wcsncpy(wprofile_fullpath,fullpath,IRC_SIZE_SMALL);
                break;
             }
             case IDM_EDIT:{
-               wchar_t wfile_config[IRC_SIZE_SMALL];
-               wchar_t config_name[IRC_SIZE_SMALL];
                int d_index[10];
                int s_index=0;
                int i;
                guimanager_getselected(d_index, &s_index);
                for(i=0;i<s_index;i++){
-                  Button_GetText(manager.connect_handles[d_index[i]],config_name,IRC_SIZE_SMALL);
-                  wcsncpy(wfile_config,module_path,IRC_SIZE_SMALL);
-                  wcscpy(wcsrchr(wfile_config,'\\')+1,config_name);
-//                  WideCharToMultiByte(CP_ACP,0,wfile_config,-1,file_config,IRC_SIZE_SMALL,NULL,NULL);
-                  DialogBoxParam(app_instance, (LPCTSTR)IDD_PREFERENCES, hWnd, PreferencesProc, NULL);
+                  Button_GetText(manager.connect_handles[d_index[i]],wprofile_name,IRC_SIZE_SMALL);
+                  wchar_t *parameters[2]={L"manager",wprofile_name};
+                  DialogBoxParam(app_instance, (LPCTSTR)IDD_PREFERENCES, hWnd, PreferencesProc, (LPARAM)parameters);
                }
                break;
             }
             case IDM_REMOVE:{
-               wchar_t wfile_config[IRC_SIZE_SMALL];
-               wchar_t command_line[IRC_SIZE_SMALL];
+               wchar_t wprofile_fullpath[IRC_SIZE_SMALL];
                int d_index[10];
                int s_index=0;
                int i;
                guimanager_getselected(d_index, &s_index);
                for(i=s_index-1;i>=0;i--){
-                  Button_GetText(manager.connect_handles[d_index[i]],command_line,IRC_SIZE_SMALL);
-                  wcsncpy(wfile_config,module_path,IRC_SIZE_SMALL);
-                  wcscpy(wcsrchr(wfile_config,'\\')+1,command_line);
+                  Button_GetText(manager.connect_handles[d_index[i]],wprofile_name,IRC_SIZE_SMALL);
+                  wcsncpy(wprofile_fullpath,module_path,IRC_SIZE_SMALL);
+                  wcscpy(wcsrchr(wprofile_fullpath,'\\')+1,wprofile_name);
                   guimanager_delete(d_index[i]);
-                  DeleteFile(wfile_config);
+                  DeleteFile(wprofile_fullpath);
                }
                break;
             }
@@ -101,14 +91,13 @@ wcsncpy(wprofile_fullpath,fullpath,IRC_SIZE_SMALL);
                break;
             }
             case IDM_LAUNCH:{
-               wchar_t command_line[IRC_SIZE_SMALL];
                int d_index[10];
                int s_index=0;
                int i;
                guimanager_getselected(d_index, &s_index);
                for(i=0;i<s_index;i++){
-                  Button_GetText(manager.connect_handles[d_index[i]],command_line,IRC_SIZE_SMALL);
-                  CreateProcess(module_path,command_line,NULL,NULL,FALSE,INHERIT_CALLER_PRIORITY,NULL,NULL,NULL,NULL);
+                  Button_GetText(manager.connect_handles[d_index[i]],wprofile_name,IRC_SIZE_SMALL);
+                  CreateProcess(module_path,wprofile_name,NULL,NULL,FALSE,INHERIT_CALLER_PRIORITY,NULL,NULL,NULL,NULL);
                }
                SendMessage(hWnd,WM_CLOSE,0,0);
                break;
@@ -117,50 +106,39 @@ wcsncpy(wprofile_fullpath,fullpath,IRC_SIZE_SMALL);
          break;
       }
       case WM_SIZE:{
-         RECT window_sizes;
-         GetWindowRect(hWnd, &window_sizes);
-//         window_width = window_sizes.right;
-  //       window_height = window_sizes.bottom;
-    //     window_height -= window_sizes.top*2;
-         //FAZER
+         /*refresh_sizes(LOWORD(lParam),HIWORD(lParam),GetScreenCapsX(),GetScreenCapsY());
+
+         MoveWindow(edit_chatinput_handle,EDITCHAT_LEFT,EDITCHAT_TOP,EDITCHAT_WIDTH,EDITCHAT_HEIGHT,FALSE);
+         MoveWindow(button_chatsend_handle,BUTTONCHAT_LEFT,BUTTONCHAT_TOP,BUTTONCHAT_WIDTH,BUTTONCHAT_HEIGHT,FALSE);
+         MoveWindow(tabcontrol_chatview_handle,TABCONTROLCHAT_LEFT,TABCONTROLCHAT_TOP,TABCONTROLCHAT_WIDTH,TABCONTROLCHAT_HEIGHT,FALSE);
+         MoveWindow(button_closetab_handle,CLOSETAB_LEFT,CLOSETAB_TOP,CLOSETAB_WIDTH,CLOSETAB_HEIGHT,FALSE);
+         tab_resize_all(tabcontrol_chatview_handle);*/
          break;
       }
       case WM_ACTIVATE:{
-         //SHACTIVATEINFO s_sai;
-         //SHHandleWMActivate(hWnd, wParam, lParam, &s_sai, FALSE);
+         SHHandleWMActivate(hWnd, wParam, lParam, &s_sai, FALSE);
          break;
       }
       case WM_SETTINGCHANGE:{
-         //SHACTIVATEINFO s_sai;
-         //SHHandleWMSettingChange(hWnd, wParam, lParam, &s_sai);
-         /*switch(wParam){
-            case SPI_SETSIPINFO:{
-               SIPINFO si;
-               memset(&si,0,sizeof(si));
-               si.cbSize=sizeof(si);
-               if(SHSipInfo(SPI_GETSIPINFO,0,&si,0)){
-                  RECT rect = si.rcVisibleDesktop;
-                  if(rect.bottom>window_height){
-                     MoveWindow(hWnd,rect.left,rect.top,rect.right,rect.bottom-rect.top,FALSE);
-                  }else{
-                     MoveWindow(hWnd,rect.left,rect.top,rect.right,rect.bottom,FALSE);
-                  }
-               }
-               break;
-            }
-         }*/
+         SHHandleWMSettingChange(hWnd, wParam, lParam, &s_sai);
          break;
       }
       case WM_CREATE:{
-         /*RECT window_sizes;
-         GetWindowRect(hWnd, &window_sizes);
-         window_width = window_sizes.right;
-         window_height = window_sizes.bottom;
-         window_height -= window_sizes.top*2;
+         memset(&s_sai, 0, sizeof(SHACTIVATEINFO));
+         s_sai.cbSize = sizeof(SHACTIVATEINFO);
+
          if(guimanager_init(hWnd)!=0){
             PostQuitMessage(0);
          }
-         break;*/
+         if(menu_bar_handle!=NULL){
+            RECT rcMainWindow;
+            RECT rcMenuBar;
+            GetWindowRect(hWnd, &rcMainWindow);
+            GetWindowRect(menu_bar_handle, &rcMenuBar);
+            rcMainWindow.bottom -= (rcMenuBar.bottom - rcMenuBar.top);
+            MoveWindow(hWnd, rcMainWindow.left, rcMainWindow.top, rcMainWindow.right-rcMainWindow.left, rcMainWindow.bottom-rcMainWindow.top, FALSE);
+         }
+         break;
       }
       case WM_QUIT:{
          //called on PostQuitMessage(0);
@@ -181,7 +159,7 @@ wcsncpy(wprofile_fullpath,fullpath,IRC_SIZE_SMALL);
 
 int guimanager_init(HWND hWnd){
    memset(&manager,0,sizeof(struct guimanager_t));
-   wchar_t wfilespath[256];
+   wchar_t wfilespath[IRC_SIZE_SMALL];
    wcscpy(wfilespath,module_path);
    wcscpy(wcsrchr(wfilespath,'\\')+1,L"*.ini");
    WIN32_FIND_DATA find;

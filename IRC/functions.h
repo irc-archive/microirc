@@ -76,7 +76,7 @@ void wappend_fullpath(wchar_t *wconfigfile, wchar_t *result){
 
 void append_fullpath(char *configfile, char *result){
    char fullpath[IRC_SIZE_SMALL];
-   WideCharToMultiByte(CP_ACP,0,module_path,-1,fullpath,IRC_SIZE_SMALL,NULL,NULL);
+   WideCharToMultiByte(IRC_FILE_PATH_ENCODING,0,module_path,-1,fullpath,IRC_SIZE_SMALL,NULL,NULL);
    strcpy(strrchr(fullpath,'\\')+1,configfile);
    strcpy(result,fullpath);
 }
@@ -86,7 +86,7 @@ int winiparser_load(iniparser_t *iniparser, wchar_t *wfilename){
    char fullpath[IRC_SIZE_SMALL];
    wcscpy(wfullpath,module_path);
    wcscpy(wcsrchr(wfullpath,'\\')+1,wfilename);
-   WideCharToMultiByte(CP_ACP,0,wfullpath,-1,fullpath,IRC_SIZE_SMALL,NULL,NULL);
+   WideCharToMultiByte(IRC_FILE_PATH_ENCODING,0,wfullpath,-1,fullpath,IRC_SIZE_SMALL,NULL,NULL);
    return iniparser_load(iniparser,fullpath);
 }
 
@@ -95,7 +95,7 @@ int winiparser_store(iniparser_t *iniparser, wchar_t *wfilename){
    char fullpath[IRC_SIZE_SMALL];
    wcscpy(wfullpath,module_path);
    wcscpy(wcsrchr(wfullpath,'\\')+1,wfilename);
-   WideCharToMultiByte(CP_ACP,0,wfullpath,-1,fullpath,IRC_SIZE_SMALL,NULL,NULL);
+   WideCharToMultiByte(IRC_FILE_PATH_ENCODING,0,wfullpath,-1,fullpath,IRC_SIZE_SMALL,NULL,NULL);
    return iniparser_store(iniparser,fullpath);
 }
 

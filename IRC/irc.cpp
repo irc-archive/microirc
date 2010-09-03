@@ -126,7 +126,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
    wc.lpszMenuName = 0;
    wc.lpszClassName = window_class;
    if(wcslen(lpCmdLine)==0){
-      wc.lpfnWndProc = WindowProcClient;//WindowProcManager;
+      wc.lpfnWndProc = WindowProcClient; //WindowProcManager; 
    }else{
       wc.lpfnWndProc = WindowProcClient;
    }
