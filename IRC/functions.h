@@ -67,20 +67,6 @@ int validate_name(wchar_t *str){
    return 0;
 }
 
-void wappend_fullpath(wchar_t *wconfigfile, wchar_t *result){
-   wchar_t wfullpath[IRC_SIZE_SMALL];
-   wcscpy(wfullpath,module_path);
-   wcscpy(wcsrchr(wfullpath,'\\')+1,wconfigfile);
-   wcscpy(result,wfullpath);
-}
-
-void append_fullpath(char *configfile, char *result){
-   char fullpath[IRC_SIZE_SMALL];
-   WideCharToMultiByte(IRC_FILE_PATH_ENCODING,0,module_path,-1,fullpath,IRC_SIZE_SMALL,NULL,NULL);
-   strcpy(strrchr(fullpath,'\\')+1,configfile);
-   strcpy(result,fullpath);
-}
-
 int winiparser_load(iniparser_t *iniparser, wchar_t *wfilename){
    wchar_t wfullpath[IRC_SIZE_SMALL];
    char fullpath[IRC_SIZE_SMALL];
