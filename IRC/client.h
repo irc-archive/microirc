@@ -536,7 +536,7 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
          break;
       }
       case WM_SIZE:{
-         refresh_sizes(LOWORD(lParam),HIWORD(lParam),GetScreenCapsX(),GetScreenCapsY());
+         refresh_client_sizes(LOWORD(lParam),HIWORD(lParam),GetScreenCapsX(),GetScreenCapsY());
 
          MoveWindow(edit_chatinput_handle,EDITCHAT_LEFT,EDITCHAT_TOP,EDITCHAT_WIDTH,EDITCHAT_HEIGHT,FALSE);
          MoveWindow(button_chatsend_handle,BUTTONCHAT_LEFT,BUTTONCHAT_TOP,BUTTONCHAT_WIDTH,BUTTONCHAT_HEIGHT,FALSE);

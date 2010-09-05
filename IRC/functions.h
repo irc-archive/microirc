@@ -85,7 +85,7 @@ int winiparser_store(iniparser_t *iniparser, wchar_t *wfilename){
    return iniparser_store(iniparser,fullpath);
 }
 
-void refresh_sizes(int width, int height, int logicalx, int logicaly){
+void refresh_client_sizes(int width, int height, int logicalx, int logicaly){
    BORDER = SCALEX(1,logicalx);
    CLOSETAB_WIDTH = SCALEX(20,logicalx);
    CLOSETAB_HEIGHT = SCALEY(20,logicaly);
@@ -112,4 +112,11 @@ void refresh_sizes(int width, int height, int logicalx, int logicaly){
    TABTALK_LEFT = BORDER;
    TABNICK_TOP = BORDER+BORDER+TABCONTROLCHAT_HEIGHT;
    TABNICK_LEFT = BORDER+BORDER+TABTALK_CHAT_WIDTH;
+}
+
+void refresh_manager_sizes(int width, int height, int logicalx, int logicaly){
+   MANAGER_RADIO_LEFT = SCALEX(0,logicalx);
+   MANAGER_RADIO_TOP = SCALEY(25,logicaly);
+   MANAGER_RADIO_WIDTH = SCALEX(180,logicalx);
+   MANAGER_RADIO_HEIGHT = SCALEY(20,logicaly);
 }

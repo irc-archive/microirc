@@ -20,7 +20,7 @@ INT_PTR CALLBACK AboutProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam){
          return TRUE;
       }
       case WM_COMMAND:{
-         if (LOWORD(wParam) == IDOK){
+         if(LOWORD(wParam) == IDOK){
             EndDialog(hDlg, LOWORD(wParam));
             return TRUE;
          }
@@ -91,7 +91,7 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
                break;
             }
          }
-         break;
+         return TRUE;
       }
       case WM_INITDIALOG:{
          SHINITDLGINFO shidi;
@@ -147,7 +147,11 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
             settext_fromstr(hDlg,IDC_EDIT11,config.part);
             settext_fromstr(hDlg,IDC_EDIT12,config.kick);
             settext_fromstr(hDlg,IDC_EDIT13,config.quit);
-            setcombo_fromint(hDlg,IDC_COMBO1,config.encoding);
+            if(config.encoding==CP_UTF8){
+               setcombo_fromint(hDlg,IDC_COMBO1,1);
+            }else{
+               setcombo_fromint(hDlg,IDC_COMBO1,0);
+            }
             settext_fromint(hDlg,IDC_EDIT14,config.bubble);
             setcheck_fromint(hDlg,IDC_CHECK1,config.sounds);
             settext_fromint(hDlg,IDC_EDIT15,config.lednumber);
@@ -157,7 +161,7 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
          return TRUE;
       }
       case WM_COMMAND:{
-         if (LOWORD(wParam) == IDOK){
+         if(LOWORD(wParam) == IDOK){
             iniparser_t iniparser;
             if(iniparser_init(&iniparser)!=0){
                break;
@@ -269,16 +273,16 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
                break;
             }
             iniparser_destroy(&iniparser);
-            EndDialog(hDlg, LOWORD(wParam));
+            EndDialog(hDlg, TRUE);
             return TRUE;
          }else if (LOWORD(wParam) == IDCANCEL){
-            EndDialog(hDlg, LOWORD(wParam));
+            EndDialog(hDlg, FALSE);
             return TRUE;
          }
          break;
       }
       case WM_CLOSE:{
-         EndDialog(hDlg, uMsg);
+         EndDialog(hDlg, FALSE);
          return TRUE;
       }
    }

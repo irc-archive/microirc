@@ -142,7 +142,7 @@ void setcombo_fromint(HWND hDlg, int control, int combovalue){
    HWND combo = GetDlgItem(hDlg,control);
    ComboBox_AddString(combo,L"Local");
    ComboBox_AddString(combo,L"UTF-8");
-   if(combovalue == CP_UTF8){
+   if(combovalue){
       ComboBox_SetCurSel(combo,1);
    }else{
       ComboBox_SetCurSel(combo,0);

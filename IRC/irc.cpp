@@ -47,6 +47,8 @@ unsigned int TABALL_HEIGHT;
 unsigned int TABTALK_STATUS_WIDTH;
 unsigned int TABNICK_CHAT_WIDTH;
 unsigned int TABTALK_CHAT_WIDTH;
+unsigned int MANAGER_RADIO_WIDTH;
+unsigned int MANAGER_RADIO_HEIGHT;
 
 unsigned int CLOSETAB_TOP;
 unsigned int CLOSETAB_LEFT;
@@ -60,6 +62,8 @@ unsigned int TABTALK_TOP;
 unsigned int TABTALK_LEFT;
 unsigned int TABNICK_TOP;
 unsigned int TABNICK_LEFT;
+unsigned int MANAGER_RADIO_TOP;
+unsigned int MANAGER_RADIO_LEFT;
 
 HINSTANCE app_instance;
 HWND menu_bar_handle;
@@ -126,7 +130,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
    wc.lpszMenuName = 0;
    wc.lpszClassName = window_class;
    if(wcslen(lpCmdLine)==0){
-      wc.lpfnWndProc = WindowProcClient; //WindowProcManager; 
+      wc.lpfnWndProc = WindowProcClient;//WindowProcManager;
    }else{
       wc.lpfnWndProc = WindowProcClient;
    }

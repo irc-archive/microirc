@@ -13,6 +13,7 @@
 #define IRC_SIZE_MEDIUM 1024
 
 #define IRC_RECONNECT_TIMEOUT 7500
+#define IRC_PROFILE_LIMIT 8
 
 #define IRC_FILE_PATH_ENCODING CP_ACP
 #define IRC_CONFIG_FILE_ENCODING CP_UTF8
@@ -52,7 +53,7 @@ typedef struct ircconfig_t{
 }ircconfig_t;
 
 typedef struct guimanager_t{
-   HWND connect_handles[10];
+   HWND connect_handles[IRC_PROFILE_LIMIT];
    int connect_size;
 }guimanager_t;
 
@@ -71,9 +72,7 @@ void guimanager_destroy();
 int guimanager_create(wchar_t *text, HWND hWnd);
 void guimanager_getselected(int *d_result, int *s_result);
 int guimanager_delete(int index);
-
-
-
+void guimanager_resize_all();
 
 
 
