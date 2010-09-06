@@ -72,7 +72,7 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             case IDM_EDIT:{
                int i;
                int s_index=0;
-               int d_index[10];
+               int d_index[IRC_PROFILE_LIMIT];
                guimanager_getselected(d_index, &s_index);
                for(i=0;i<s_index;i++){
                   Button_GetText(manager.connect_handles[d_index[i]],wprofile_name,IRC_SIZE_SMALL);
@@ -86,7 +86,7 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                   case IDYES:{
                      int i;
                      int s_index=0;
-                     int d_index[10];
+                     int d_index[IRC_PROFILE_LIMIT];
                      guimanager_getselected(d_index, &s_index);
                      for(i=s_index-1;i>=0;i--){
                         guimanager_delete(d_index[i]);
@@ -102,7 +102,7 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             case IDM_LAUNCH:{
                int i;
                int s_index=0;
-               int d_index[10];
+               int d_index[IRC_PROFILE_LIMIT];
                guimanager_getselected(d_index, &s_index);
                for(i=0;i<s_index;i++){
                   Button_GetText(manager.connect_handles[d_index[i]],wprofile_name,IRC_SIZE_SMALL);

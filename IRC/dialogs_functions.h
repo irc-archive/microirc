@@ -316,7 +316,6 @@ INT_PTR CALLBACK InputBoxProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
          Edit_SetText(edit,titletext[1]);
          int element = Edit_GetTextLength(edit);
          SendMessage(edit, EM_SETSEL, element, element);
-         SetFocus(edit);
          return TRUE;
       }
       case WM_COMMAND:{
