@@ -42,8 +42,6 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
          window_size.bottom=SCROLL_PREFERENCES_HEIGHT;
          MapDialogRect(hDlg,&window_size);
          int dialog_height = window_size.bottom;
-         GetWindowRect(hDlg,&window_size);
-         dialog_height -= window_size.bottom-window_size.top*4;//2 for menus(up/down), 2 for input panel
 
          SCROLLINFO info;
          memset(&info,0,sizeof(SCROLLINFO));
@@ -57,10 +55,10 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
                int pos = HIWORD(wParam);
                if(pos>info.nPos && pos<=SCROLL_PREFERENCES_MAX_POSITIONS){
                   SetScrollPos(hDlg,SB_VERT,pos,TRUE);
-                  ScrollWindowEx(hDlg,0,-(((dialog_height)/(SCROLL_PREFERENCES_MAX_POSITIONS-1))*(pos-info.nPos)),NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN);
+                  ScrollWindowEx(hDlg,0,-((dialog_height/SCROLL_PREFERENCES_MAX_POSITIONS)*(pos-info.nPos)),NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN);
                }else if(pos<info.nPos && pos>=SCROLL_PREFERENCES_MIN_POSITIONS){
                   SetScrollPos(hDlg,SB_VERT,pos,TRUE);
-                  ScrollWindowEx(hDlg,0,(((dialog_height)/(SCROLL_PREFERENCES_MAX_POSITIONS-1))*(info.nPos-pos)),NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN);
+                  ScrollWindowEx(hDlg,0,((dialog_height/SCROLL_PREFERENCES_MAX_POSITIONS)*(info.nPos-pos)),NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN);
                }
                break;
             }
@@ -73,7 +71,7 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
                if(pos > SCROLL_PREFERENCES_MIN_POSITIONS){
                   pos--;
                   SetScrollPos(hDlg,SB_VERT,pos,TRUE);
-                  ScrollWindowEx(hDlg,0,((dialog_height)/(SCROLL_PREFERENCES_MAX_POSITIONS-1)),NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN);
+                  ScrollWindowEx(hDlg,0,(dialog_height/SCROLL_PREFERENCES_MAX_POSITIONS),NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN);
                }
                break;
             }
@@ -86,7 +84,7 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
                if(pos < SCROLL_PREFERENCES_MAX_POSITIONS){
                   pos++;
                   SetScrollPos(hDlg,SB_VERT,pos,TRUE);
-                  ScrollWindowEx(hDlg,0,-((dialog_height)/(SCROLL_PREFERENCES_MAX_POSITIONS-1)),NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN);
+                  ScrollWindowEx(hDlg,0,-(dialog_height/SCROLL_PREFERENCES_MAX_POSITIONS),NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN);
                }
                break;
             }
@@ -133,17 +131,19 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
          settext_fromstr(hDlg,IDC_EDIT8,iniparser_getstring(&iniparser, "autojoin", "channels", "#microirc"));
          settext_fromint(hDlg,IDC_EDIT9,iniparser_getint(&iniparser, "autojoin", "delay", 5000));
          if(wcscmp(parameters[0],L"manager")==0){
-            settext_fromint(hDlg,IDC_EDIT10,iniparser_getint(&iniparser, "autoreconnect", "retries", 5));
+            setcheck_fromint(hDlg,IDC_CHECK1,iniparser_getint(&iniparser, "connection", "connect_on_startup", 1));
+            settext_fromint(hDlg,IDC_EDIT10,iniparser_getint(&iniparser, "connection", "reconnect_retries", 5));
             settext_fromstr(hDlg,IDC_EDIT11,iniparser_getstring(&iniparser, "messages", "part", ""));
             settext_fromstr(hDlg,IDC_EDIT12,iniparser_getstring(&iniparser, "messages", "kick", ""));
             settext_fromstr(hDlg,IDC_EDIT13,iniparser_getstring(&iniparser, "messages", "quit", "http://code.google.com/p/microirc/"));
             setcombo_fromint(hDlg,IDC_COMBO1,iniparser_getint(&iniparser, "miscellaneous", "encoding", 1));
             settext_fromint(hDlg,IDC_EDIT14,iniparser_getint(&iniparser, "miscellaneous", "bubble", 0));
-            setcheck_fromint(hDlg,IDC_CHECK1,iniparser_getint(&iniparser, "miscellaneous", "sounds", 0));
-            settext_fromint(hDlg,IDC_EDIT15,iniparser_getint(&iniparser, "miscellaneous", "lednumber", -1));
-            settext_fromint(hDlg,IDC_EDIT16,iniparser_getint(&iniparser, "miscellaneous", "ledinterval", 500));
+            setcheck_fromint(hDlg,IDC_CHECK2,iniparser_getint(&iniparser, "miscellaneous", "sounds", 0));
+            settext_fromint(hDlg,IDC_EDIT15,iniparser_getint(&iniparser, "miscellaneous", "led_number", -1));
+            settext_fromint(hDlg,IDC_EDIT16,iniparser_getint(&iniparser, "miscellaneous", "led_interval", 500));
          }else if(wcscmp(parameters[0],L"client")==0){
-            settext_fromint(hDlg,IDC_EDIT10,config.reconnect);
+            setcheck_fromint(hDlg,IDC_CHECK1,config.connect_on_startup);
+            settext_fromint(hDlg,IDC_EDIT10,config.reconnect_retries);
             settext_fromstr(hDlg,IDC_EDIT11,config.part);
             settext_fromstr(hDlg,IDC_EDIT12,config.kick);
             settext_fromstr(hDlg,IDC_EDIT13,config.quit);
@@ -153,9 +153,9 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
                setcombo_fromint(hDlg,IDC_COMBO1,0);
             }
             settext_fromint(hDlg,IDC_EDIT14,config.bubble);
-            setcheck_fromint(hDlg,IDC_CHECK1,config.sounds);
-            settext_fromint(hDlg,IDC_EDIT15,config.lednumber);
-            settext_fromint(hDlg,IDC_EDIT16,config.ledinterval);
+            setcheck_fromint(hDlg,IDC_CHECK2,config.sounds);
+            settext_fromint(hDlg,IDC_EDIT15,config.led_number);
+            settext_fromint(hDlg,IDC_EDIT16,config.led_interval);
          }
          iniparser_destroy(&iniparser);
          return TRUE;
@@ -174,17 +174,18 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
             char name[IRCPROTOCOL_SIZE_SMALL];
             char nick[IRCPROTOCOL_SIZE_SMALL];
             char perform[IRCPROTOCOL_SIZE_MEDIUM];
-            char autojoin_channels[IRCPROTOCOL_SIZE_MEDIUM];
-            int autojoin_delay;
-            int reconnect;
+            char channels[IRCPROTOCOL_SIZE_MEDIUM];
+            int delay;
+            int connect_on_startup;
+            int reconnect_retries;
             char part[IRC_SIZE_SMALL];
             char kick[IRC_SIZE_SMALL];
             char quit[IRC_SIZE_SMALL];
             int encoding;
             int bubble;
             int sounds;
-            int lednumber;
-            int ledinterval;
+            int led_number;
+            int led_interval;
             gettext_towstr(hDlg,IDC_EDIT0,type,IRC_SIZE_SMALL);
             gettext_towstr(hDlg,IDC_EDIT1,profile,IRC_SIZE_SMALL);
             gettext_tostr(hDlg, IDC_EDIT2, host, IRCPROTOCOL_SIZE_SMALL);
@@ -193,17 +194,18 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
             gettext_tostr(hDlg, IDC_EDIT5, name, IRCPROTOCOL_SIZE_SMALL);
             gettext_tostr(hDlg, IDC_EDIT6, nick, IRCPROTOCOL_SIZE_MEDIUM);
             gettext_tostr(hDlg, IDC_EDIT7, perform, IRCPROTOCOL_SIZE_MEDIUM);
-            gettext_tostr(hDlg, IDC_EDIT8, autojoin_channels, IRCPROTOCOL_SIZE_MEDIUM);
-            autojoin_delay = gettext_toint(hDlg,IDC_EDIT9);
-            reconnect = gettext_toint(hDlg,IDC_EDIT10);
+            gettext_tostr(hDlg, IDC_EDIT8, channels, IRCPROTOCOL_SIZE_MEDIUM);
+            delay = gettext_toint(hDlg,IDC_EDIT9);
+            connect_on_startup = getint_fromcheck(hDlg,IDC_CHECK1);
+            reconnect_retries = gettext_toint(hDlg,IDC_EDIT10);
             gettext_tostr(hDlg, IDC_EDIT11, part, IRC_SIZE_SMALL);
             gettext_tostr(hDlg, IDC_EDIT12, kick, IRC_SIZE_SMALL);
             gettext_tostr(hDlg, IDC_EDIT13, quit, IRC_SIZE_SMALL);
             encoding = getint_fromcombo(hDlg,IDC_COMBO1);
             bubble = gettext_toint(hDlg,IDC_EDIT14);
-            sounds = getint_fromcheck(hDlg,IDC_CHECK1);
-            lednumber = gettext_toint(hDlg,IDC_EDIT15);
-            ledinterval = gettext_toint(hDlg,IDC_EDIT16);
+            sounds = getint_fromcheck(hDlg,IDC_CHECK2);
+            led_number = gettext_toint(hDlg,IDC_EDIT15);
+            led_interval = gettext_toint(hDlg,IDC_EDIT16);
             if(strlen(host)==0){
                MessageBox(hDlg,L"Host is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                break;
@@ -224,15 +226,15 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
                MessageBox(hDlg,L"Nick is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                break;
             }
-            if(autojoin_delay < 0){
+            if(delay < 0){
                MessageBox(hDlg,L"Auto-join Delay is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                break;
             }
-            if(reconnect < 0){
+            if(reconnect_retries < 0){
                MessageBox(hDlg,L"Reconnect Retries is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                break;
             }
-            if(ledinterval < 0){
+            if(led_interval < 0){
                MessageBox(hDlg,L"Led Interval is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                break;
             }
@@ -242,19 +244,21 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
             iniparser_setstring(&iniparser, "client", "name", name);
             iniparser_setstring(&iniparser, "client", "nick", nick);
             iniparser_setstring(&iniparser, "client", "perform", perform);
-            iniparser_setstring(&iniparser, "autojoin", "channels", autojoin_channels);
-            iniparser_setint(&iniparser, "autojoin", "delay", autojoin_delay);
-            iniparser_setint(&iniparser, "autoreconnect", "retries", reconnect);
+            iniparser_setstring(&iniparser, "autojoin", "channels", channels);
+            iniparser_setint(&iniparser, "autojoin", "delay", delay);
+            iniparser_setint(&iniparser, "connection", "connect_on_startup", connect_on_startup);
+            iniparser_setint(&iniparser, "connection", "reconnect_retries", reconnect_retries);
             iniparser_setstring(&iniparser, "messages", "part", part);
             iniparser_setstring(&iniparser, "messages", "kick", kick);
             iniparser_setstring(&iniparser, "messages", "quit", quit);
             iniparser_setint(&iniparser, "miscellaneous", "encoding", encoding);
             iniparser_setint(&iniparser, "miscellaneous", "bubble", bubble);
             iniparser_setint(&iniparser, "miscellaneous", "sounds", sounds);
-            iniparser_setint(&iniparser, "miscellaneous", "lednumber", lednumber);
-            iniparser_setint(&iniparser, "miscellaneous", "ledinterval", ledinterval);
+            iniparser_setint(&iniparser, "miscellaneous", "led_number", led_number);
+            iniparser_setint(&iniparser, "miscellaneous", "led_interval", led_interval);
             if(wcscmp(type,L"client")==0){
-               config.reconnect = reconnect;
+               config.connect_on_startup = connect_on_startup;
+               config.reconnect_retries = reconnect_retries;
                strncpy0(config.part,part,IRC_SIZE_SMALL);
                strncpy0(config.kick,kick,IRC_SIZE_SMALL);
                strncpy0(config.quit,quit,IRC_SIZE_SMALL);
@@ -265,8 +269,8 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
                }
                config.bubble=bubble;
                config.sounds=sounds;
-               config.lednumber=lednumber;
-               config.ledinterval=ledinterval;
+               config.led_number=led_number;
+               config.led_interval=led_interval;
             }
             if(winiparser_store(&iniparser,profile)!=0){
                iniparser_destroy(&iniparser);

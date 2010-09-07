@@ -83,8 +83,8 @@ typedef struct irc_t{
    char name[IRCPROTOCOL_SIZE_SMALL];
    char nick[IRCPROTOCOL_SIZE_SMALL];
    char perform[IRCPROTOCOL_SIZE_MEDIUM];
-   char autojoin_channels[IRCPROTOCOL_SIZE_MEDIUM];
-   int autojoin_delay;
+   char channels[IRCPROTOCOL_SIZE_MEDIUM];
+   int delay;
    
    network_t network;
    char recv_buffer[IRCPROTOCOL_MAX_MESSAGE_LEN];

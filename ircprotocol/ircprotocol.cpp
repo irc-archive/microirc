@@ -115,8 +115,8 @@ export int irc_init(irc_t *irc, char *host, char *port, char *user, char *name, 
    strncpy0(irc->name,name,IRCPROTOCOL_SIZE_SMALL);
    strncpy0(irc->nick,nick,IRCPROTOCOL_SIZE_SMALL);
    strncpy0(irc->perform,perform,IRCPROTOCOL_SIZE_MEDIUM);
-   strncpy0(irc->autojoin_channels,channels,IRCPROTOCOL_SIZE_MEDIUM);
-   irc->autojoin_delay = delay;
+   strncpy0(irc->channels,channels,IRCPROTOCOL_SIZE_MEDIUM);
+   irc->delay = delay;
    return 0;
 }
 
@@ -173,8 +173,8 @@ export int irc_connect(irc_t *irc){
                }
             }
             s_tokens=0;
-            Sleep(irc->autojoin_delay);
-            tokens_required(irc->autojoin_channels,CHAR_LISTSEPARATOR,IRCPROTOCOL_CONFIG_MAX_TOKENS,d_tokens,&s_tokens);
+            Sleep(irc->delay);
+            tokens_required(irc->channels,CHAR_LISTSEPARATOR,IRCPROTOCOL_CONFIG_MAX_TOKENS,d_tokens,&s_tokens);
             for(i=0;i<s_tokens;i++){
                if(irc_send_message(irc,SEND_JOIN,&d_tokens[i],1)<0){
                   goto fullerror;

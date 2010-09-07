@@ -18,16 +18,16 @@ void set_led(int led_num, int state){
 
 VOID CALLBACK deactivate_led(UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2){
    timer_led=NULL;
-   set_led(config.lednumber,0);
+   set_led(config.led_number,0);
 }
 
 void activate_led(){
    if(timer_led!=NULL){
       return;
    }
-   timer_led=timeSetEvent(config.ledinterval, 50, deactivate_led, 0, TIME_ONESHOT|TIME_CALLBACK_FUNCTION);
+   timer_led=timeSetEvent(config.led_interval, 50, deactivate_led, 0, TIME_ONESHOT|TIME_CALLBACK_FUNCTION);
    if(timer_led!=NULL){
-      set_led(config.lednumber,1);
+      set_led(config.led_number,1);
    }
 }
 

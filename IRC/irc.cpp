@@ -106,8 +106,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
    if(GetModuleFileName(NULL,module_path,IRC_SIZE_SMALL)==0){
       return 0;
    }
-   //if(title(window_title,lpCmdLine)!=0){
-   if(title(window_title,L"Client.ini")!=0){
+   if(title(window_title,lpCmdLine)!=0){
+   //if(title(window_title,L"Client.ini")!=0){
       return 0;
    }
    if(FindWindow(window_class, window_title)!=NULL){
@@ -131,15 +131,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
    wc.lpszMenuName = 0;
    wc.lpszClassName = window_class;
    if(wcslen(lpCmdLine)==0){
-      wc.lpfnWndProc = WindowProcClient;//WindowProcManager;
+      wc.lpfnWndProc = WindowProcManager;//WindowProcManager;
    }else{
       wc.lpfnWndProc = WindowProcClient;
    }
    if(RegisterClass(&wc)==0){
       return 0;
    }
-   //HWND hWnd_Main = CreateWindowEx(0, window_class, window_title, WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL,(HMENU)0, hInstance, lpCmdLine);
-   HWND hWnd_Main = CreateWindowEx(0, window_class, window_title, WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL,(HMENU)0, hInstance, L"options.ini");
+   HWND hWnd_Main = CreateWindowEx(0, window_class, window_title, WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL,(HMENU)0, hInstance, lpCmdLine);
+   //HWND hWnd_Main = CreateWindowEx(0, window_class, window_title, WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL,(HMENU)0, hInstance, L"options.ini");
    if(hWnd_Main==NULL){
       return 0;
    }

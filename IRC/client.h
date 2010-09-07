@@ -83,7 +83,7 @@ void *receiverThreadProc(void *window_handle){
                if(strstri(recv_buffer_ptr[4],irc.nick)!=NULL){
                   if(config.sounds!=0)
                      PlaySound(sound_alert,NULL,SND_ASYNC|SND_FILENAME);
-                  if(config.lednumber>=0)
+                  if(config.led_number>=0)
                      activate_led();
                   if(GetForegroundWindow()!=hWnd){
                      SHNOTIFICATIONDATA sn;
@@ -244,7 +244,7 @@ void *receiverThreadProc(void *window_handle){
          }
       }
       if(connected!=0){
-         if(config.reconnect==0){
+         if(config.reconnect_retries==0){
             SendMessage(hWnd,WM_DISCONNECTING,0,0);
             switch(MessageBox(hWnd,L"Do you really want to reconnect?",L"Reconnect",MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2|MB_APPLMODAL|MB_SETFOREGROUND)){
                case IDYES:{
@@ -617,6 +617,9 @@ int guiclient_init(HWND hWnd){
    init_menu_bar(hWnd,IDR_MAIN_MENU_OFFLINE);
    init_chat_screen(hWnd);
    tab_create(hWnd,tabcontrol_chatview_handle,L".status",STATUS);
+   if(config.connect_on_startup){
+      SendMessage(hWnd, WM_CONNECTING, 0, 0);
+   }
    return 0;
 }
 
@@ -676,7 +679,7 @@ int guiclient_reconnecting(HWND hWnd){
       MessageBox(hWnd,L"Config file is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
       return -1;
    }
-   int trys = config.reconnect;
+   int trys = config.reconnect_retries;
    while(irc_connect(&irc)<0){
       Sleep(IRC_RECONNECT_TIMEOUT);
       trys--;

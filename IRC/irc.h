@@ -37,19 +37,20 @@
 #define EDITCHATINPUT_LIMIT 256
 
 #define SCROLL_PREFERENCES_MIN_POSITIONS 1
-#define SCROLL_PREFERENCES_MAX_POSITIONS 8
-#define SCROLL_PREFERENCES_HEIGHT 337
+#define SCROLL_PREFERENCES_MAX_POSITIONS 10
+#define SCROLL_PREFERENCES_HEIGHT 351
 
 typedef struct ircconfig_t{
-   int reconnect;
+   int connect_on_startup;
+   int reconnect_retries;
    char part[IRC_SIZE_SMALL];
    char kick[IRC_SIZE_SMALL];
    char quit[IRC_SIZE_SMALL];
    int encoding;
    int bubble;
    int sounds;
-   int lednumber;
-   int ledinterval;
+   int led_number;
+   int led_interval;
 }ircconfig_t;
 
 typedef struct guimanager_t{

@@ -48,15 +48,16 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                iniparser_setstring(&iniparser, "client", "perform", "");
                iniparser_setstring(&iniparser, "autojoin", "channels", "#microirc");
                iniparser_setint(&iniparser, "autojoin", "delay", 5000);
-               iniparser_setint(&iniparser, "autoreconnect", "retries", 5);
+               iniparser_setint(&iniparser, "connection", "connect_on_startup", 1);
+               iniparser_setint(&iniparser, "connection", "reconnect_retries", 5);
                iniparser_setstring(&iniparser, "messages", "part", "");
                iniparser_setstring(&iniparser, "messages", "kick", "");
                iniparser_setstring(&iniparser, "messages", "quit", "http://code.google.com/p/microirc/");
                iniparser_setint(&iniparser, "miscellaneous", "encoding", 1);
                iniparser_setint(&iniparser, "miscellaneous", "bubble", 0);
                iniparser_setint(&iniparser, "miscellaneous", "sounds", 0);
-               iniparser_setint(&iniparser, "miscellaneous", "lednumber", -1);
-               iniparser_setint(&iniparser, "miscellaneous", "ledinterval", 500);
+               iniparser_setint(&iniparser, "miscellaneous", "led_number", -1);
+               iniparser_setint(&iniparser, "miscellaneous", "led_interval", 500);
                if(winiparser_store(&iniparser,wprofile_name)!=0){
                   iniparser_destroy(&iniparser);
                   break;
