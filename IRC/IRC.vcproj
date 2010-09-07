@@ -444,11 +444,12 @@
 				>
 			</File>
 			<File
-				RelativePath=".\future.txt"
+				RelativePath=".\Freenode.ini"
+				DeploymentContent="true"
 				>
 			</File>
 			<File
-				RelativePath=".\gui.PNG"
+				RelativePath=".\future.txt"
 				>
 			</File>
 			<File
@@ -464,16 +465,12 @@
 				>
 			</File>
 			<File
-				RelativePath=".\options.ini"
-				DeploymentContent="true"
-				>
-			</File>
-			<File
-				RelativePath=".\options_default.ini"
-				>
-			</File>
-			<File
 				RelativePath=".\paypal.txt"
+				>
+			</File>
+			<File
+				RelativePath=".\personalized.ini"
+				DeploymentContent="true"
 				>
 			</File>
 			<File

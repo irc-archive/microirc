@@ -11,7 +11,7 @@
 
 int ircconfig_init(ircconfig_t *ircconfig, int connect_on_startup, int reconnect_retries, char *part, char *kick, char *quit, int encoding, int bubble, int sounds, int led_number, int led_interval){
    memset(ircconfig,0,sizeof(ircconfig_t));
-   if(reconnect_retries<0 || led_interval<0){
+   if(reconnect_retries<0 || bubble<0 || led_interval<0){
       return -1;
    }
    ircconfig->connect_on_startup = connect_on_startup;

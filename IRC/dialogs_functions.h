@@ -234,6 +234,10 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
                MessageBox(hDlg,L"Reconnect Retries is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                break;
             }
+            if(bubble < 0){
+               MessageBox(hDlg,L"Bubble Duration is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               break;
+            }
             if(led_interval < 0){
                MessageBox(hDlg,L"Led Interval is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                break;
