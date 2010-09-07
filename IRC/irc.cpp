@@ -62,6 +62,7 @@ unsigned int TABTALK_TOP;
 unsigned int TABTALK_LEFT;
 unsigned int TABNICK_TOP;
 unsigned int TABNICK_LEFT;
+unsigned int MANAGER_RADIO_TOP_DISTANCE;
 unsigned int MANAGER_RADIO_TOP;
 unsigned int MANAGER_RADIO_LEFT;
 

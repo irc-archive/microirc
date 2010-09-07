@@ -108,7 +108,9 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                   Button_GetText(manager.connect_handles[d_index[i]],wprofile_name,IRC_SIZE_SMALL);
                   CreateProcess(module_path,wprofile_name,NULL,NULL,FALSE,INHERIT_CALLER_PRIORITY,NULL,NULL,NULL,NULL);
                }
-               SendMessage(hWnd,WM_CLOSE,0,0);
+               if(s_index>0){
+                  SendMessage(hWnd,WM_CLOSE,0,0);
+               }
                break;
             }
             case IDM_EXIT:{
@@ -119,9 +121,6 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
          break;
       }
       case WM_SIZE:{
-         refresh_manager_sizes(LOWORD(lParam),HIWORD(lParam),GetScreenCapsX(),GetScreenCapsY());
-
-         guimanager_resize_all();
          break;
       }
       case WM_ACTIVATE:{
@@ -136,7 +135,11 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
          memset(&s_sai, 0, sizeof(SHACTIVATEINFO));
          s_sai.cbSize = sizeof(SHACTIVATEINFO);
 
-         if(guimanager_init(hWnd)!=0){
+         int logicalx = GetScreenCapsX();
+         int logicaly = GetScreenCapsY();
+         refresh_manager_sizes(logicalx,logicaly);
+
+         if(guimanager_init(hWnd,logicalx,logicaly)!=0){
             PostQuitMessage(0);
          }
          if(menu_bar_handle!=NULL){
@@ -166,11 +169,10 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
    return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
-int guimanager_init(HWND hWnd){
+int guimanager_init(HWND hWnd, int logicalx, int logicaly){
    memset(&manager,0,sizeof(struct guimanager_t));
    wchar_t wfilespath[IRC_SIZE_SMALL];
-   wcscpy(wfilespath,module_path);
-   wcscpy(wcsrchr(wfilespath,'\\')+1,L"*.ini");
+   wfile_to_fullpath(L"*.ini",wfilespath);
    WIN32_FIND_DATA find;
    HANDLE findhwnd = FindFirstFile(wfilespath,&find);
    if(findhwnd!=INVALID_HANDLE_VALUE){
@@ -180,6 +182,8 @@ int guimanager_init(HWND hWnd){
       }
       FindClose(findhwnd);
    }
+   CreateWindowEx(0,L"static",L"Profiles",WS_CHILD | WS_VISIBLE,SCALEX(5,logicalx),SCALEY(5,logicaly),SCALEX(75,logicalx),SCALEY(20,logicaly),hWnd,(HMENU)NULL,app_instance,NULL);
+   CreateWindowEx(0,L"static",L"Selected",WS_CHILD | WS_VISIBLE,SCALEX(170,logicalx),SCALEY(5,logicaly),SCALEX(75,logicalx),SCALEY(20,logicaly),hWnd,(HMENU)NULL,app_instance,NULL);
    init_menu_bar(hWnd,IDR_MAIN_MENU_MANAGER);
    return 0;
 }
@@ -204,18 +208,18 @@ int guimanager_create(wchar_t *text, HWND hWnd){
          return -2;
       }
    }
-   manager.connect_handles[manager.connect_size]=CreateWindowEx(0,L"button",text,BS_LEFTTEXT|BS_AUTOCHECKBOX|WS_CHILD|WS_VISIBLE,MANAGER_RADIO_LEFT,manager.connect_size*MANAGER_RADIO_TOP,MANAGER_RADIO_WIDTH,MANAGER_RADIO_HEIGHT,hWnd,(HMENU)NULL,app_instance,NULL);
+   manager.connect_handles[manager.connect_size]=CreateWindowEx(0,L"button",text,BS_LEFTTEXT|BS_AUTOCHECKBOX|WS_CHILD|WS_VISIBLE,MANAGER_RADIO_LEFT,MANAGER_RADIO_TOP_DISTANCE+(MANAGER_RADIO_TOP*manager.connect_size),MANAGER_RADIO_WIDTH,MANAGER_RADIO_HEIGHT,hWnd,(HMENU)NULL,app_instance,NULL);
    Button_SetCheck(manager.connect_handles[manager.connect_size],BST_CHECKED);
    manager.connect_size++;
    return 0;
 }
 
-void guimanager_resize_all(){
+/*void guimanager_resize_all(){
    int i;
    for(i=0;i<manager.connect_size;i++){
-      MoveWindow(manager.connect_handles[i],MANAGER_RADIO_LEFT,i*MANAGER_RADIO_TOP,MANAGER_RADIO_WIDTH,MANAGER_RADIO_HEIGHT,TRUE);
+      MoveWindow(manager.connect_handles[i],MANAGER_RADIO_LEFT,MANAGER_RADIO_TOP_DISTANCE+(MANAGER_RADIO_TOP*i),MANAGER_RADIO_WIDTH,MANAGER_RADIO_HEIGHT,TRUE);
    }
-}
+}*/
 
 void guimanager_getselected(int *d_result, int *s_result){
    *s_result = 0;
@@ -235,8 +239,7 @@ int guimanager_delete(int index){
    wchar_t wprofile_name[IRC_SIZE_SMALL];
    wchar_t wprofile_fullpath[IRC_SIZE_SMALL];
    Button_GetText(manager.connect_handles[index],wprofile_name,IRC_SIZE_SMALL);
-   wcsncpy(wprofile_fullpath,module_path,IRC_SIZE_SMALL);
-   wcscpy(wcsrchr(wprofile_fullpath,'\\')+1,wprofile_name);
+   wfile_to_fullpath(wprofile_name,wprofile_fullpath);
    DeleteFile(wprofile_fullpath);
    DestroyWindow(manager.connect_handles[index]);
    manager.connect_size--;

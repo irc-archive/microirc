@@ -67,14 +67,12 @@ int guiclient_connecting(HWND hWnd);
 int guiclient_reconnecting(HWND hWnd);
 void guiclient_disconnecting(HWND hWnd);
 int title(wchar_t *window_title, wchar_t *cmd_line);
-int guimanager_init(HWND hWnd);
+int guimanager_init(HWND hWnd, int logicalx, int logicaly);
 void guimanager_destroy();
 int guimanager_create(wchar_t *text, HWND hWnd);
 void guimanager_getselected(int *d_result, int *s_result);
 int guimanager_delete(int index);
 void guimanager_resize_all();
-
-
 
 const int HIDPI = 96;
 

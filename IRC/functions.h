@@ -67,11 +67,15 @@ int validate_name(wchar_t *str){
    return 0;
 }
 
+void wfile_to_fullpath(wchar_t *wfilename, wchar_t *wfullpath){
+   wcsncpy(wfullpath,module_path,IRC_SIZE_SMALL);
+   wcscpy(wcsrchr(wfullpath,'\\')+1,wfilename);
+}
+
 int winiparser_load(iniparser_t *iniparser, wchar_t *wfilename){
    wchar_t wfullpath[IRC_SIZE_SMALL];
    char fullpath[IRC_SIZE_SMALL];
-   wcscpy(wfullpath,module_path);
-   wcscpy(wcsrchr(wfullpath,'\\')+1,wfilename);
+   wfile_to_fullpath(wfilename,wfullpath);
    WideCharToMultiByte(IRC_FILE_PATH_ENCODING,0,wfullpath,-1,fullpath,IRC_SIZE_SMALL,NULL,NULL);
    return iniparser_load(iniparser,fullpath);
 }
@@ -79,8 +83,7 @@ int winiparser_load(iniparser_t *iniparser, wchar_t *wfilename){
 int winiparser_store(iniparser_t *iniparser, wchar_t *wfilename){
    wchar_t wfullpath[IRC_SIZE_SMALL];
    char fullpath[IRC_SIZE_SMALL];
-   wcscpy(wfullpath,module_path);
-   wcscpy(wcsrchr(wfullpath,'\\')+1,wfilename);
+   wfile_to_fullpath(wfilename,wfullpath);
    WideCharToMultiByte(IRC_FILE_PATH_ENCODING,0,wfullpath,-1,fullpath,IRC_SIZE_SMALL,NULL,NULL);
    return iniparser_store(iniparser,fullpath);
 }
@@ -114,9 +117,10 @@ void refresh_client_sizes(int width, int height, int logicalx, int logicaly){
    TABNICK_LEFT = BORDER+BORDER+TABTALK_CHAT_WIDTH;
 }
 
-void refresh_manager_sizes(int width, int height, int logicalx, int logicaly){
-   MANAGER_RADIO_LEFT = SCALEX(0,logicalx);
-   MANAGER_RADIO_TOP = SCALEY(25,logicaly);
+void refresh_manager_sizes(int logicalx, int logicaly){
+   MANAGER_RADIO_LEFT = SCALEX(5,logicalx);
+   MANAGER_RADIO_TOP = SCALEY(20,logicaly);
    MANAGER_RADIO_WIDTH = SCALEX(180,logicalx);
    MANAGER_RADIO_HEIGHT = SCALEY(20,logicaly);
+   MANAGER_RADIO_TOP_DISTANCE = SCALEY(25,logicaly);
 }

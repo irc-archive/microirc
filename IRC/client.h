@@ -606,8 +606,7 @@ int guiclient_init(HWND hWnd){
       CloseHandle(receiver_thread_event);
       return -1;
    }
-   wcsncpy(sound_alert,module_path,IRC_SIZE_SMALL);
-   wcscpy(wcsrchr(sound_alert,'\\')+1,L"alert.wav");
+   wfile_to_fullpath(L"alert.wav",sound_alert);
    if(irc_config_init(&irc,&config,profile)!=0){
       MessageBox(hWnd,L"Config file is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
       CloseHandle(receiver_thread);
