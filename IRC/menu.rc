@@ -1,19 +1,7 @@
-// Microsoft Visual C++ generated resource script.
-//
 #include "resource.h"
-
-#define APSTUDIO_READONLY_SYMBOLS
-/////////////////////////////////////////////////////////////////////////////
-//
-// Generated from the TEXTINCLUDE 2 resource.
-//
-#define APSTUDIO_HIDDEN_SYMBOLS
 #include "windows.h"
 #include "resdefce.h"
-#undef APSTUDIO_HIDDEN_SYMBOLS
 
-/////////////////////////////////////////////////////////////////////////////
-#undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
 // Neutral resources
@@ -23,6 +11,7 @@
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 #pragma code_page(1252)
 #endif //_WIN32
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -108,49 +97,14 @@ BEGIN
     CONTROL         "SIP1",IDC_SIP2,"SIPPREF",NOT WS_VISIBLE,0,0,0,0
 END
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// DESIGNINFO
-//
-
-#ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
-BEGIN
-    IDD_ABOUTBOX, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 123
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 93
-    END
-
-    IDD_INPUTBOX, DIALOG
-    BEGIN
-        LEFTMARGIN, 8
-        RIGHTMARGIN, 113
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 41
-    END
-
-    IDD_PREFERENCES, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 122
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 192
-    END
-END
-#endif    // APSTUDIO_INVOKED
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Icon
 //
 
-// Icon with lowest ID value placed first to ensure application icon
-// remains consistent on all systems.
 IDI_IRC                 ICON                    "microirc.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -202,6 +156,7 @@ BEGIN
     END
 END
 
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Accelerator
@@ -247,69 +202,68 @@ BEGIN
     IDS_CANCEL              "Cancel"
 END
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// MENU BAR
+//
+
+IDR_MAIN_MENU_MANAGER SHMENUBAR DISCARDABLE
+BEGIN
+    IDR_MAIN_MENU_MANAGER,
+    5,
+
+    I_IMAGENONE, IDM_NEW, TBSTATE_ENABLED, TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE,
+    IDS_NEW, 0, NOMENU,
+
+    I_IMAGENONE, IDM_EDIT, TBSTATE_ENABLED, TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE,
+    IDS_EDIT, 0, NOMENU,
+
+    I_IMAGENONE, IDM_REMOVE, TBSTATE_ENABLED, TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE,
+    IDS_REMOVE, 0, NOMENU,
+
+    I_IMAGENONE, IDM_EXIT, TBSTATE_ENABLED, TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE,
+    IDS_EXIT, 0, NOMENU,
+
+    I_IMAGENONE, IDM_LAUNCH, TBSTATE_ENABLED, TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE,
+    IDS_LAUNCH, 0, NOMENU,
+END
+
+IDR_MAIN_MENU_OFFLINE SHMENUBAR DISCARDABLE
+BEGIN
+    IDR_MAIN_MENU_OFFLINE,
+    2,
+
+    I_IMAGENONE, IDM_CONNECT, TBSTATE_ENABLED, TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE,
+    IDS_CONNECT, 0, NOMENU,
+
+    I_IMAGENONE, IDM_OPTIONS, TBSTATE_ENABLED, TBSTYLE_DROPDOWN | TBSTYLE_AUTOSIZE,
+    IDS_OPTIONS, 0, 0,
+END
+
+IDR_MAIN_MENU_ONLINE SHMENUBAR DISCARDABLE
+BEGIN
+    IDR_MAIN_MENU_ONLINE,
+    2,
+
+    I_IMAGENONE, IDM_OPENURL, TBSTATE_ENABLED, TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE,
+    IDS_OPENURL, 0, NOMENU,
+
+    I_IMAGENONE, IDM_OPTIONS, TBSTATE_ENABLED, TBSTYLE_DROPDOWN | TBSTYLE_AUTOSIZE,
+    IDS_OPTIONS, 0, 0,
+END
+
+IDR_PREFERENCES_MENU SHMENUBAR DISCARDABLE
+BEGIN
+    IDR_PREFERENCES_MENU,
+    2,
+
+    I_IMAGENONE, IDOK, TBSTATE_ENABLED, TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE,
+    IDS_OK, 0, NOMENU,
+
+    I_IMAGENONE, IDCANCEL, TBSTATE_ENABLED, TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE,
+    IDS_CANCEL, 0, NOMENU,
+END
+
 #endif    // Neutral resources
 /////////////////////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-#pragma code_page(1252)
-#endif //_WIN32
-
-#ifdef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
-// TEXTINCLUDE
-//
-
-1 TEXTINCLUDE 
-BEGIN
-    "resource.h\0"
-END
-
-2 TEXTINCLUDE 
-BEGIN
-    "#define APSTUDIO_HIDDEN_SYMBOLS\r\n"
-    "#include ""windows.h""\r\n"
-    "#include ""resdefce.h""\r\n"
-    "#undef APSTUDIO_HIDDEN_SYMBOLS\r\n"
-    "\0"
-END
-
-3 TEXTINCLUDE 
-BEGIN
-    "\r\n"
-    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
-    "LANGUAGE 9, 1\r\n"
-    "#pragma code_page(1252)\r\n"
-    "#include ""menu.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
-    "#endif\r\n"
-    "\0"
-END
-
-#endif    // APSTUDIO_INVOKED
-
-#endif    // English (U.S.) resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-
-#ifndef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
-// Generated from the TEXTINCLUDE 3 resource.
-//
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-LANGUAGE 9, 1
-#pragma code_page(1252)
-#include "menu.rc2"  // non-Microsoft Visual C++ edited resources
-#endif
-
-/////////////////////////////////////////////////////////////////////////////
-#endif    // not APSTUDIO_INVOKED
-

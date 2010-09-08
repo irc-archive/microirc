@@ -67,7 +67,6 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions=" /subsystem:windowsce,5.01"
-				AdditionalDependencies="ws2.lib mmtimer.lib"
 				OutputFile="$(OutDir)/IRC.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories=""
@@ -156,7 +155,6 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions=" /subsystem:windowsce,5.01"
-				AdditionalDependencies="ws2.lib mmtimer.lib"
 				OutputFile="$(OutDir)/IRC.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories=""
@@ -245,7 +243,6 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions=" /subsystem:windowsce,5.01"
-				AdditionalDependencies="ws2.lib mmtimer.lib"
 				OutputFile="$(OutDir)/IRC.exe"
 				LinkIncremental="1"
 				DelayLoadDLLs="$(NOINHERIT)"
@@ -335,7 +332,6 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions=" /subsystem:windowsce,5.01"
-				AdditionalDependencies="ws2.lib mmtimer.lib"
 				OutputFile="$(OutDir)/IRC.exe"
 				LinkIncremental="1"
 				DelayLoadDLLs="$(NOINHERIT)"
@@ -454,10 +450,6 @@
 			</File>
 			<File
 				RelativePath=".\menu.rc"
-				>
-			</File>
-			<File
-				RelativePath=".\menu.rc2"
 				>
 			</File>
 			<File

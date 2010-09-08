@@ -8,21 +8,25 @@
 *
 * This code is licenced under the GPL version 2. For details see COPYING.txt file.
 */
-
-#include <aygshell.h>
-#pragma comment(lib, "aygshell.lib") 
-#include <commctrl.h>
+#pragma comment(lib, "aygshell.lib")
 #pragma comment(lib, "commctrl.lib")
-#include <ceconfig.h>
+#pragma comment(lib, "richink.lib")
+#pragma comment(lib, "ws2.lib")
+#pragma comment(lib, "mmtimer.lib")
+
 #include <windows.h>
 #include <windowsx.h>
-#include <winsock2.h>
-#include <ws2tcpip.h>
 #include <Windef.h>
 #include <time.h>
 #include <wchar.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <aygshell.h>
+#include <commctrl.h>
+#include <richink.h>
+#include <ceconfig.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
 #include <nled.h>
 
 #include "resource.h"
@@ -118,6 +122,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
    icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
    icex.dwICC = ICC_BAR_CLASSES|ICC_TAB_CLASSES;
    InitCommonControlsEx(&icex);
+   InitRichInkDLL();
    SHInitExtraControls();
    WNDCLASS wc;
    memset(&wc, 0, sizeof(WNDCLASS));
