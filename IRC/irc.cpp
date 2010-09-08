@@ -145,6 +145,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
    }
    ShowWindow(hWnd_Main, nCmdShow);
    UpdateWindow(hWnd_Main);
+   SendMessage(hWnd_Main, WM_CREATE_AFTER, 0, 0);
    MSG msg;
    HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_IRC));
    while(GetMessage(&msg, NULL, 0, 0)){

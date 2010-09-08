@@ -462,6 +462,7 @@ export int irc_send_message(irc_t *irc, int opcode, char **messages, int size){/
          }
          EnterCriticalSection(&irc->send_buffer_critical_section);
          if(size==0){
+            srand(GetTickCount());
             sprintf(irc->send_buffer,"NICK microirc%d", rand()%1000);
          }else{
             sprintf(irc->send_buffer,"NICK %s", messages[0]);

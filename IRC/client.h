@@ -300,6 +300,12 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
          }
          break;
       }
+      case WM_CREATE_AFTER:{
+         if(config.connect_on_startup){
+            SendMessage(hWnd, WM_CONNECTING, 0, 0);
+         }
+         break;
+      }
 
       case WM_NOTIFY:{
          switch(LOWORD(wParam)){
@@ -617,9 +623,6 @@ int guiclient_init(HWND hWnd){
    init_menu_bar(hWnd,IDR_MAIN_MENU_OFFLINE);
    init_chat_screen(hWnd);
    tab_create(hWnd,tabcontrol_chatview_handle,L".status",STATUS);
-   if(config.connect_on_startup){
-      SendMessage(hWnd, WM_CONNECTING, 0, 0);
-   }
    return 0;
 }
 
