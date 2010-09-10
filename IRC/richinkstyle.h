@@ -1,5 +1,5 @@
 /*
-* irc.cpp
+* richinkstyle.h
 *
 * Original from http://channel9.msdn.com/wiki/mobiledeveloper/richink/
 *

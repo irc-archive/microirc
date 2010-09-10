@@ -263,14 +263,11 @@ int tab_write_index(HWND tab_control, int tab_index, wchar_t *text, TAB_TEXT_TYP
          return -1;
       }
       if(operation==APPEND){
-         /*if(SendMessage(write_tab->text,EM_GETLIMITTEXT,0,0)-Edit_GetTextLength(write_tab->text)<EDITCHATVIEWTEXT_DELETE){
-            SendMessage(write_tab->text, EM_SETSEL, 0, EDITCHATVIEWTEXT_DELETE);
-            SendMessage(write_tab->text, EM_REPLACESEL, 0, (LPARAM)"");
+         if(SendMessage(write_tab->text, WM_GETTEXTLENGTH, 0, 0)>EDITCHATVIEWTEXT_LIMIT){
+            SendMessage(write_tab->text, EM_SETSEL, 0, (EDITCHATVIEWTEXT_LIMIT/4));
+            SendMessage(write_tab->text, EM_REPLACESEL, 0, (LPARAM)L"");
          }
-         */
-         //wchar_t aaa[1000];
-         int len = Edit_GetTextLength(write_tab->text);
-         //swprintf(aaa,L"%s %u",text,len);
+         int len = SendMessage(write_tab->text, WM_GETTEXTLENGTH, 0, 0);
          SendMessage(write_tab->text, EM_SETSEL, len, len);
          SendMessage(write_tab->text, EM_REPLACESEL, 0, (LPARAM)text);
          SendMessage(write_tab->text, EM_SCROLLCARET, 0, 0);
