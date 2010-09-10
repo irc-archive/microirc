@@ -17,7 +17,7 @@ enum TAB_TEXT_ACTION{APPEND,REMOVE};
 typedef struct tab_t{
    HWND text;
    HWND nick;
-   wchar_t lasturl[IRC_SIZE_MEDIUM];
+   //wchar_t lasturl[IRC_SIZE_MEDIUM];
 }tab_t;
 
 int tab_get_parameters_index(HWND tab_control, int tab_index, tab_t **result){
@@ -80,7 +80,6 @@ void tab_refresh(HWND tab_control, TAB_VISIBLE_ACTION hide){
    }
    if(hide==SHOW){
       ShowWindow(refresh_tab->text,SW_SHOW);
-      SendMessage(refresh_tab->text, EM_SCROLLCARET, 0, 0);
       if(refresh_tab->nick!=NULL){
          ShowWindow(refresh_tab->nick,SW_SHOW);
       }
@@ -90,17 +89,6 @@ void tab_refresh(HWND tab_control, TAB_VISIBLE_ACTION hide){
          ShowWindow(refresh_tab->nick,SW_HIDE);
       }
    }
-}
-
-WNDPROC old_ChatViewTextProc;
-LRESULT CALLBACK ChatViewTextProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
-   switch (uMsg){
-      case WM_LBUTTONUP:{
-         SetFocus(edit_chatinput_handle);
-         break;
-      }
-   }
-   return CallWindowProc(old_ChatViewTextProc, hWnd, uMsg, wParam, lParam);
 }
 
 WNDPROC old_ChatViewNickProc;
@@ -165,10 +153,10 @@ LRESULT CALLBACK ChatViewNickProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                irc_send_message(&irc,SEND_CHANNEL_MODE,send,3);
                break;
             }
-            case IDM_CHATBOX_WHOIS:{
+            /*case IDM_CHATBOX_WHOIS:{
                MessageBox(NULL,L"not done",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                break;
-            }
+            }*/
             case IDM_CHATBOX_COPYNICK:{
                int element = ListBox_GetCurSel(hWnd);
                ListBox_GetText(hWnd,element,wnick);
@@ -222,19 +210,19 @@ int tab_create(HWND hWnd, HWND tab_control, wchar_t *tab_name, TAB_TYPE type){
       return -1;
    }
    if(type==STATUS){
-      new_tab->text=CreateWindowEx(0,L"edit",NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|ES_MULTILINE,TABTALK_LEFT,TABTALK_TOP,TABTALK_STATUS_WIDTH,TABALL_HEIGHT,hWnd,(HMENU)EDIT_CHATVIEW_TEXT,app_instance,NULL);
+      new_tab->text=CreateWindowEx(0,L"richink",NULL,ES_AUTOVSCROLL|WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|ES_MULTILINE|ES_READONLY,TABTALK_LEFT,TABTALK_TOP,TABTALK_STATUS_WIDTH,TABALL_HEIGHT,hWnd,(HMENU)EDIT_CHATVIEW_TEXT,app_instance,NULL);
       if(new_tab->text==NULL){
          free(new_tab);
          return -1;
       }
       new_tab->nick=NULL;
    }else if(type==CHAT){
-      new_tab->text=CreateWindowEx(0,L"edit",NULL,ES_AUTOVSCROLL|WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|ES_MULTILINE,TABTALK_LEFT,TABTALK_TOP,TABTALK_CHAT_WIDTH,TABALL_HEIGHT,hWnd,(HMENU)EDIT_CHATVIEW_TEXT,app_instance,NULL);
+      new_tab->text=CreateWindowEx(0,L"richink",NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|ES_MULTILINE|ES_READONLY,TABTALK_LEFT,TABTALK_TOP,TABTALK_CHAT_WIDTH,TABALL_HEIGHT,hWnd,(HMENU)EDIT_CHATVIEW_TEXT,app_instance,NULL);
       if(new_tab->text==NULL){
          free(new_tab);
          return -1;
       }
-      new_tab->nick=CreateWindowEx(0,L"listbox",NULL,LBS_NOINTEGRALHEIGHT|ES_AUTOVSCROLL|WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|WS_HSCROLL|LBS_SORT|LBS_HASSTRINGS|LBS_NOTIFY,TABNICK_LEFT,TABNICK_TOP,TABNICK_CHAT_WIDTH,TABALL_HEIGHT,hWnd,(HMENU)LIST_CHATVIEW_NICK,app_instance,NULL);
+      new_tab->nick=CreateWindowEx(0,L"listbox",NULL,LBS_NOINTEGRALHEIGHT|WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|WS_HSCROLL|LBS_SORT|LBS_HASSTRINGS|LBS_NOTIFY,TABNICK_LEFT,TABNICK_TOP,TABNICK_CHAT_WIDTH,TABALL_HEIGHT,hWnd,(HMENU)LIST_CHATVIEW_NICK,app_instance,NULL);
       if(new_tab->nick==NULL){
          DestroyWindow(new_tab->text);
          free(new_tab);
@@ -245,8 +233,6 @@ int tab_create(HWND hWnd, HWND tab_control, wchar_t *tab_name, TAB_TYPE type){
    }else{
       return -1;
    }
-   old_ChatViewTextProc = (WNDPROC)GetWindowLong(new_tab->text,GWL_WNDPROC);
-   SetWindowLong(new_tab->text,GWL_WNDPROC,(LONG)ChatViewTextProc);
 
    tab_index = SendMessage(tab_control,TCM_GETITEMCOUNT,0,0);
    if(tab_insert_both_index(tab_control,tab_index,tab_name,new_tab)==-1){
@@ -257,14 +243,12 @@ int tab_create(HWND hWnd, HWND tab_control, wchar_t *tab_name, TAB_TYPE type){
       free(new_tab);
       return -1;
    }
-   SendMessage(new_tab->text,EM_FMTLINES,FALSE,0);
-   SendMessage(new_tab->text,EM_SETREADONLY,TRUE,0);
    ShowWindow(new_tab->text,SW_HIDE);
    if(new_tab->nick!=NULL){
       SendMessage(new_tab->nick,LB_SETHORIZONTALEXTENT,150,0);
       ShowWindow(new_tab->nick,SW_HIDE);
    }
-   wcscpy(new_tab->lasturl,L"");
+   //wcscpy(new_tab->lasturl,L"");
    tab_refresh(tab_control,SHOW);
    return 0;
 }
@@ -279,15 +263,16 @@ int tab_write_index(HWND tab_control, int tab_index, wchar_t *text, TAB_TEXT_TYP
          return -1;
       }
       if(operation==APPEND){
-         if(SendMessage(write_tab->text,EM_GETLIMITTEXT,0,0)-Edit_GetTextLength(write_tab->text)<EDITCHATVIEWTEXT_DELETE){
+         /*if(SendMessage(write_tab->text,EM_GETLIMITTEXT,0,0)-Edit_GetTextLength(write_tab->text)<EDITCHATVIEWTEXT_DELETE){
             SendMessage(write_tab->text, EM_SETSEL, 0, EDITCHATVIEWTEXT_DELETE);
             SendMessage(write_tab->text, EM_REPLACESEL, 0, (LPARAM)"");
          }
+         */
          int len = Edit_GetTextLength(write_tab->text);
          SendMessage(write_tab->text, EM_SETSEL, len, len);
          SendMessage(write_tab->text, EM_REPLACESEL, 0, (LPARAM)text);
          SendMessage(write_tab->text, EM_SCROLLCARET, 0, 0);
-         wchar_t *start = wcsstr(text,L"http://");
+         /*wchar_t *start = wcsstr(text,L"http://");
          if(start!=NULL){
             wchar_t *end = wcschr(start,' ');
             if(end==NULL){
@@ -295,7 +280,7 @@ int tab_write_index(HWND tab_control, int tab_index, wchar_t *text, TAB_TEXT_TYP
             }
             wcscpy(write_tab->lasturl,L"");
             wcsncat(write_tab->lasturl,start,end-start);
-         }
+         }*/
       }
    }else if(window==NICK){
       if(write_tab->nick==NULL){
@@ -452,6 +437,7 @@ void tab_resize_all(HWND tab_control){
             MoveWindow(tab->text,TABTALK_LEFT,TABTALK_TOP,TABTALK_CHAT_WIDTH,TABALL_HEIGHT,FALSE);
             MoveWindow(tab->nick,TABNICK_LEFT,TABNICK_TOP,TABNICK_CHAT_WIDTH,TABALL_HEIGHT,FALSE);
          }
+         SendMessage(tab->text,WM_VSCROLL,SB_LINEDOWN,0);
       }
    }
 }

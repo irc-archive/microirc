@@ -13,7 +13,7 @@
 #define IDR_PREFERENCES_MENU            203
 #define IDR_CHATBOX_MENU                204
 #define IDR_MAIN_MENU_MANAGER           205
-#define IDS_OPENURL                     301
+#define IDS_DISCONNECT                  301
 #define IDS_OPTIONS                     302
 #define IDS_OK                          303
 #define IDS_CANCEL                      304
@@ -27,7 +27,7 @@
 #define IDD_INPUTBOX                    402
 #define IDD_PREFERENCES                 403
 #define IDM_CONNECT                     600
-#define IDM_OPENURL                     601
+#define IDM_DISCONNECT                  601
 #define IDM_OPTIONS                     602
 #define IDM_OPTIONS_ABOUT               603
 #define IDM_OPTIONS_HELP                604
@@ -41,7 +41,7 @@
 #define IDM_CHATBOX_BAN                 612
 #define IDM_CHATBOX_KICK                613
 #define IDM_CHATBOX_KICKBAN             614
-#define IDM_CHATBOX_WHOIS               615
+//#define IDM_CHATBOX_WHOIS               615
 #define IDM_OPTIONS_DISCONNECT          616
 #define IDM_CHATBOX_COPYNICK            617
 #define IDM_NEW                         618

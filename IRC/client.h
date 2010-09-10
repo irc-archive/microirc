@@ -308,9 +308,24 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
       }
 
       case WM_NOTIFY:{
-         switch(LOWORD(wParam)){
+         LPNMHDR notification = (LPNMHDR)lParam;
+         switch(notification->idFrom){
+            case EDIT_CHATVIEW_TEXT:{
+               switch(notification->code){
+                  case 1000:{//tap and hold finished.....
+                     break;
+                  }
+                  case 10101:{//right click.....
+                     SetFocus(edit_chatinput_handle);
+                     int len = Edit_GetTextLength(notification->hwndFrom);
+                     SendMessage(notification->hwndFrom, EM_SETSEL, len, len);
+                     break;
+                  }
+               }
+               break;
+            }
             case TABCONTROL_CHATVIEW:{
-               switch(((LPNMHDR)lParam)->code){
+               switch(notification->code){
                   case TCN_SELCHANGING:{
                      tab_refresh(tabcontrol_chatview_handle,HIDE);
                      break;
@@ -329,6 +344,7 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
          }
          break;
       }
+
       case WM_COMMAND:{
          int wmEvent = HIWORD(wParam);
          HWND control_handler = (HWND)lParam;
@@ -454,7 +470,7 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                irc_send_message(&irc,SEND_JOIN,send,1);
                break;
             }
-            case IDM_OPENURL:{
+            /*case IDM_OPENURL:{
                wchar_t wurl[IRC_SIZE_MEDIUM]=L"http://";
                tab_t *current_tab;
                if(tab_get_parameters_current(tabcontrol_chatview_handle,&current_tab)==0){
@@ -487,7 +503,7 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                ShExecInfo.hInstApp = NULL;
                ShellExecuteEx(&ShExecInfo);
                break;
-            }
+            }*/
             case IDM_OPTIONS_ABOUT:{
                DialogBoxParam(app_instance, (LPCTSTR)IDD_ABOUTBOX, hWnd, AboutProc, NULL);
                break;
@@ -530,6 +546,7 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                SendMessage(hWnd, WM_CONNECTING, 0, 0);
                break;
             }
+            case IDM_DISCONNECT:
             case IDM_OPTIONS_DISCONNECT:{
                SendMessage(hWnd, WM_DISCONNECTING, 0, 0);
                break;
