@@ -9,6 +9,8 @@
 * This code is licenced under the GPL version 2. For details see COPYING.txt file.
 */
 
+#define CLIENT_ONLY
+
 #pragma comment(lib, "aygshell.lib")
 #pragma comment(lib, "commctrl.lib")
 #pragma comment(lib, "richink.lib")
@@ -30,6 +32,7 @@
 #include <ws2tcpip.h>
 #include <nled.h>
 
+#include "richinkstyle.h"
 #include "resource.h"
 #include "irc.h"
 #include "../util/util.h"
@@ -111,8 +114,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
    if(GetModuleFileName(NULL,module_path,IRC_SIZE_SMALL)==0){
       return 0;
    }
+#ifdef CLIENT_ONLY
+   if(title(window_title,L"Client.ini")!=0){
+#else
    if(title(window_title,lpCmdLine)!=0){
-   //if(title(window_title,L"Client.ini")!=0){
+#endif
       return 0;
    }
    if(FindWindow(window_class, window_title)!=NULL){
@@ -136,16 +142,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
    wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
    wc.lpszMenuName = 0;
    wc.lpszClassName = window_class;
+#ifdef CLIENT_ONLY
+   wc.lpfnWndProc = WindowProcClient;
+#else
    if(wcslen(lpCmdLine)==0){
-      wc.lpfnWndProc = WindowProcManager;//WindowProcManager;
+      wc.lpfnWndProc = WindowProcManager;
    }else{
       wc.lpfnWndProc = WindowProcClient;
    }
+#endif
    if(RegisterClass(&wc)==0){
       return 0;
    }
+#ifdef CLIENT_ONLY
+   HWND hWnd_Main = CreateWindowEx(0, window_class, window_title, WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL,(HMENU)0, hInstance, L"personalized.ini");
+#else
    HWND hWnd_Main = CreateWindowEx(0, window_class, window_title, WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL,(HMENU)0, hInstance, lpCmdLine);
-   //HWND hWnd_Main = CreateWindowEx(0, window_class, window_title, WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL,(HMENU)0, hInstance, L"personalized.ini");
+#endif
    if(hWnd_Main==NULL){
       return 0;
    }

@@ -425,6 +425,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\richinkstyle.h"
+				>
+			</File>
+			<File
 				RelativePath=".\tab_manager.h"
 				>
 			</File>
