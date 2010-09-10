@@ -344,7 +344,6 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
          }
          break;
       }
-
       case WM_COMMAND:{
          int wmEvent = HIWORD(wParam);
          HWND control_handler = (HWND)lParam;
