@@ -16,6 +16,7 @@
 #pragma comment(lib, "richink.lib")
 #pragma comment(lib, "ws2.lib")
 #pragma comment(lib, "mmtimer.lib")
+//#pragma comment(lib, "riched20.lib")
 
 #include <windows.h>
 #include <windowsx.h>
@@ -27,12 +28,15 @@
 #include <aygshell.h>
 #include <commctrl.h>
 #include <richink.h>
+#include <inkx.h>
 #include <ceconfig.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <nled.h>
 
-#include "richinkstyle.h"
+//#include "richink.h"
+//#include "richinkstyle.h"
+#include "richedit.h"
 #include "resource.h"
 #include "irc.h"
 #include "../util/util.h"
@@ -130,6 +134,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
    icex.dwICC = ICC_BAR_CLASSES|ICC_TAB_CLASSES;
    InitCommonControlsEx(&icex);
    InitRichInkDLL();
+   LoadLibrary(L"riched20.dll");
    SHInitExtraControls();
    WNDCLASS wc;
    memset(&wc, 0, sizeof(WNDCLASS));
@@ -155,7 +160,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
       return 0;
    }
 #ifdef CLIENT_ONLY
-   HWND hWnd_Main = CreateWindowEx(0, window_class, window_title, WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL,(HMENU)0, hInstance, L"personalized.ini");
+   HWND hWnd_Main = CreateWindowEx(0, window_class, window_title, WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL,(HMENU)0, hInstance, L"options.ini");
 #else
    HWND hWnd_Main = CreateWindowEx(0, window_class, window_title, WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL,(HMENU)0, hInstance, lpCmdLine);
 #endif
