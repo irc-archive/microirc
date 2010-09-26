@@ -261,6 +261,7 @@ int tab_create(HWND hWnd, HWND tab_control, wchar_t *tab_name, TAB_TYPE type){
    PostMessage(new_tab->text,EM_SHOWSCROLLBAR, SB_VERT, TRUE);
    SendMessage(new_tab->text,EM_AUTOURLDETECT,TRUE,0);
    SendMessage(new_tab->text,EM_SETEVENTMASK,0,ENM_LINK);
+   SendMessage(new_tab->text,EM_EXLIMITTEXT,0,EDITCHATVIEWTEXT_LIMIT);
    tab_index = SendMessage(tab_control,TCM_GETITEMCOUNT,0,0);
    if(tab_insert_index(tab_control,tab_index,tab_name,new_tab)==-1){
       DestroyWindow(new_tab->text);
@@ -395,7 +396,10 @@ int write_text_index(HWND tab_control, int tab_index, wchar_t *text, style_text_
    if(write_tab->text==NULL){
       return -1;
    }
-   if(SendMessage(write_tab->text, WM_GETTEXTLENGTH, 0, 0)>EDITCHATVIEWTEXT_LIMIT){
+   GETTEXTLENGTHEX limit;
+   limit.flags = GTL_USECRLF|GTL_CLOSE|GTL_NUMCHARS;
+   limit.codepage = 1200;
+   if(SendMessage(write_tab->text, EM_GETTEXTLENGTHEX, (WPARAM)&limit, 0)>(EDITCHATVIEWTEXT_LIMIT-IRC_SIZE_MEDIUM)){
       SendMessage(write_tab->text, EM_SETSEL, 0, (EDITCHATVIEWTEXT_LIMIT/4));
       SendMessage(write_tab->text, EM_REPLACESEL, 0, (LPARAM)L"");
    }
