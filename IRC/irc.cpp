@@ -9,7 +9,7 @@
 * This code is licenced under the GPL version 2. For details see COPYING.txt file.
 */
 
-#define CLIENT_ONLY
+//#define CLIENT_ONLY
 
 #pragma comment(lib, "aygshell.lib")
 #pragma comment(lib, "commctrl.lib")
@@ -169,7 +169,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
    }
    ShowWindow(hWnd_Main, nCmdShow);
    UpdateWindow(hWnd_Main);
-   SendMessage(hWnd_Main, WM_CREATE_AFTER, 0, 0);
    MSG msg;
    HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_IRC));
    while(GetMessage(&msg, NULL, 0, 0)){

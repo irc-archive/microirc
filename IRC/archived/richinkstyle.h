@@ -114,6 +114,25 @@ typedef struct _richinkstyle{
   BYTE  byte129; // uninitialized
 } RICHINKSTYLE;
 
+/* notify on parent window
+case WM_NOTIFY:{
+   LPNMHDR notification = (LPNMHDR)lParam;
+   switch(notification->idFrom){
+      case EDIT_CHATVIEW_TEXT:{
+         switch(notification->code){
+            case 1000:{//tap and hold finished.....
+               break;
+            }
+            case 10101:{//right click.....
+               break;
+            }
+         }
+         break;
+      }
+   }
+}
+*/
+
 /*
 bool [wxTextCtrl::SetStyle(long] start, long end, const [wxTextAttr&] textAttr){
    // TODO: if the selection does not match start/end, save the selection & select start/end

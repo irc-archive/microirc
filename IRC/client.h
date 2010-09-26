@@ -297,25 +297,31 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
          }
          break;
       }
-      case WM_CREATE_AFTER:{
-         if(config.connect_on_startup){
-            SendMessage(hWnd, WM_CONNECTING, 0, 0);
-         }
-         break;
-      }
 
       case WM_NOTIFY:{
          LPNMHDR notification = (LPNMHDR)lParam;
          switch(notification->idFrom){
             case EDIT_CHATVIEW_TEXT:{
                switch(notification->code){
-                  case 1000:{//tap and hold finished.....
-                     break;
-                  }
-                  case 10101:{//right click.....
-                     SetFocus(edit_chatinput_handle);
-                     int len = Edit_GetTextLength(notification->hwndFrom);
-                     SendMessage(notification->hwndFrom, EM_SETSEL, len, len);
+                  case EN_LINK:{
+                     ENLINK *link = (ENLINK*)lParam;
+                     wchar_t wlink[IRC_SIZE_MEDIUM];
+                     TEXTRANGE textrange;
+                     memcpy(&textrange.chrg,&link->chrg,sizeof(CHARRANGE));
+                     textrange.lpstrText = wlink;
+                     SendMessage(notification->hwndFrom,EM_GETTEXTRANGE,0,(LPARAM)&textrange);
+
+                     SHELLEXECUTEINFO ShExecInfo = {0};
+                     ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+                     ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+                     ShExecInfo.hwnd = NULL;
+                     ShExecInfo.lpVerb = L"open";
+                     ShExecInfo.lpFile = wlink;
+                     ShExecInfo.lpParameters = NULL;
+                     ShExecInfo.lpDirectory = NULL;
+                     ShExecInfo.nShow = SW_SHOW;
+                     ShExecInfo.hInstApp = NULL;
+                     ShellExecuteEx(&ShExecInfo);
                      break;
                   }
                }
@@ -634,6 +640,9 @@ int guiclient_init(HWND hWnd){
    init_menu_bar(hWnd,IDR_MAIN_MENU_OFFLINE);
    init_chat_screen(hWnd);
    tab_create(hWnd,tabcontrol_chatview_handle,L".status",STATUS);
+   if(config.connect_on_startup){
+      PostMessage(hWnd, WM_CONNECTING, 0, 0);
+   }
    return 0;
 }
 

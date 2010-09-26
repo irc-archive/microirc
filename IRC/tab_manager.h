@@ -96,6 +96,22 @@ void tab_refresh(HWND tab_control, TAB_VISIBLE_ACTION hide){
    }
 }
 
+WNDPROC old_ChatViewTextProc;
+LRESULT CALLBACK ChatViewTextProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
+   switch (uMsg){
+      case WM_LBUTTONUP:{
+         SetFocus(edit_chatinput_handle);
+         SendMessage(hWnd, EM_SETSEL, EDITCHATVIEWTEXT_LIMIT, EDITCHATVIEWTEXT_LIMIT);
+         break;
+      }
+      case EM_SCROLLCARET:{
+         SendMessage(hWnd, WM_VSCROLL, SB_BOTTOM, 0);
+         break;
+      }
+   }
+   return CallWindowProc(old_ChatViewTextProc, hWnd, uMsg, wParam, lParam);
+}
+
 WNDPROC old_ChatViewNickProc;
 LRESULT CALLBACK ChatViewNickProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
    switch(uMsg){
@@ -216,7 +232,7 @@ int tab_create(HWND hWnd, HWND tab_control, wchar_t *tab_name, TAB_TYPE type){
    }
    if(type==STATUS){
       //new_tab->text=CreateWindowEx(0,L"richink",NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|ES_MULTILINE|ES_READONLY,TABTALK_LEFT,TABTALK_TOP,TABTALK_STATUS_WIDTH,TABALL_HEIGHT,hWnd,(HMENU)EDIT_CHATVIEW_TEXT,app_instance,NULL);
-      new_tab->text=CreateWindowEx(0,L"RICHEDIT50W",NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|ES_MULTILINE|ES_READONLY,TABTALK_LEFT,TABTALK_TOP,TABTALK_STATUS_WIDTH,TABALL_HEIGHT,hWnd,(HMENU)EDIT_CHATVIEW_TEXT,app_instance,NULL);
+      new_tab->text=CreateWindowEx(WS_EX_STATICEDGE,L"RICHEDIT50W",NULL,WS_CHILD|WS_VISIBLE|ES_MULTILINE|ES_READONLY,TABTALK_LEFT,TABTALK_TOP,TABTALK_STATUS_WIDTH,TABALL_HEIGHT,hWnd,(HMENU)EDIT_CHATVIEW_TEXT,app_instance,NULL);
       if(new_tab->text==NULL){
          free(new_tab);
          return -1;
@@ -224,12 +240,12 @@ int tab_create(HWND hWnd, HWND tab_control, wchar_t *tab_name, TAB_TYPE type){
       new_tab->nick=NULL;
    }else if(type==CHAT){
       //new_tab->text=CreateWindowEx(0,L"richink",NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|ES_MULTILINE|ES_READONLY,TABTALK_LEFT,TABTALK_TOP,TABTALK_STATUS_WIDTH,TABALL_HEIGHT,hWnd,(HMENU)EDIT_CHATVIEW_TEXT,app_instance,NULL);
-      new_tab->text=CreateWindowEx(0,L"RICHEDIT50W",NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|ES_MULTILINE|ES_READONLY,TABTALK_LEFT,TABTALK_TOP,TABTALK_CHAT_WIDTH,TABALL_HEIGHT,hWnd,(HMENU)EDIT_CHATVIEW_TEXT,app_instance,NULL);
+      new_tab->text=CreateWindowEx(WS_EX_STATICEDGE,L"RICHEDIT50W",NULL,WS_CHILD|WS_VISIBLE|ES_MULTILINE|ES_READONLY,TABTALK_LEFT,TABTALK_TOP,TABTALK_CHAT_WIDTH,TABALL_HEIGHT,hWnd,(HMENU)EDIT_CHATVIEW_TEXT,app_instance,NULL);
       if(new_tab->text==NULL){
          free(new_tab);
          return -1;
       }
-      new_tab->nick=CreateWindowEx(0,L"listbox",NULL,LBS_NOINTEGRALHEIGHT|WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|WS_HSCROLL|LBS_SORT|LBS_HASSTRINGS|LBS_NOTIFY,TABNICK_LEFT,TABNICK_TOP,TABNICK_CHAT_WIDTH,TABALL_HEIGHT,hWnd,(HMENU)LIST_CHATVIEW_NICK,app_instance,NULL);
+      new_tab->nick=CreateWindowEx(0,L"listbox",NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|WS_HSCROLL|LBS_SORT|LBS_HASSTRINGS|LBS_NOINTEGRALHEIGHT|LBS_NOTIFY,TABNICK_LEFT,TABNICK_TOP,TABNICK_CHAT_WIDTH,TABALL_HEIGHT,hWnd,(HMENU)LIST_CHATVIEW_NICK,app_instance,NULL);
       if(new_tab->nick==NULL){
          DestroyWindow(new_tab->text);
          free(new_tab);
@@ -240,7 +256,11 @@ int tab_create(HWND hWnd, HWND tab_control, wchar_t *tab_name, TAB_TYPE type){
    }else{
       return -1;
    }
-   //SendMessage(new_tab->text,EM_FMTLINES,FALSE,0);
+   old_ChatViewTextProc = (WNDPROC)GetWindowLong(new_tab->text,GWL_WNDPROC);
+   SetWindowLong(new_tab->text,GWL_WNDPROC,(LONG)ChatViewTextProc);
+   PostMessage(new_tab->text,EM_SHOWSCROLLBAR, SB_VERT, TRUE);
+   SendMessage(new_tab->text,EM_AUTOURLDETECT,TRUE,0);
+   SendMessage(new_tab->text,EM_SETEVENTMASK,0,ENM_LINK);
    tab_index = SendMessage(tab_control,TCM_GETITEMCOUNT,0,0);
    if(tab_insert_index(tab_control,tab_index,tab_name,new_tab)==-1){
       DestroyWindow(new_tab->text);
@@ -379,27 +399,33 @@ int write_text_index(HWND tab_control, int tab_index, wchar_t *text, style_text_
       SendMessage(write_tab->text, EM_SETSEL, 0, (EDITCHATVIEWTEXT_LIMIT/4));
       SendMessage(write_tab->text, EM_REPLACESEL, 0, (LPARAM)L"");
    }
-   int xpto = SendMessage(write_tab->text, WM_GETTEXTLENGTH, 0, 0);
+   CHARFORMAT2 format; //|CFM_FACE|CFM_SIZE; wcscpy(format.szFaceName, L"Courier new"); format.yHeight = 32;
+   memset(&format,0,sizeof(CHARFORMAT2));
+   format.cbSize = sizeof(CHARFORMAT2);
+   format.dwMask = CFM_COLOR;
+   format.crTextColor = 0x000000FF;
+
+   SendMessage(write_tab->text, EM_SETSEL, EDITCHATVIEWTEXT_LIMIT, EDITCHATVIEWTEXT_LIMIT);
+   SendMessage(write_tab->text, EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM)&format);
    if(ts == TSTRUE){
       SYSTEMTIME timestamp;
       wchar_t wtimestamp[IRC_SIZE_SMALL];
       GetSystemTime(&timestamp);
-      swprintf(wtimestamp,L"\r[%02d:%02d:%02d] ",(unsigned short)timestamp.wHour,(unsigned short)timestamp.wMinute,(unsigned short)timestamp.wSecond);
-      SendMessage(write_tab->text, EM_SETSEL, EDITCHATVIEWTEXT_LIMIT, EDITCHATVIEWTEXT_LIMIT);
+      swprintf(wtimestamp,L"\r\n[%02d:%02d:%02d] ",(unsigned short)timestamp.wHour,(unsigned short)timestamp.wMinute,(unsigned short)timestamp.wSecond);
       SendMessage(write_tab->text, EM_REPLACESEL, 0, (LPARAM)wtimestamp);
    }else if(ts == TSFALSE){
-      SendMessage(write_tab->text, EM_REPLACESEL, 0, (LPARAM)L"\r");
+      SendMessage(write_tab->text, EM_REPLACESEL, 0, (LPARAM)L"\r\n");
    }
+   memset(&format,0,sizeof(CHARFORMAT2));
+   format.cbSize = sizeof(CHARFORMAT2);
+   format.dwMask = CFM_COLOR;
+   format.crTextColor = 0x00000000;
+
    SendMessage(write_tab->text, EM_SETSEL, EDITCHATVIEWTEXT_LIMIT, EDITCHATVIEWTEXT_LIMIT);
+   SendMessage(write_tab->text, EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM)&format);
+
    SendMessage(write_tab->text, EM_REPLACESEL, 0, (LPARAM)text);
-   
-   int xptoo = SendMessage(write_tab->text, WM_GETTEXTLENGTH, 0, 0);
-   SendMessage(write_tab->text, EM_SETSEL, xpto, xpto+5);
-   
-//wchar_t aa[100];
-//swprintf(aa,L"%u %u %u %u",a.wAlignment,a.dwMask,a.dxOffset,a.wNumbering);
-//MessageBox(NULL,aa,NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
-   
+
    SendMessage(write_tab->text, EM_SCROLLCARET, 0, 0);
    /*wchar_t *start = wcsstr(text,L"http://");
    if(start!=NULL){
