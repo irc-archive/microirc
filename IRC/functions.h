@@ -88,19 +88,59 @@ int winiparser_store(iniparser_t *iniparser, wchar_t *wfilename){
    return iniparser_store(iniparser,fullpath);
 }
 
-void refresh_client_sizes(int width, int height, int logicalx, int logicaly){
-   BORDER = SCALEX(1,logicalx);
-   CLOSETAB_WIDTH = SCALEX(20,logicalx);
-   CLOSETAB_HEIGHT = SCALEY(20,logicaly);
-   BUTTONCHAT_WIDTH = SCALEY(40,logicaly);
-   BUTTONCHAT_HEIGHT = SCALEY(20,logicaly);
+int GetScreenCapsX(){
+   HDC hDC = GetDC(NULL);
+   if(hDC == NULL){
+      return -1;
+   }
+   int i = GetDeviceCaps(hDC, LOGPIXELSX);
+   ReleaseDC(NULL, hDC);
+   return i;
+}
+
+int GetScreenCapsY(){
+   HDC hDC = GetDC(NULL);
+   if(hDC == NULL){
+      return -1;
+   }
+   int i = GetDeviceCaps(hDC, LOGPIXELSY);
+   ReleaseDC(NULL, hDC);
+   return i;
+}
+
+inline int HIDPIMulDiv(int x, int y, int z){
+   return ((((abs(x)*(y))+((z)>>1))/(z))*(((x)<0)?-1:1));
+}
+
+inline int SCALEX(int argX){
+   return HIDPIMulDiv(argX, LOG_PIXELS_X, HIDPI);
+}
+
+inline int SCALEY(int argY){
+   return HIDPIMulDiv(argY, LOG_PIXELS_Y, HIDPI);
+}
+
+inline int UNSCALEX(int argX){
+   return HIDPIMulDiv(argX, HIDPI, LOG_PIXELS_X);
+}
+
+inline int UNSCALEY(int argY){
+   return HIDPIMulDiv(argY, HIDPI, LOG_PIXELS_Y);
+}
+
+void refresh_client_sizes(int width, int height){
+   BORDER = SCALEX(1);
+   CLOSETAB_WIDTH = SCALEX(20);
+   CLOSETAB_HEIGHT = SCALEY(20);
+   BUTTONCHAT_WIDTH = SCALEY(40);
+   BUTTONCHAT_HEIGHT = SCALEY(20);
    TABCONTROLCHAT_WIDTH = width-(BORDER+BORDER+BORDER+CLOSETAB_WIDTH);
-   TABCONTROLCHAT_HEIGHT = SCALEY(20,logicaly);
+   TABCONTROLCHAT_HEIGHT = SCALEY(20);
    EDITCHAT_WIDTH = width-(BORDER+BORDER+BORDER+BUTTONCHAT_WIDTH);
-   EDITCHAT_HEIGHT = SCALEY(20,logicaly);
+   EDITCHAT_HEIGHT = SCALEY(20);
    TABALL_HEIGHT = height-(BORDER+BORDER+BORDER+BORDER+TABCONTROLCHAT_HEIGHT+EDITCHAT_HEIGHT);
    TABTALK_STATUS_WIDTH = width-(BORDER+BORDER);
-   TABNICK_CHAT_WIDTH = SCALEX(70,logicalx);
+   TABNICK_CHAT_WIDTH = SCALEX(70);
    TABTALK_CHAT_WIDTH = width-(BORDER+BORDER+BORDER+TABNICK_CHAT_WIDTH);
 
    CLOSETAB_TOP = BORDER;
@@ -117,10 +157,16 @@ void refresh_client_sizes(int width, int height, int logicalx, int logicaly){
    TABNICK_LEFT = BORDER+BORDER+TABTALK_CHAT_WIDTH;
 }
 
-void refresh_manager_sizes(int logicalx, int logicaly){
-   MANAGER_RADIO_LEFT = SCALEX(5,logicalx);
-   MANAGER_RADIO_TOP = SCALEY(20,logicaly);
-   MANAGER_RADIO_WIDTH = SCALEX(180,logicalx);
-   MANAGER_RADIO_HEIGHT = SCALEY(20,logicaly);
-   MANAGER_RADIO_TOP_DISTANCE = SCALEY(25,logicaly);
+void refresh_manager_sizes(){
+   STATIC_WIDTH = SCALEX(75);
+   STATIC_HEIGHT = SCALEY(20);
+   STATIC_TOP = SCALEY(5);
+   STATIC_LEFT = SCALEX(5);
+   STATIC_LEFT_SECOND = SCALEX(170);
+
+   RADIO_WIDTH = SCALEX(180);
+   RADIO_HEIGHT = SCALEY(20);
+   RADIO_TOP_DISTANCE = SCALEY(25);
+   RADIO_TOP = SCALEY(20);
+   RADIO_LEFT = SCALEX(5);
 }

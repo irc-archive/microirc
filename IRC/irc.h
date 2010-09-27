@@ -40,6 +40,8 @@
 #define SCROLL_PREFERENCES_MAX_POSITIONS 10
 #define SCROLL_PREFERENCES_HEIGHT 351
 
+#define HIDPI 96
+
 typedef struct ircconfig_t{
    int connect_on_startup;
    int reconnect_retries;
@@ -51,73 +53,27 @@ typedef struct ircconfig_t{
    int sounds;
    int led_number;
    int led_interval;
-}ircconfig_t;
+}ircconfig_t;//move to irconfig
+
+typedef struct guiclient_t{
+
+}guiclient_t;
 
 typedef struct guimanager_t{
    HWND connect_handles[IRC_PROFILE_LIMIT];
    int connect_size;
 }guimanager_t;
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow);
+//client
 LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 void *receiverThreadProc(void *window_handle);
 int guiclient_init(HWND hWnd);
 void guiclient_destroy(HWND hWnd);
 int guiclient_connecting(HWND hWnd);
 int guiclient_reconnecting(HWND hWnd);
 void guiclient_disconnecting(HWND hWnd);
-int title(wchar_t *window_title, wchar_t *cmd_line);
-int guimanager_init(HWND hWnd, int logicalx, int logicaly);
+
+//manager
+LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+int guimanager_init(HWND hWnd);
 void guimanager_destroy();
-int guimanager_create(wchar_t *text, HWND hWnd);
-void guimanager_getselected(int *d_result, int *s_result);
-int guimanager_delete(int index);
-void guimanager_resize_all();
-
-const int HIDPI = 96;
-
-int GetScreenCapsX(){
-   HDC hDC = GetDC(NULL);
-   if(hDC == NULL){
-      return -1;
-   }
-   int i = GetDeviceCaps(hDC, LOGPIXELSX);
-   ReleaseDC(NULL, hDC);
-   return i;
-}
-
-int GetScreenCapsY(){
-   HDC hDC = GetDC(NULL);
-   if(hDC == NULL){
-      return -1;
-   }
-   int i = GetDeviceCaps(hDC, LOGPIXELSY);
-   ReleaseDC(NULL, hDC);
-   return i;
-}
-
-inline int HIDPISIGN(int x){
-   return (((x)<0)?-1:1);
-}
-
-inline int HIDPIMulDiv(int x, int y, int z){
-   return ((((abs(x)*(y))+((z)>>1))/(z))*HIDPISIGN(x));
-}
-
-/* nLogPixels should be result of GetScreenCaps */
-inline int SCALEX(int argX, int nLogPixelsX){
-   return HIDPIMulDiv(argX, nLogPixelsX, HIDPI);
-}
-
-inline int SCALEY(int argY, int nLogPixelsY){
-   return HIDPIMulDiv(argY, nLogPixelsY, HIDPI);
-}
-
-inline int UNSCALEX(int argX, int nLogPixelsX){
-   return HIDPIMulDiv(argX, HIDPI, nLogPixelsX);
-}
-
-inline int UNSCALEY(int argY, int nLogPixelsY){
-   return HIDPIMulDiv(argY, HIDPI, nLogPixelsY);
-}

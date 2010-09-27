@@ -18,18 +18,14 @@
 #pragma comment(lib, "mmtimer.lib")
 //#pragma comment(lib, "riched20.lib")
 
-#include <windows.h>
-#include <windowsx.h>
-#include <Windef.h>
-#include <time.h>
-#include <wchar.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <windows.h>
+#include <windowsx.h>
 #include <aygshell.h>
 #include <commctrl.h>
 #include <richink.h>
 #include <inkx.h>
-#include <ceconfig.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <nled.h>
@@ -46,6 +42,13 @@
 #include "../iniparser/iniparser.h"
 #include "../ircprotocol/ircprotocol.h"
 
+//global
+int color_background;
+int color_text;
+unsigned int LOG_PIXELS_X;
+unsigned int LOG_PIXELS_Y;
+
+//client
 unsigned int BORDER;
 unsigned int CLOSETAB_WIDTH;
 unsigned int CLOSETAB_HEIGHT;
@@ -59,8 +62,6 @@ unsigned int TABALL_HEIGHT;
 unsigned int TABTALK_STATUS_WIDTH;
 unsigned int TABNICK_CHAT_WIDTH;
 unsigned int TABTALK_CHAT_WIDTH;
-unsigned int MANAGER_RADIO_WIDTH;
-unsigned int MANAGER_RADIO_HEIGHT;
 
 unsigned int CLOSETAB_TOP;
 unsigned int CLOSETAB_LEFT;
@@ -74,15 +75,27 @@ unsigned int TABTALK_TOP;
 unsigned int TABTALK_LEFT;
 unsigned int TABNICK_TOP;
 unsigned int TABNICK_LEFT;
-unsigned int MANAGER_RADIO_TOP_DISTANCE;
-unsigned int MANAGER_RADIO_TOP;
-unsigned int MANAGER_RADIO_LEFT;
 
+//manager
+unsigned int STATIC_WIDTH;
+unsigned int STATIC_HEIGHT;
+unsigned int RADIO_WIDTH;
+unsigned int RADIO_HEIGHT;
+
+unsigned int STATIC_TOP;
+unsigned int STATIC_LEFT;
+unsigned int STATIC_LEFT_SECOND;
+unsigned int RADIO_TOP_DISTANCE;
+unsigned int RADIO_TOP;
+unsigned int RADIO_LEFT;
+
+//global
 HINSTANCE app_instance;
 HWND menu_bar_handle;
 wchar_t window_title[IRC_SIZE_SMALL];
 wchar_t module_path[IRC_SIZE_SMALL];
 
+//client
 wchar_t profile[IRC_SIZE_SMALL];
 wchar_t sound_alert[IRC_SIZE_SMALL];
 HWND tabcontrol_chatview_handle;
@@ -99,10 +112,14 @@ irc_t irc;
 ircconfig_t config;
 int connected;
 
+//manager
 guimanager_t manager;
+HWND static_label1_handle;
+HWND static_label2_handle;
 
 #include "functions.h"
 #include "ircconfig.h"
+#include "checkbox_manager.h"
 #include "tab_manager.h"
 #include "dialogs_functions.h"
 #include "gui_functions.h"
@@ -111,6 +128,8 @@ guimanager_t manager;
 
 //MessageBox(NULL,L"LOL",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow){
+color_background = 0x00FFFFFF;
+color_text = 0x00000000;
    app_instance = hInstance;
    wchar_t window_class[IRC_SIZE_SMALL];
    LoadString(hInstance, IDS_WNDCLASS_IRC, window_class, IRC_SIZE_SMALL);
@@ -144,7 +163,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
    wc.hInstance = hInstance;
    wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_IRC));
    wc.hCursor = 0;
-   wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+   wc.hbrBackground = GetSysColorBrush(COLOR_WINDOW);
    wc.lpszMenuName = 0;
    wc.lpszClassName = window_class;
 #ifdef CLIENT_ONLY

@@ -27,7 +27,7 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                }
                wcscat(wprofile_name,L".ini");
 
-               int result = guimanager_create(wprofile_name,hWnd);
+               int result = checkbox_create(wprofile_name,hWnd);
                if(result==-1){
                   MessageBox(hWnd,L"Cannot create more profiles.",NULL,MB_ICONEXCLAMATION|MB_APPLMODAL|MB_SETFOREGROUND);
                   break;
@@ -66,7 +66,7 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 
                wchar_t *parameters[2]={L"manager",wprofile_name};
                if(!DialogBoxParam(app_instance, (LPCTSTR)IDD_PREFERENCES, hWnd, PreferencesProc, (LPARAM)parameters)){
-                  guimanager_delete(manager.connect_size-1);
+                  checkbox_delete(manager.connect_size-1);
                }
                break;
             }
@@ -74,7 +74,7 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                int i;
                int s_index=0;
                int d_index[IRC_PROFILE_LIMIT];
-               guimanager_getselected(d_index, &s_index);
+               checkbox_getselected(d_index, &s_index);
                for(i=0;i<s_index;i++){
                   Button_GetText(manager.connect_handles[d_index[i]],wprofile_name,IRC_SIZE_SMALL);
                   wchar_t *parameters[2]={L"manager",wprofile_name};
@@ -88,9 +88,9 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                      int i;
                      int s_index=0;
                      int d_index[IRC_PROFILE_LIMIT];
-                     guimanager_getselected(d_index, &s_index);
+                     checkbox_getselected(d_index, &s_index);
                      for(i=s_index-1;i>=0;i--){
-                        guimanager_delete(d_index[i]);
+                        checkbox_delete(d_index[i]);
                      }
                      break;
                   }
@@ -104,7 +104,7 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                int i;
                int s_index=0;
                int d_index[IRC_PROFILE_LIMIT];
-               guimanager_getselected(d_index, &s_index);
+               checkbox_getselected(d_index, &s_index);
                for(i=0;i<s_index;i++){
                   Button_GetText(manager.connect_handles[d_index[i]],wprofile_name,IRC_SIZE_SMALL);
                   CreateProcess(module_path,wprofile_name,NULL,NULL,FALSE,INHERIT_CALLER_PRIORITY,NULL,NULL,NULL,NULL);
@@ -122,6 +122,14 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
          break;
       }
       case WM_SIZE:{
+         LOG_PIXELS_X = GetScreenCapsX();
+         LOG_PIXELS_Y = GetScreenCapsY();
+
+         refresh_manager_sizes();
+
+         MoveWindow(static_label1_handle,STATIC_LEFT,STATIC_TOP,STATIC_WIDTH,STATIC_HEIGHT,FALSE);
+         MoveWindow(static_label2_handle,STATIC_LEFT_SECOND,STATIC_TOP,STATIC_WIDTH,STATIC_HEIGHT,FALSE);
+         checkbox_resize_all();
          break;
       }
       case WM_ACTIVATE:{
@@ -136,11 +144,10 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
          memset(&s_sai, 0, sizeof(SHACTIVATEINFO));
          s_sai.cbSize = sizeof(SHACTIVATEINFO);
 
-         int logicalx = GetScreenCapsX();
-         int logicaly = GetScreenCapsY();
-         refresh_manager_sizes(logicalx,logicaly);
+         LOG_PIXELS_X = GetScreenCapsX();
+         LOG_PIXELS_Y = GetScreenCapsY();
 
-         if(guimanager_init(hWnd,logicalx,logicaly)!=0){
+         if(guimanager_init(hWnd)!=0){
             PostQuitMessage(0);
          }
          if(menu_bar_handle!=NULL){
@@ -170,22 +177,21 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
    return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
-int guimanager_init(HWND hWnd, int logicalx, int logicaly){
+int guimanager_init(HWND hWnd){
    memset(&manager,0,sizeof(struct guimanager_t));
    wchar_t wfilespath[IRC_SIZE_SMALL];
    wfile_to_fullpath(L"*.ini",wfilespath);
    WIN32_FIND_DATA find;
    HANDLE findhwnd = FindFirstFile(wfilespath,&find);
    if(findhwnd!=INVALID_HANDLE_VALUE){
-      guimanager_create(find.cFileName,hWnd);
+      checkbox_create(find.cFileName,hWnd);
       while(FindNextFile(findhwnd,&find)){
-         guimanager_create(find.cFileName,hWnd);
+         checkbox_create(find.cFileName,hWnd);
       }
       FindClose(findhwnd);
    }
-   CreateWindowEx(0,L"static",L"Profiles",WS_CHILD | WS_VISIBLE,SCALEX(5,logicalx),SCALEY(5,logicaly),SCALEX(75,logicalx),SCALEY(20,logicaly),hWnd,(HMENU)NULL,app_instance,NULL);
-   CreateWindowEx(0,L"static",L"Selected",WS_CHILD | WS_VISIBLE,SCALEX(170,logicalx),SCALEY(5,logicaly),SCALEX(75,logicalx),SCALEY(20,logicaly),hWnd,(HMENU)NULL,app_instance,NULL);
    init_menu_bar(hWnd,IDR_MAIN_MENU_MANAGER);
+   init_profile_screen(hWnd);
    return 0;
 }
 
@@ -194,60 +200,6 @@ void guimanager_destroy(){
    for(i=0;i<manager.connect_size;i++){
       DestroyWindow(manager.connect_handles[i]);
    }
+   destroy_profile_screen();
    memset(&manager,0,sizeof(struct guimanager_t));
-}
-
-int guimanager_create(wchar_t *text, HWND hWnd){
-   if(manager.connect_size>=IRC_PROFILE_LIMIT){
-      return -1;
-   }
-   wchar_t wprofile_name_cmp[IRC_SIZE_SMALL];
-   int i;
-   for(i=0;i<manager.connect_size;i++){
-      Button_GetText(manager.connect_handles[i],wprofile_name_cmp,IRC_SIZE_SMALL);
-      if(_wcsicmp(wprofile_name_cmp,text)==0){
-         return -2;
-      }
-   }
-   manager.connect_handles[manager.connect_size]=CreateWindowEx(0,L"button",text,BS_LEFTTEXT|BS_AUTOCHECKBOX|WS_CHILD|WS_VISIBLE,MANAGER_RADIO_LEFT,MANAGER_RADIO_TOP_DISTANCE+(MANAGER_RADIO_TOP*manager.connect_size),MANAGER_RADIO_WIDTH,MANAGER_RADIO_HEIGHT,hWnd,(HMENU)NULL,app_instance,NULL);
-   Button_SetCheck(manager.connect_handles[manager.connect_size],BST_CHECKED);
-   manager.connect_size++;
-   return 0;
-}
-
-/*void guimanager_resize_all(){
-   int i;
-   for(i=0;i<manager.connect_size;i++){
-      MoveWindow(manager.connect_handles[i],MANAGER_RADIO_LEFT,MANAGER_RADIO_TOP_DISTANCE+(MANAGER_RADIO_TOP*i),MANAGER_RADIO_WIDTH,MANAGER_RADIO_HEIGHT,TRUE);
-   }
-}*/
-
-void guimanager_getselected(int *d_result, int *s_result){
-   *s_result = 0;
-   int i;
-   for(i=0;i<manager.connect_size;i++){
-      if(Button_GetCheck(manager.connect_handles[i])==BST_CHECKED){
-         d_result[*s_result] = i;
-         (*s_result)++;
-      }
-   }
-}
-
-int guimanager_delete(int index){
-   if(index<0 || index>=IRC_PROFILE_LIMIT){
-      return -1;
-   }
-   wchar_t wprofile_name[IRC_SIZE_SMALL];
-   wchar_t wprofile_fullpath[IRC_SIZE_SMALL];
-   Button_GetText(manager.connect_handles[index],wprofile_name,IRC_SIZE_SMALL);
-   wfile_to_fullpath(wprofile_name,wprofile_fullpath);
-   DeleteFile(wprofile_fullpath);
-   DestroyWindow(manager.connect_handles[index]);
-   manager.connect_size--;
-   int i;
-   for(i=index;i<manager.connect_size;i++){
-      manager.connect_handles[i]=manager.connect_handles[i+1];
-      MoveWindow(manager.connect_handles[i],0,5+(i*20),150,20,FALSE);
-   }
-   return 0;
 }

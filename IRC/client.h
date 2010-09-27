@@ -558,8 +558,35 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
          }
          break;
       }
+      /*case WM_DRAWITEM:{
+         LPDRAWITEMSTRUCT lpdis = (LPDRAWITEMSTRUCT)lParam;
+         switch(wParam){
+            case TABCONTROL_CHATVIEW:{
+               break;
+            }
+         }
+         wchar_t tab_text[IRC_SIZE_SMALL];
+         wcscpy(tab_text,L"");
+
+         TCITEM tci;
+         tci.mask = TCIF_TEXT;
+         tci.pszText = tab_text;
+         tci.cchTextMax = IRC_SIZE_SMALL;
+
+         TabCtrl_GetItem(tabcontrol_chatview_handle, lpdis->itemID, &tci);
+
+         FillRect(lpdis->hDC, &lpdis->rcItem, CreateSolidBrush(0x00000000));
+         SetBkColor(lpdis->hDC, 0x00000000);
+
+         ExtTextOut();
+         TextOut(lpdis->hDC,lpdis->rcItem.left,lpdis->rcItem.top,tci.pszText,wcslen(tci.pszText));
+         break;
+      }*/
       case WM_SIZE:{
-         refresh_client_sizes(LOWORD(lParam),HIWORD(lParam),GetScreenCapsX(),GetScreenCapsY());
+         LOG_PIXELS_X = GetScreenCapsX();
+         LOG_PIXELS_Y = GetScreenCapsY();
+
+         refresh_client_sizes(LOWORD(lParam),HIWORD(lParam));
 
          MoveWindow(edit_chatinput_handle,EDITCHAT_LEFT,EDITCHAT_TOP,EDITCHAT_WIDTH,EDITCHAT_HEIGHT,FALSE);
          MoveWindow(button_chatsend_handle,BUTTONCHAT_LEFT,BUTTONCHAT_TOP,BUTTONCHAT_WIDTH,BUTTONCHAT_HEIGHT,FALSE);
@@ -579,6 +606,9 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
       case WM_CREATE:{
          memset(&s_sai, 0, sizeof(SHACTIVATEINFO));
          s_sai.cbSize = sizeof(SHACTIVATEINFO);
+
+         LOG_PIXELS_X = GetScreenCapsX();
+         LOG_PIXELS_Y = GetScreenCapsY();
 
          LPCREATESTRUCT create = (LPCREATESTRUCT)lParam;
          wcsncpy(profile,(wchar_t*)create->lpCreateParams,IRC_SIZE_SMALL);
@@ -652,8 +682,8 @@ void guiclient_destroy(HWND hWnd){
       connected = 0;
       irc_disconnect(&irc,config.quit);
    }
-   destroy_chat_screen(hWnd);
-   destroy_menu_bar(hWnd);
+   destroy_chat_screen();
+   destroy_menu_bar();
    SetEvent(receiver_thread_event);
    WaitForSingleObject(receiver_thread,INFINITE);
    CloseHandle(receiver_thread_event);
@@ -682,7 +712,7 @@ int guiclient_connecting(HWND hWnd){
    }
    connected = 1;
    tab_connect(tabcontrol_chatview_handle,L"CONNECTED",NULL,TSFALSE);
-   destroy_menu_bar(hWnd);
+   destroy_menu_bar();
    init_menu_bar(hWnd,IDR_MAIN_MENU_ONLINE);
    SetEvent(receiver_thread_event);
    destroy_loading_screen(hWnd);
@@ -707,7 +737,7 @@ int guiclient_reconnecting(HWND hWnd){
       Sleep(IRC_RECONNECT_TIMEOUT);
       trys--;
       if(trys<=0){
-         destroy_menu_bar(hWnd);
+         destroy_menu_bar();
          init_menu_bar(hWnd,IDR_MAIN_MENU_OFFLINE);
          destroy_loading_screen(hWnd);
          return -1;
@@ -725,7 +755,7 @@ void guiclient_disconnecting(HWND hWnd){
       connected = 0;
       irc_disconnect(&irc,config.quit);
       tab_disconnect(tabcontrol_chatview_handle,L"DISCONNECTED",NULL,TSFALSE);
-      destroy_menu_bar(hWnd);
+      destroy_menu_bar();
       init_menu_bar(hWnd,IDR_MAIN_MENU_OFFLINE);
    }
 }

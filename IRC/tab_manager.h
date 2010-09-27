@@ -25,6 +25,16 @@ typedef struct style_text_t{
    int color;
 }style_text_t;
 
+void set_style(style_text_t *style, CHARFORMAT2 *format){
+   if(style==NULL){
+      format->dwMask = CFM_COLOR;
+      format->crTextColor = color_text;
+   }else{
+      format->dwMask = CFM_COLOR;
+      format->crTextColor = style->color;
+   }
+}
+
 int tab_get_parameters_index(HWND tab_control, int tab_index, tab_t **result){
    TCITEM tab_item;
    memset(&tab_item,0,sizeof(TCITEM));
@@ -231,7 +241,7 @@ int tab_create(HWND hWnd, HWND tab_control, wchar_t *tab_name, TAB_TYPE type){
       return -1;
    }
    if(type==STATUS){
-      //new_tab->text=CreateWindowEx(0,L"richink",NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|ES_MULTILINE|ES_READONLY,TABTALK_LEFT,TABTALK_TOP,TABTALK_STATUS_WIDTH,TABALL_HEIGHT,hWnd,(HMENU)EDIT_CHATVIEW_TEXT,app_instance,NULL);
+      //new_tab->text=CreateWindowEx(0,L"RICHINK",NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|ES_MULTILINE|ES_READONLY,TABTALK_LEFT,TABTALK_TOP,TABTALK_STATUS_WIDTH,TABALL_HEIGHT,hWnd,(HMENU)EDIT_CHATVIEW_TEXT,app_instance,NULL);
       new_tab->text=CreateWindowEx(WS_EX_STATICEDGE,L"RICHEDIT50W",NULL,WS_CHILD|WS_VISIBLE|ES_MULTILINE|ES_READONLY,TABTALK_LEFT,TABTALK_TOP,TABTALK_STATUS_WIDTH,TABALL_HEIGHT,hWnd,(HMENU)EDIT_CHATVIEW_TEXT,app_instance,NULL);
       if(new_tab->text==NULL){
          free(new_tab);
@@ -239,13 +249,13 @@ int tab_create(HWND hWnd, HWND tab_control, wchar_t *tab_name, TAB_TYPE type){
       }
       new_tab->nick=NULL;
    }else if(type==CHAT){
-      //new_tab->text=CreateWindowEx(0,L"richink",NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|ES_MULTILINE|ES_READONLY,TABTALK_LEFT,TABTALK_TOP,TABTALK_STATUS_WIDTH,TABALL_HEIGHT,hWnd,(HMENU)EDIT_CHATVIEW_TEXT,app_instance,NULL);
+      //new_tab->text=CreateWindowEx(0,L"RICHINK",NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|ES_MULTILINE|ES_READONLY,TABTALK_LEFT,TABTALK_TOP,TABTALK_STATUS_WIDTH,TABALL_HEIGHT,hWnd,(HMENU)EDIT_CHATVIEW_TEXT,app_instance,NULL);
       new_tab->text=CreateWindowEx(WS_EX_STATICEDGE,L"RICHEDIT50W",NULL,WS_CHILD|WS_VISIBLE|ES_MULTILINE|ES_READONLY,TABTALK_LEFT,TABTALK_TOP,TABTALK_CHAT_WIDTH,TABALL_HEIGHT,hWnd,(HMENU)EDIT_CHATVIEW_TEXT,app_instance,NULL);
       if(new_tab->text==NULL){
          free(new_tab);
          return -1;
       }
-      new_tab->nick=CreateWindowEx(0,L"listbox",NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|WS_HSCROLL|LBS_SORT|LBS_HASSTRINGS|LBS_NOINTEGRALHEIGHT|LBS_NOTIFY,TABNICK_LEFT,TABNICK_TOP,TABNICK_CHAT_WIDTH,TABALL_HEIGHT,hWnd,(HMENU)LIST_CHATVIEW_NICK,app_instance,NULL);
+      new_tab->nick=CreateWindowEx(0,L"LISTBOX",NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|WS_HSCROLL|LBS_SORT|LBS_HASSTRINGS|LBS_NOINTEGRALHEIGHT|LBS_NOTIFY,TABNICK_LEFT,TABNICK_TOP,TABNICK_CHAT_WIDTH,TABALL_HEIGHT,hWnd,(HMENU)LIST_CHATVIEW_NICK,app_instance,NULL);
       if(new_tab->nick==NULL){
          DestroyWindow(new_tab->text);
          free(new_tab);
@@ -258,10 +268,11 @@ int tab_create(HWND hWnd, HWND tab_control, wchar_t *tab_name, TAB_TYPE type){
    }
    old_ChatViewTextProc = (WNDPROC)GetWindowLong(new_tab->text,GWL_WNDPROC);
    SetWindowLong(new_tab->text,GWL_WNDPROC,(LONG)ChatViewTextProc);
-   PostMessage(new_tab->text,EM_SHOWSCROLLBAR, SB_VERT, TRUE);
+   PostMessage(new_tab->text,EM_SHOWSCROLLBAR,SB_VERT,TRUE);
    SendMessage(new_tab->text,EM_AUTOURLDETECT,TRUE,0);
    SendMessage(new_tab->text,EM_SETEVENTMASK,0,ENM_LINK);
    SendMessage(new_tab->text,EM_EXLIMITTEXT,0,EDITCHATVIEWTEXT_LIMIT);
+   SendMessage(new_tab->text,EM_SETBKGNDCOLOR,0,color_background);
    tab_index = SendMessage(tab_control,TCM_GETITEMCOUNT,0,0);
    if(tab_insert_index(tab_control,tab_index,tab_name,new_tab)==-1){
       DestroyWindow(new_tab->text);
@@ -273,7 +284,7 @@ int tab_create(HWND hWnd, HWND tab_control, wchar_t *tab_name, TAB_TYPE type){
    }
    ShowWindow(new_tab->text,SW_HIDE);
    if(new_tab->nick!=NULL){
-      SendMessage(new_tab->nick,LB_SETHORIZONTALEXTENT,150,0);
+      SendMessage(new_tab->nick,LB_SETHORIZONTALEXTENT,SCALEX(150),0);
       ShowWindow(new_tab->nick,SW_HIDE);
    }
    //wcscpy(new_tab->lasturl,L"");
@@ -396,18 +407,15 @@ int write_text_index(HWND tab_control, int tab_index, wchar_t *text, style_text_
    if(write_tab->text==NULL){
       return -1;
    }
-   GETTEXTLENGTHEX limit;
-   limit.flags = GTL_USECRLF|GTL_CLOSE|GTL_NUMCHARS;
-   limit.codepage = 1200;
-   if(SendMessage(write_tab->text, EM_GETTEXTLENGTHEX, (WPARAM)&limit, 0)>(EDITCHATVIEWTEXT_LIMIT-IRC_SIZE_MEDIUM)){
+   if(SendMessage(write_tab->text, WM_GETTEXTLENGTH, 0, 0)>(EDITCHATVIEWTEXT_LIMIT-IRC_SIZE_MEDIUM)){
       SendMessage(write_tab->text, EM_SETSEL, 0, (EDITCHATVIEWTEXT_LIMIT/4));
       SendMessage(write_tab->text, EM_REPLACESEL, 0, (LPARAM)L"");
    }
-   CHARFORMAT2 format; //|CFM_FACE|CFM_SIZE; wcscpy(format.szFaceName, L"Courier new"); format.yHeight = 32;
+   //|CFM_FACE; wcscpy(format.szFaceName, L"Courier new");
+   CHARFORMAT2 format;
    memset(&format,0,sizeof(CHARFORMAT2));
    format.cbSize = sizeof(CHARFORMAT2);
-   format.dwMask = CFM_COLOR;
-   format.crTextColor = 0x000000FF;
+   set_style(style,&format);
 
    SendMessage(write_tab->text, EM_SETSEL, EDITCHATVIEWTEXT_LIMIT, EDITCHATVIEWTEXT_LIMIT);
    SendMessage(write_tab->text, EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM)&format);
@@ -422,8 +430,7 @@ int write_text_index(HWND tab_control, int tab_index, wchar_t *text, style_text_
    }
    memset(&format,0,sizeof(CHARFORMAT2));
    format.cbSize = sizeof(CHARFORMAT2);
-   format.dwMask = CFM_COLOR;
-   format.crTextColor = 0x00000000;
+   set_style(style,&format);
 
    SendMessage(write_tab->text, EM_SETSEL, EDITCHATVIEWTEXT_LIMIT, EDITCHATVIEWTEXT_LIMIT);
    SendMessage(write_tab->text, EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM)&format);
