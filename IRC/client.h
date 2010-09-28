@@ -39,7 +39,8 @@ void *receiverThreadProc(void *window_handle){
                   }else{
                      swprintf(wresult,L"%s sets modes: %s %s",recv_buffer[0],recv_buffer[2],recv_buffer[3]);
                   }
-                  write_text_name(tabcontrol_chatview_handle,recv_buffer[1],wresult,NULL,TSTRUE);
+                  style_text_t style = {0,RGB(0,0,255)};
+                  write_text_name(tabcontrol_chatview_handle,recv_buffer[1],wresult,&style,TSTRUE);
                }else if(recv_buffer_size<7){
                   char *modes = recv_buffer_ptr[4];
                   while(*modes!='\0'){
@@ -55,7 +56,8 @@ void *receiverThreadProc(void *window_handle){
                   }else{
                      swprintf(wresult,L"%s sets modes: %s %s",recv_buffer[0],recv_buffer[4],recv_buffer[5]);
                   }
-                  write_text_name(tabcontrol_chatview_handle,recv_buffer[3],wresult,NULL,TSTRUE);
+                  style_text_t style = {0,RGB(0,0,255)};
+                  write_text_name(tabcontrol_chatview_handle,recv_buffer[3],wresult,&style,TSTRUE);
                }
                break;
             }
@@ -65,6 +67,7 @@ void *receiverThreadProc(void *window_handle){
                }
                if(memcmp(recv_buffer_ptr[4],"ACTION ",7)!=0){
                   swprintf(wresult,L"%s",recv_buffer[4]);
+                  style_text_t style = {0,RGB(0,0,0)};
                   write_text_name(tabcontrol_chatview_handle,L".status",wresult,NULL,TSTRUE);
                   break;
                }
@@ -98,22 +101,28 @@ void *receiverThreadProc(void *window_handle){
                      SHNotificationAdd(&sn);
                   }
                }
+               style_text_t style = {0,0};
+               style_text_t *pstyle = NULL;
                if(recv_result==RECV_CTCP){
                   swprintf(wresult,L"%s %s",recv_buffer[0],recv_buffer[4]);
+                  style.color = RGB(192,192,0);
+                  pstyle = &style;
                }else if(recv_result==RECV_PRIVMSG){
                   swprintf(wresult,L"%s: %s",recv_buffer[0],recv_buffer[4]);
                }else if(recv_result==RECV_NOTICE){
                   swprintf(wresult,L"%s: %s",recv_buffer[0],recv_buffer[4]);
+                  style.color = RGB(0,255,255);
+                  pstyle = &style;
                }
                if(irc_validate_channel(&irc,recv_buffer_ptr[3])==0){
                   SendMessage(hWnd,WM_CREATE_TAB,CHAT,(LPARAM)recv_buffer[3]);
-                  write_text_name(tabcontrol_chatview_handle,recv_buffer[3],wresult,NULL,TSTRUE);
+                  write_text_name(tabcontrol_chatview_handle,recv_buffer[3],wresult,pstyle,TSTRUE);
                }else{
                   if(recv_result==RECV_NOTICE){
-                     write_text_name(tabcontrol_chatview_handle,L".status",wresult,NULL,TSTRUE);
+                     write_text_name(tabcontrol_chatview_handle,L".status",wresult,pstyle,TSTRUE);
                   }else{
                      SendMessage(hWnd,WM_CREATE_TAB,STATUS,(LPARAM)recv_buffer[0]);
-                     write_text_name(tabcontrol_chatview_handle,recv_buffer[0],wresult,NULL,TSTRUE);
+                     write_text_name(tabcontrol_chatview_handle,recv_buffer[0],wresult,pstyle,TSTRUE);
                   }
                }
                break;
@@ -126,7 +135,8 @@ void *receiverThreadProc(void *window_handle){
                   SendMessage(hWnd,WM_CREATE_TAB,CHAT,(LPARAM)recv_buffer[3]);
                }else{
                   swprintf(wresult,L"%s joined",recv_buffer[0]);
-                  write_text_name(tabcontrol_chatview_handle,recv_buffer[3],wresult,NULL,TSTRUE);
+                  style_text_t style = {0,RGB(0,128,128)};
+                  write_text_name(tabcontrol_chatview_handle,recv_buffer[3],wresult,&style,TSTRUE);
                   write_nick_name(tabcontrol_chatview_handle,recv_buffer[3],recv_buffer[0],APPEND);
                }
                break;
@@ -143,7 +153,8 @@ void *receiverThreadProc(void *window_handle){
                }else{
                   swprintf(wresult,L"%s kicked by %s (%s)",recv_buffer[4],recv_buffer[0],recv_buffer[5]);
                }
-               write_text_name(tabcontrol_chatview_handle,recv_buffer[3],wresult,NULL,TSTRUE);
+               style_text_t style = {0,RGB(128,128,128)};
+               write_text_name(tabcontrol_chatview_handle,recv_buffer[3],wresult,&style,TSTRUE);
                write_nick_name(tabcontrol_chatview_handle,recv_buffer[3],recv_buffer[4],REMOVE);
                break;
             }
@@ -152,7 +163,8 @@ void *receiverThreadProc(void *window_handle){
                   break;
                }
                swprintf(wresult,L"nickchange %s -> %s",recv_buffer[0],recv_buffer[3]);
-               tab_change_nick(tabcontrol_chatview_handle,recv_buffer[0],recv_buffer[3],wresult,NULL,TSTRUE);
+               style_text_t style = {0,RGB(128,0,128)};
+               tab_change_nick(tabcontrol_chatview_handle,recv_buffer[0],recv_buffer[3],wresult,&style,TSTRUE);
                break;
             }
             case RECV_NICK_LIST:{//host channel nicklist
@@ -171,7 +183,8 @@ void *receiverThreadProc(void *window_handle){
                   break;
                }
                swprintf(wresult,L"%s sets modes: %s %s",recv_buffer[0],recv_buffer[2],recv_buffer[1]);
-               write_text_name(tabcontrol_chatview_handle,L".status",wresult,NULL,TSTRUE);
+               style_text_t style = {0,RGB(0,0,255)};
+               write_text_name(tabcontrol_chatview_handle,L".status",wresult,&style,TSTRUE);
                break;
             }
             case RECV_NICK_TAKEN:{//host actualnick failednick [message OR null]
@@ -179,7 +192,8 @@ void *receiverThreadProc(void *window_handle){
                   break;
                }
                swprintf(wresult,L"nick already in use");
-               write_text_current(tabcontrol_chatview_handle,wresult,NULL,TSTRUE);
+               style_text_t style = {0,RGB(255,0,255)};
+               write_text_current(tabcontrol_chatview_handle,wresult,&style,TSTRUE);
                break;
             }
             case RECV_PART:{//nick user host channel [message OR null]
@@ -194,7 +208,8 @@ void *receiverThreadProc(void *window_handle){
                }else{
                   swprintf(wresult,L"%s parted (%s)",recv_buffer[0],recv_buffer[4]);
                }
-               write_text_name(tabcontrol_chatview_handle,recv_buffer[3],wresult,NULL,TSTRUE);
+               style_text_t style = {0,RGB(128,0,0)};
+               write_text_name(tabcontrol_chatview_handle,recv_buffer[3],wresult,&style,TSTRUE);
                write_nick_name(tabcontrol_chatview_handle,recv_buffer[3],recv_buffer[0],REMOVE);
                break;
             }
@@ -219,7 +234,8 @@ void *receiverThreadProc(void *window_handle){
                }else{
                   swprintf(wresult,L"%s quit (%s)",recv_buffer[0],recv_buffer[3]);
                }
-               tab_quit(tabcontrol_chatview_handle,recv_buffer[0],wresult,NULL,TSTRUE);
+               style_text_t style = {0,RGB(255,0,0)};
+               tab_quit(tabcontrol_chatview_handle,recv_buffer[0],wresult,&style,TSTRUE);
                break;
             }
             case RECV_TOPIC:{//host your_nick canal topic
@@ -227,7 +243,8 @@ void *receiverThreadProc(void *window_handle){
                   break;
                }
                swprintf(wresult,L"Topic is '%s'",recv_buffer[3]);
-               write_text_name(tabcontrol_chatview_handle,recv_buffer[2],wresult,NULL,TSFALSE);
+               style_text_t style = {0,RGB(0,128,0)};
+               write_text_name(tabcontrol_chatview_handle,recv_buffer[2],wresult,&style,TSFALSE);
                break;
             }
             case RECV_TOPIC_CHANGED:{//nick user host canal topic
@@ -235,7 +252,8 @@ void *receiverThreadProc(void *window_handle){
                   break;
                }
                swprintf(wresult,L"Topic changed by %s to '%s'",recv_buffer[0],recv_buffer[4]);
-               write_text_name(tabcontrol_chatview_handle,recv_buffer[3],wresult,NULL,TSFALSE);
+               style_text_t style = {0,RGB(0,255,0)};
+               write_text_name(tabcontrol_chatview_handle,recv_buffer[3],wresult,&style,TSFALSE);
                break;
             }
          }
