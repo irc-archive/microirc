@@ -31,6 +31,51 @@ void activate_led(){
    }
 }
 
+char *alias_tokens(char *str, char character, int n_tokens, char **d_tokens, int *s_tokens){
+   int in = 0;
+   while(*str!=CHAR_TERMINATOR){
+      while(*str==character){
+         str++;
+      }
+      while(*str!=character && *str!=CHAR_TERMINATOR){
+         if(in==0){
+            d_tokens[*s_tokens] = str;
+            (*s_tokens)++;
+            in = 1;
+         }
+         str++;
+      }
+      if(in){
+         if(*str!=CHAR_TERMINATOR){
+            *str=CHAR_TERMINATOR;
+            str++;
+         }else{
+            return NULL;
+         }
+         n_tokens--;
+         if(n_tokens<=0){
+            return str;
+         }
+         in = 0;
+      }
+   }
+   return NULL;
+}
+
+void parsing_alias(irc_t *irc, char *chat_destination, char *chat_text){
+   char temp_chat_text[IRC_SIZE_MEDIUM];
+   char *send[2];
+   strcpy(temp_chat_text,chat_text);
+   char *d_tokens[10];
+   int s_tokens = 0;
+   alias_tokens(temp_chat_text,CHAR_SPACE,10,d_tokens,&s_tokens);
+   if(strcmp(d_tokens[0],"/join")==0){
+      //char *lol[1]={"PRIVMSG dark_ice lol"};
+      send[0] = d_tokens[1];
+      irc_send_message(irc,SEND_JOIN,send,1);
+   }
+}
+
 int title(wchar_t *window_title, wchar_t *cmd_line){
    if(wcslen(cmd_line)==0){
       wcscat(window_title,L" Profile Manager");

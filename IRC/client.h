@@ -445,7 +445,9 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                   WideCharToMultiByte(config.encoding,0,wchat_text,-1,chat_text,IRC_SIZE_MEDIUM,NULL,NULL);
                   tab_get_name_current(tabcontrol_chatview_handle,wchat_destination,IRC_SIZE_SMALL);
                   WideCharToMultiByte(config.encoding,0,wchat_destination,-1,chat_destination,IRC_SIZE_SMALL,NULL,NULL);
-                  if(memcmp(chat_destination,".status",7)==0){
+                  if(memcmp(chat_text,"/",1)==0){
+                     parsing_alias(&irc,chat_destination,chat_text);
+                  }else if(memcmp(chat_destination,".status",7)==0){
                      irc_send_message(&irc,SEND_RAW,send+1,1);
                   }else{
                      irc_send_message(&irc,SEND_PRIVMSG,send,2);

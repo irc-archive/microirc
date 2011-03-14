@@ -66,6 +66,7 @@
 #define IDC_EDIT14                      1013
 #define IDC_EDIT15                      1014
 #define IDC_EDIT16                      1015
+#define IDC_EDIT17                      1016
 #define IDC_CHECK1                      1028
 #define IDC_CHECK2                      1029
 #define IDC_COMBO1                      1030

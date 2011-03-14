@@ -47,6 +47,7 @@ int irc_config_init(irc_t *irc, ircconfig_t *ircconfig, wchar_t *filepath){
    }
    char host[IRCPROTOCOL_SIZE_SMALL];
    char port[IRCPROTOCOL_SIZE_SMALL];
+   char pass[IRCPROTOCOL_SIZE_SMALL];
    char user[IRCPROTOCOL_SIZE_SMALL];
    char name[IRCPROTOCOL_SIZE_SMALL];
    char nick[IRCPROTOCOL_SIZE_SMALL];
@@ -66,6 +67,7 @@ int irc_config_init(irc_t *irc, ircconfig_t *ircconfig, wchar_t *filepath){
 
    strncpy0(host,iniparser_getstring(&iniparser, "server", "host", "chat.freenode.net"),IRCPROTOCOL_SIZE_SMALL);
    strncpy0(port,iniparser_getstring(&iniparser, "server", "port", "6667"),IRCPROTOCOL_SIZE_SMALL);
+   strncpy0(pass,iniparser_getstring(&iniparser, "server", "pass", ""),IRCPROTOCOL_SIZE_SMALL);
    strncpy0(user,iniparser_getstring(&iniparser, "client", "user", "user"),IRCPROTOCOL_SIZE_SMALL);
    strncpy0(name,iniparser_getstring(&iniparser, "client", "name", "Real Name"),IRCPROTOCOL_SIZE_SMALL);
    strncpy0(nick,iniparser_getstring(&iniparser, "client", "nick", "change_me"),IRCPROTOCOL_SIZE_SMALL);
@@ -89,7 +91,7 @@ int irc_config_init(irc_t *irc, ircconfig_t *ircconfig, wchar_t *filepath){
    led_interval = iniparser_getint(&iniparser, "miscellaneous", "led_interval", 500);
    
    iniparser_destroy(&iniparser);
-   if(irc_init(irc,host,port,user,name,nick,perform,channels,delay)!=0){
+   if(irc_init(irc,host,port,pass,user,name,nick,perform,channels,delay)!=0){
       return -1;
    }
    if(ircconfig_init(ircconfig,connect_on_startup,reconnect_retries,part,kick,quit,encoding,bubble,sounds,led_number,led_interval)!=0){

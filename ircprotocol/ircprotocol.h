@@ -45,6 +45,7 @@
 #define SEND_CHANNEL_MODE 92
 #define SEND_NICK_MODE 93
 #define SEND_NAMES 94
+#define SEND_PASS 95
 
 #define CHAR_SPACE ' '
 #define CHAR_TRAIL ':'
@@ -79,6 +80,7 @@ typedef struct irc_t{
    
    char host[IRCPROTOCOL_SIZE_SMALL];
    char port[IRCPROTOCOL_SIZE_SMALL];
+   char pass[IRCPROTOCOL_SIZE_SMALL];
    char user[IRCPROTOCOL_SIZE_SMALL];
    char name[IRCPROTOCOL_SIZE_SMALL];
    char nick[IRCPROTOCOL_SIZE_SMALL];
@@ -94,7 +96,7 @@ typedef struct irc_t{
    int connected;
 }irc_t;
 
-export int irc_init(irc_t*, char*, char*, char*, char*, char*, char*, char*, int);
+export int irc_init(irc_t*, char*, char*, char*, char*, char*, char*, char*, char*, int);
 export void irc_destroy(irc_t*);
 
 export int irc_connect(irc_t*);

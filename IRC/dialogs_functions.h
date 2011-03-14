@@ -124,38 +124,39 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
          settext_fromwstr(hDlg,IDC_EDIT1,parameters[1]);
          settext_fromstr(hDlg,IDC_EDIT2,iniparser_getstring(&iniparser, "server", "host", "chat.freenode.net"));
          settext_fromstr(hDlg,IDC_EDIT3,iniparser_getstring(&iniparser, "server", "port", "6667"));
-         settext_fromstr(hDlg,IDC_EDIT4,iniparser_getstring(&iniparser, "client", "user", "user"));
-         settext_fromstr(hDlg,IDC_EDIT5,iniparser_getstring(&iniparser, "client", "name", "Real Name"));
-         settext_fromstr(hDlg,IDC_EDIT6,iniparser_getstring(&iniparser, "client", "nick", "change_me"));
-         settext_fromstr(hDlg,IDC_EDIT7,iniparser_getstring(&iniparser, "client", "perform", ""));
-         settext_fromstr(hDlg,IDC_EDIT8,iniparser_getstring(&iniparser, "autojoin", "channels", "#microirc"));
-         settext_fromint(hDlg,IDC_EDIT9,iniparser_getint(&iniparser, "autojoin", "delay", 5000));
+         settext_fromstr(hDlg,IDC_EDIT4,iniparser_getstring(&iniparser, "server", "pass", ""));
+         settext_fromstr(hDlg,IDC_EDIT5,iniparser_getstring(&iniparser, "client", "user", "user"));
+         settext_fromstr(hDlg,IDC_EDIT6,iniparser_getstring(&iniparser, "client", "name", "Real Name"));
+         settext_fromstr(hDlg,IDC_EDIT7,iniparser_getstring(&iniparser, "client", "nick", "change_me"));
+         settext_fromstr(hDlg,IDC_EDIT8,iniparser_getstring(&iniparser, "client", "perform", ""));
+         settext_fromstr(hDlg,IDC_EDIT9,iniparser_getstring(&iniparser, "autojoin", "channels", "#microirc"));
+         settext_fromint(hDlg,IDC_EDIT10,iniparser_getint(&iniparser, "autojoin", "delay", 5000));
          if(wcscmp(parameters[0],L"manager")==0){
             setcheck_fromint(hDlg,IDC_CHECK1,iniparser_getint(&iniparser, "connection", "connect_on_startup", 1));
-            settext_fromint(hDlg,IDC_EDIT10,iniparser_getint(&iniparser, "connection", "reconnect_retries", 5));
-            settext_fromstr(hDlg,IDC_EDIT11,iniparser_getstring(&iniparser, "messages", "part", ""));
-            settext_fromstr(hDlg,IDC_EDIT12,iniparser_getstring(&iniparser, "messages", "kick", ""));
-            settext_fromstr(hDlg,IDC_EDIT13,iniparser_getstring(&iniparser, "messages", "quit", "http://code.google.com/p/microirc/"));
+            settext_fromint(hDlg,IDC_EDIT11,iniparser_getint(&iniparser, "connection", "reconnect_retries", 5));
+            settext_fromstr(hDlg,IDC_EDIT12,iniparser_getstring(&iniparser, "messages", "part", ""));
+            settext_fromstr(hDlg,IDC_EDIT13,iniparser_getstring(&iniparser, "messages", "kick", ""));
+            settext_fromstr(hDlg,IDC_EDIT14,iniparser_getstring(&iniparser, "messages", "quit", "http://code.google.com/p/microirc/"));
             setcombo_fromint(hDlg,IDC_COMBO1,iniparser_getint(&iniparser, "miscellaneous", "encoding", 1));
-            settext_fromint(hDlg,IDC_EDIT14,iniparser_getint(&iniparser, "miscellaneous", "bubble", 0));
+            settext_fromint(hDlg,IDC_EDIT15,iniparser_getint(&iniparser, "miscellaneous", "bubble", 0));
             setcheck_fromint(hDlg,IDC_CHECK2,iniparser_getint(&iniparser, "miscellaneous", "sounds", 0));
-            settext_fromint(hDlg,IDC_EDIT15,iniparser_getint(&iniparser, "miscellaneous", "led_number", -1));
-            settext_fromint(hDlg,IDC_EDIT16,iniparser_getint(&iniparser, "miscellaneous", "led_interval", 500));
+            settext_fromint(hDlg,IDC_EDIT16,iniparser_getint(&iniparser, "miscellaneous", "led_number", -1));
+            settext_fromint(hDlg,IDC_EDIT17,iniparser_getint(&iniparser, "miscellaneous", "led_interval", 500));
          }else if(wcscmp(parameters[0],L"client")==0){
             setcheck_fromint(hDlg,IDC_CHECK1,config.connect_on_startup);
-            settext_fromint(hDlg,IDC_EDIT10,config.reconnect_retries);
-            settext_fromstr(hDlg,IDC_EDIT11,config.part);
-            settext_fromstr(hDlg,IDC_EDIT12,config.kick);
-            settext_fromstr(hDlg,IDC_EDIT13,config.quit);
+            settext_fromint(hDlg,IDC_EDIT11,config.reconnect_retries);
+            settext_fromstr(hDlg,IDC_EDIT12,config.part);
+            settext_fromstr(hDlg,IDC_EDIT13,config.kick);
+            settext_fromstr(hDlg,IDC_EDIT14,config.quit);
             if(config.encoding==CP_UTF8){
                setcombo_fromint(hDlg,IDC_COMBO1,1);
             }else{
                setcombo_fromint(hDlg,IDC_COMBO1,0);
             }
-            settext_fromint(hDlg,IDC_EDIT14,config.bubble);
+            settext_fromint(hDlg,IDC_EDIT15,config.bubble);
             setcheck_fromint(hDlg,IDC_CHECK2,config.sounds);
-            settext_fromint(hDlg,IDC_EDIT15,config.led_number);
-            settext_fromint(hDlg,IDC_EDIT16,config.led_interval);
+            settext_fromint(hDlg,IDC_EDIT16,config.led_number);
+            settext_fromint(hDlg,IDC_EDIT17,config.led_interval);
          }
          iniparser_destroy(&iniparser);
          return TRUE;
@@ -170,6 +171,7 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
             wchar_t profile[IRC_SIZE_SMALL];
             char host[IRCPROTOCOL_SIZE_SMALL];
             char port[IRCPROTOCOL_SIZE_SMALL];
+            char pass[IRCPROTOCOL_SIZE_SMALL];
             char user[IRCPROTOCOL_SIZE_SMALL];
             char name[IRCPROTOCOL_SIZE_SMALL];
             char nick[IRCPROTOCOL_SIZE_SMALL];
@@ -190,22 +192,23 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
             gettext_towstr(hDlg,IDC_EDIT1,profile,IRC_SIZE_SMALL);
             gettext_tostr(hDlg, IDC_EDIT2, host, IRCPROTOCOL_SIZE_SMALL);
             gettext_tostr(hDlg, IDC_EDIT3, port, IRCPROTOCOL_SIZE_SMALL);
-            gettext_tostr(hDlg, IDC_EDIT4, user, IRCPROTOCOL_SIZE_SMALL);
-            gettext_tostr(hDlg, IDC_EDIT5, name, IRCPROTOCOL_SIZE_SMALL);
-            gettext_tostr(hDlg, IDC_EDIT6, nick, IRCPROTOCOL_SIZE_MEDIUM);
-            gettext_tostr(hDlg, IDC_EDIT7, perform, IRCPROTOCOL_SIZE_MEDIUM);
-            gettext_tostr(hDlg, IDC_EDIT8, channels, IRCPROTOCOL_SIZE_MEDIUM);
-            delay = gettext_toint(hDlg,IDC_EDIT9);
+            gettext_tostr(hDlg, IDC_EDIT4, pass, IRCPROTOCOL_SIZE_SMALL);
+            gettext_tostr(hDlg, IDC_EDIT5, user, IRCPROTOCOL_SIZE_SMALL);
+            gettext_tostr(hDlg, IDC_EDIT6, name, IRCPROTOCOL_SIZE_SMALL);
+            gettext_tostr(hDlg, IDC_EDIT7, nick, IRCPROTOCOL_SIZE_MEDIUM);
+            gettext_tostr(hDlg, IDC_EDIT8, perform, IRCPROTOCOL_SIZE_MEDIUM);
+            gettext_tostr(hDlg, IDC_EDIT9, channels, IRCPROTOCOL_SIZE_MEDIUM);
+            delay = gettext_toint(hDlg,IDC_EDIT10);
             connect_on_startup = getint_fromcheck(hDlg,IDC_CHECK1);
-            reconnect_retries = gettext_toint(hDlg,IDC_EDIT10);
-            gettext_tostr(hDlg, IDC_EDIT11, part, IRC_SIZE_SMALL);
-            gettext_tostr(hDlg, IDC_EDIT12, kick, IRC_SIZE_SMALL);
-            gettext_tostr(hDlg, IDC_EDIT13, quit, IRC_SIZE_SMALL);
+            reconnect_retries = gettext_toint(hDlg,IDC_EDIT11);
+            gettext_tostr(hDlg, IDC_EDIT12, part, IRC_SIZE_SMALL);
+            gettext_tostr(hDlg, IDC_EDIT13, kick, IRC_SIZE_SMALL);
+            gettext_tostr(hDlg, IDC_EDIT14, quit, IRC_SIZE_SMALL);
             encoding = getint_fromcombo(hDlg,IDC_COMBO1);
-            bubble = gettext_toint(hDlg,IDC_EDIT14);
+            bubble = gettext_toint(hDlg,IDC_EDIT15);
             sounds = getint_fromcheck(hDlg,IDC_CHECK2);
-            led_number = gettext_toint(hDlg,IDC_EDIT15);
-            led_interval = gettext_toint(hDlg,IDC_EDIT16);
+            led_number = gettext_toint(hDlg,IDC_EDIT16);
+            led_interval = gettext_toint(hDlg,IDC_EDIT17);
             if(strlen(host)==0){
                MessageBox(hDlg,L"Host is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                break;
@@ -244,6 +247,7 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
             }
             iniparser_setstring(&iniparser, "server", "host", host);
             iniparser_setstring(&iniparser, "server", "port", port);
+            iniparser_setstring(&iniparser, "server", "pass", pass);
             iniparser_setstring(&iniparser, "client", "user", user);
             iniparser_setstring(&iniparser, "client", "name", name);
             iniparser_setstring(&iniparser, "client", "nick", nick);

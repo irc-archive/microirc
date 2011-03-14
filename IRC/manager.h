@@ -42,6 +42,7 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                }
                iniparser_setstring(&iniparser, "server", "host", "chat.freenode.net");
                iniparser_setstring(&iniparser, "server", "port", "6667");
+               iniparser_setstring(&iniparser, "server", "pass", "");
                iniparser_setstring(&iniparser, "client", "user", "user");
                iniparser_setstring(&iniparser, "client", "name", "Real Name");
                iniparser_setstring(&iniparser, "client", "nick", "change_me");

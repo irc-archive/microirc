@@ -98,7 +98,7 @@ int verify_buffer(char **messages, int size){
    return result;
 }
 
-export int irc_init(irc_t *irc, char *host, char *port, char *user, char *name, char *nick, char *perform, char *channels, int delay){
+export int irc_init(irc_t *irc, char *host, char *port, char *pass, char *user, char *name, char *nick, char *perform, char *channels, int delay){
    memset(irc,0,sizeof(irc_t));
    if(strlen(host)==0 || strlen(port)==0 || strlen(user)==0 || strlen(name)==0 || strlen(nick)==0 || delay<0){
       return -1;
@@ -111,6 +111,7 @@ export int irc_init(irc_t *irc, char *host, char *port, char *user, char *name, 
    irc->maxnicklen = 16;
    strncpy0(irc->host,host,IRCPROTOCOL_SIZE_SMALL);
    strncpy0(irc->port,port,IRCPROTOCOL_SIZE_SMALL);
+   strncpy0(irc->pass,pass,IRCPROTOCOL_SIZE_SMALL);
    strncpy0(irc->user,user,IRCPROTOCOL_SIZE_SMALL);
    strncpy0(irc->name,name,IRCPROTOCOL_SIZE_SMALL);
    strncpy0(irc->nick,nick,IRCPROTOCOL_SIZE_SMALL);
@@ -141,6 +142,10 @@ export int irc_connect(irc_t *irc){
    irc->connected=1;
    InitializeCriticalSection(&irc->send_buffer_critical_section);
    char *sendrecv[IRCPROTOCOL_RECV_MAX_TOKENS];
+   sendrecv[0] = irc->pass;
+   if(irc_send_message(irc,SEND_PASS,sendrecv,1)<0){
+      goto fullerror;
+   }
    sendrecv[0] = irc->nick;
    if(irc_send_message(irc,SEND_NICK,sendrecv,1)<0){
       goto fullerror;
@@ -475,6 +480,14 @@ export int irc_send_message(irc_t *irc, int opcode, char **messages, int size){/
          }
          EnterCriticalSection(&irc->send_buffer_critical_section);
          sprintf(irc->send_buffer,"MODE %s %s",irc->nick,messages[0]);
+         break;
+      }
+      case SEND_PASS:{//password
+         if(size!=1 || send_result+5+IRCPROTOCOL_SPLITER_SIZE>IRCPROTOCOL_MAX_MESSAGE_LEN){
+            return -1;
+         }
+         EnterCriticalSection(&irc->send_buffer_critical_section);
+         sprintf(irc->send_buffer,"PASS %s",messages[0]);
          break;
       }
       case SEND_PART:{//channel [message or null]
