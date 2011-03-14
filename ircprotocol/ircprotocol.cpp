@@ -577,7 +577,7 @@ export int irc_validate_channel(irc_t *irc, char *channel){
 }
 
 export char *irc_get_nick(irc_t *irc, char *nick){
-   if(strlen(nick)>irc->nicklen || strlen(nick)>irc->maxnicklen || strlen(nick)<1){
+   if(strlen(nick)>irc->nicklen || strlen(nick)<1){ //|| strlen(nick)>irc->maxnicklen
       return NULL;
    }
    char *d_current = strchr(irc->prefix_char,*nick);

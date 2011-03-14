@@ -368,13 +368,17 @@ int write_nick_index(HWND tab_control, int tab_index, wchar_t *nick, TAB_TEXT_AC
          int i;
          WideCharToMultiByte(config.encoding,0,nick,-1,secondnick,IRC_SIZE_SMALL,NULL,NULL);
          secondptr = irc_get_nick(&irc,secondnick);
-         for(i=0;i<listsize;i++){
-            result = SendMessage(write_tab->nick,LB_GETTEXT,i,(LPARAM)wcurrent);
-            WideCharToMultiByte(config.encoding,0,wcurrent,-1,firstnick,IRC_SIZE_SMALL,NULL,NULL);
-            firstptr = irc_get_nick(&irc,firstnick);
-            if(strcmp(firstptr,secondptr)==0){
-               SendMessage(write_tab->nick,LB_DELETESTRING,i,0);
-               return 0;
+         if(secondptr!=NULL){
+            for(i=0;i<listsize;i++){
+               result = SendMessage(write_tab->nick,LB_GETTEXT,i,(LPARAM)wcurrent);
+               WideCharToMultiByte(config.encoding,0,wcurrent,-1,firstnick,IRC_SIZE_SMALL,NULL,NULL);
+               firstptr = irc_get_nick(&irc,firstnick);
+               if(firstptr!=NULL){
+                  if(strcmp(firstptr,secondptr)==0){
+                     SendMessage(write_tab->nick,LB_DELETESTRING,i,0);
+                     return 0;
+                  }
+               }
             }
          }
          return -1;
@@ -546,19 +550,23 @@ void tab_refresh_nicklist(HWND tab_control, wchar_t *channel, char **d_nicklist,
                result = SendMessage(tab->nick,LB_GETTEXT,i,(LPARAM)wcurrent);
                WideCharToMultiByte(config.encoding,0,wcurrent,-1,current,IRC_SIZE_SMALL,NULL,NULL);
                firstptr = irc_get_nick(&irc,current);
-               for(j=0;j<s_nicklist;j++){
-                  secondptr = irc_get_nick(&irc,d_nicklist[j]);
-                  if(strcmp(firstptr,secondptr)==0){
-                     if(strcmp(current,d_nicklist[j])!=0){
-                        updatelist[updatesize]=j;
-                        updatesize++;
-                        SendMessage(tab->nick,LB_DELETESTRING,i,0);
-                        listsize--;
-                        i--;
+               if(firstptr!=NULL){
+                  for(j=0;j<s_nicklist;j++){
+                     secondptr = irc_get_nick(&irc,d_nicklist[j]);
+                     if(secondptr!=NULL){
+                        if(strcmp(firstptr,secondptr)==0){
+                           if(strcmp(current,d_nicklist[j])!=0){
+                              updatelist[updatesize]=j;
+                              updatesize++;
+                              SendMessage(tab->nick,LB_DELETESTRING,i,0);
+                              listsize--;
+                              i--;
+                           }
+                           containlist[containsize]=j;
+                           containsize++;
+                           break;
+                        }
                      }
-                     containlist[containsize]=j;
-                     containsize++;
-                     break;
                   }
                }
             }

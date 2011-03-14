@@ -9,7 +9,7 @@
 * This code is licenced under the GPL version 2. For details see COPYING.txt file.
 */
 
-#define CLIENT_ONLY
+//#define CLIENT_ONLY
 
 #pragma comment(lib, "aygshell.lib")
 #pragma comment(lib, "commctrl.lib")
