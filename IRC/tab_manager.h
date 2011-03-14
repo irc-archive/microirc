@@ -47,7 +47,11 @@ int tab_get_parameters_index(HWND tab_control, int tab_index, tab_t **result){
 }
 
 int tab_get_parameters_current(HWND tab_control, tab_t **result){
-   return tab_get_parameters_index(tab_control,SendMessage(tab_control,TCM_GETCURSEL,0,0),result);
+   int tab_index = SendMessage(tab_control,TCM_GETCURSEL,0,0);
+   if(tab_index==-1){
+      return -1;
+   }
+   return tab_get_parameters_index(tab_control,tab_index,result);
 }
 
 int tab_get_name_index(HWND tab_control, int tab_index, wchar_t *d_result, int s_result){
@@ -63,7 +67,11 @@ int tab_get_name_index(HWND tab_control, int tab_index, wchar_t *d_result, int s
 }
 
 int tab_get_name_current(HWND tab_control, wchar_t *d_result, int s_result){
-   return tab_get_name_index(tab_control,SendMessage(tab_control,TCM_GETCURSEL,0,0),d_result,s_result);
+   int tab_index = SendMessage(tab_control,TCM_GETCURSEL,0,0);
+   if(tab_index==-1){
+      return -1;
+   }
+   return tab_get_name_index(tab_control,tab_index,d_result,s_result);
 }
 
 int tab_insert_index(HWND tab_control, int tab_index, wchar_t *tab_name, tab_t *tab_parameters){
@@ -90,10 +98,15 @@ int tab_find(HWND tab_control, wchar_t *target){
 
 void tab_refresh(HWND tab_control, TAB_VISIBLE_ACTION hide){
    tab_t *refresh_tab;
-   if(tab_get_parameters_current(tab_control,&refresh_tab)!=0){
+   int tab_index = SendMessage(tab_control,TCM_GETCURSEL,0,0);
+   if(tab_index==-1){
+      return;
+   }
+   if(tab_get_parameters_index(tab_control,tab_index,&refresh_tab)!=0){
       return;
    }
    if(hide==SHOW){
+      SendMessage(tab_control,TCM_HIGHLIGHTITEM,SendMessage(tab_control,TCM_GETCURSEL,0,0),LOWORD(FALSE));
       ShowWindow(refresh_tab->text,SW_SHOW);
       if(refresh_tab->nick!=NULL){
          ShowWindow(refresh_tab->nick,SW_SHOW);
@@ -420,7 +433,6 @@ int write_text_index(HWND tab_control, int tab_index, wchar_t *text, style_text_
    memset(&format,0,sizeof(CHARFORMAT2));
    format.cbSize = sizeof(CHARFORMAT2);
    set_style(style,&format);
-
    SendMessage(write_tab->text, EM_SETSEL, EDITCHATVIEWTEXT_LIMIT, EDITCHATVIEWTEXT_LIMIT);
    SendMessage(write_tab->text, EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM)&format);
    if(ts == TSTRUE){
@@ -440,8 +452,11 @@ int write_text_index(HWND tab_control, int tab_index, wchar_t *text, style_text_
    SendMessage(write_tab->text, EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM)&format);
 
    SendMessage(write_tab->text, EM_REPLACESEL, 0, (LPARAM)text);
-
    SendMessage(write_tab->text, EM_SCROLLCARET, 0, 0);
+
+   if(tab_index != SendMessage(tab_control,TCM_GETCURSEL,0,0)){
+      SendMessage(tab_control,TCM_HIGHLIGHTITEM,tab_index,LOWORD(TRUE));
+   }
    /*wchar_t *start = wcsstr(text,L"http://");
    if(start!=NULL){
       wchar_t *end = wcschr(start,' ');
@@ -475,7 +490,7 @@ int write_text_all(HWND tab_control, wchar_t *text, style_text_t *style, TAB_TIM
    for(size--;size>=0;size--){
       write_text_index(tab_control,size,text,style,ts);
    }
-   return -1;
+   return 0;
 }
 
 int tab_change_nick(HWND tab_control, wchar_t *oldnick, wchar_t *newnick, wchar_t *text, style_text_t *style, TAB_TIMESTAMP ts){
