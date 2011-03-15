@@ -4,7 +4,7 @@ Release notes for MicroIRC
 
 Installation
 --------------------
-Extract the contents of this zip file to a folder in your device. If want an icon in your Start Menu, copy microirc.exe and paste a shortcut in \Windows\Start Menu\Programs. You can optionally provide the name of a profile to load automatically with a command-line parameter. We plan to provide a cab file for easier installation when the program is more mature.
+Extract the contents of this zip file to a folder in your device. If you want an icon in your Start Menu, copy microirc.exe and paste a shortcut in \Windows\Start Menu\Programs. You can optionally provide the name of a profile to load automatically with a command-line parameter. We plan to provide a cab file for easier installation when the program is more mature.
 
 Profiles
 --------------------
