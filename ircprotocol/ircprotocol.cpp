@@ -108,7 +108,6 @@ export int irc_init(irc_t *irc, char *host, char *port, char *pass, char *user, 
    strncpy0(irc->chantypes,"#",IRCPROTOCOL_SIZE_SMALL);
    irc->channellen = 200;
    irc->nicklen = 16;
-   irc->maxnicklen = 16;
    strncpy0(irc->host,host,IRCPROTOCOL_SIZE_SMALL);
    strncpy0(irc->port,port,IRCPROTOCOL_SIZE_SMALL);
    strncpy0(irc->pass,pass,IRCPROTOCOL_SIZE_SMALL);
@@ -360,10 +359,8 @@ export int irc_recv_message(irc_t *irc, char **d_result, int *s_result){
                      }
                   }else if(memcmp("CHANNELLEN",d_tokens[i],10)==0){
                      irc->channellen = atoi(separator);
-                  }else if(memcmp("NICKLEN",d_tokens[i],7)==0){
+                  }else if(memcmp("NICKLEN",d_tokens[i],7)==0 || memcmp("MAXNICKLEN",d_tokens[i],10)==0){
                      irc->nicklen = atoi(separator);
-                  }else if(memcmp("MAXNICKLEN",d_tokens[i],10)==0){
-                     irc->maxnicklen = atoi(separator);
                   }
                }
             }
@@ -577,7 +574,7 @@ export int irc_validate_channel(irc_t *irc, char *channel){
 }
 
 export char *irc_get_nick(irc_t *irc, char *nick){
-   if(strlen(nick)>irc->nicklen || strlen(nick)<1){ //|| strlen(nick)>irc->maxnicklen
+   if(strlen(nick)>irc->nicklen || strlen(nick)<1){
       return NULL;
    }
    char *d_current = strchr(irc->prefix_char,*nick);

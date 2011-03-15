@@ -76,7 +76,6 @@ typedef struct irc_t{
    char chantypes[IRCPROTOCOL_SIZE_SMALL];
    int channellen;
    int nicklen;
-   int maxnicklen;
    
    char host[IRCPROTOCOL_SIZE_SMALL];
    char port[IRCPROTOCOL_SIZE_SMALL];
