@@ -22,7 +22,7 @@
 #include <stdio.h>
 #include <windows.h>
 #include <windowsx.h>
-#include <aygshell.h>
+//#include <aygshell.h>
 #include <commctrl.h>
 //#include <richink.h>
 //#include <inkx.h>
@@ -129,7 +129,7 @@ HWND static_label2_handle;
 #include "manager.h"
 
 //MessageBox(NULL,L"LOL",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow){
+int WINAPI WinMain2(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow){
 color_background = 0x00FFFFFF;
 color_text = 0x00000000;
    app_instance = hInstance;
@@ -154,9 +154,9 @@ color_text = 0x00000000;
    icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
    icex.dwICC = ICC_BAR_CLASSES|ICC_TAB_CLASSES;
    InitCommonControlsEx(&icex);
-   InitRichInkDLL();
+   //InitRichInkDLL();
    LoadLibrary(L"riched20.dll");
-   SHInitExtraControls();
+   //SHInitExtraControls();
    WNDCLASS wc;
    memset(&wc, 0, sizeof(WNDCLASS));
    wc.style = CS_HREDRAW|CS_VREDRAW;

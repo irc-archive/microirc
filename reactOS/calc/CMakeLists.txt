@@ -14,10 +14,11 @@ ircprotocol.c
 list.c
 network.c
 util.c
+IRC/irc.c
     resource.rc)
 
 set_module_type(calc win32gui UNICODE)
-add_importlibs(calc advapi32 user32 gdi32 msvcrt kernel32 ws2_32 winmm)
+add_importlibs(calc advapi32 user32 gdi32 msvcrt kernel32 ws2_32 winmm comctl32 shell32)
 if(MSVC)
     add_importlibs(calc ntdll)
 endif()

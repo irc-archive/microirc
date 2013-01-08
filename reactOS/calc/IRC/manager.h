@@ -10,11 +10,11 @@
 */
 
 LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
-   static SHACTIVATEINFO s_sai;
+   //static SHACTIVATEINFO s_sai;
    switch(uMsg){
       case WM_COMMAND:{
-         int wmEvent = HIWORD(wParam);
-         HWND control_handler = (HWND)lParam;
+         //int wmEvent = HIWORD(wParam);
+         //HWND control_handler = (HWND)lParam;
          wchar_t wprofile_name[IRC_SIZE_SMALL];
          switch (LOWORD(wParam)){
             case IDM_NEW:{
@@ -108,7 +108,8 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                checkbox_getselected(d_index, &s_index);
                for(i=0;i<s_index;i++){
                   Button_GetText(manager.connect_handles[d_index[i]],wprofile_name,IRC_SIZE_SMALL);
-                  CreateProcess(module_path,wprofile_name,NULL,NULL,FALSE,INHERIT_CALLER_PRIORITY,NULL,NULL,NULL,NULL);
+                  //CreateProcess(module_path,wprofile_name,NULL,NULL,FALSE,INHERIT_CALLER_PRIORITY,NULL,NULL,NULL,NULL);
+                  CreateProcess(module_path,wprofile_name,NULL,NULL,FALSE,NORMAL_PRIORITY_CLASS,NULL,NULL,NULL,NULL);
                }
                if(s_index>0){
                   SendMessage(hWnd,WM_CLOSE,0,0);
@@ -134,16 +135,16 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
          break;
       }
       case WM_ACTIVATE:{
-         SHHandleWMActivate(hWnd, wParam, lParam, &s_sai, FALSE);
+         //SHHandleWMActivate(hWnd, wParam, lParam, &s_sai, FALSE);
          break;
       }
       case WM_SETTINGCHANGE:{
-         SHHandleWMSettingChange(hWnd, wParam, lParam, &s_sai);
+         //SHHandleWMSettingChange(hWnd, wParam, lParam, &s_sai);
          break;
       }
       case WM_CREATE:{
-         memset(&s_sai, 0, sizeof(SHACTIVATEINFO));
-         s_sai.cbSize = sizeof(SHACTIVATEINFO);
+         //memset(&s_sai, 0, sizeof(SHACTIVATEINFO));
+         //s_sai.cbSize = sizeof(SHACTIVATEINFO);
 
          LOG_PIXELS_X = GetScreenCapsX();
          LOG_PIXELS_Y = GetScreenCapsY();
@@ -165,8 +166,8 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
          //called on PostQuitMessage(0);
          break;
       }
-      case WM_HIBERNATE:{
-      }
+      //case WM_HIBERNATE:{
+      //}
       case WM_CLOSE:{
       }
       case WM_DESTROY:{

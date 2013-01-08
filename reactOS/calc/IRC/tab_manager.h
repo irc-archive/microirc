@@ -377,13 +377,14 @@ int write_nick_index(HWND tab_control, int tab_index, wchar_t *nick, TAB_TEXT_AC
          char secondnick[IRC_SIZE_SMALL];
          char *firstptr;
          char *secondptr;
-         LRESULT result;
+         //LRESULT result;
          int i;
          WideCharToMultiByte(config.encoding,0,nick,-1,secondnick,IRC_SIZE_SMALL,NULL,NULL);
          secondptr = irc_get_nick(&irc,secondnick);
          if(secondptr!=NULL){
             for(i=0;i<listsize;i++){
-               result = SendMessage(write_tab->nick,LB_GETTEXT,i,(LPARAM)wcurrent);
+               //result = 
+               SendMessage(write_tab->nick,LB_GETTEXT,i,(LPARAM)wcurrent);
                WideCharToMultiByte(config.encoding,0,wcurrent,-1,firstnick,IRC_SIZE_SMALL,NULL,NULL);
                firstptr = irc_get_nick(&irc,firstnick);
                if(firstptr!=NULL){
@@ -558,11 +559,12 @@ void tab_refresh_nicklist(HWND tab_control, wchar_t *channel, char **d_nicklist,
             char current[IRC_SIZE_SMALL];
             char *firstptr;
             char *secondptr;
-            LRESULT result;
+            //LRESULT result;
             int i;
             int j;
             for(i=0;i<listsize;i++){
-               result = SendMessage(tab->nick,LB_GETTEXT,i,(LPARAM)wcurrent);
+               //result = 
+               SendMessage(tab->nick,LB_GETTEXT,i,(LPARAM)wcurrent);
                WideCharToMultiByte(config.encoding,0,wcurrent,-1,current,IRC_SIZE_SMALL,NULL,NULL);
                firstptr = irc_get_nick(&irc,current);
                if(firstptr!=NULL){

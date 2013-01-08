@@ -23,9 +23,9 @@ void init_menu_bar(HWND hWnd, int barId){
    }*/
 }
 
-void destroy_menu_bar(){
+/*void destroy_menu_bar(){
    CommandBar_Destroy(menu_bar_handle);
-}
+}*/
 
 void init_loading_screen(HWND hWnd){
    SendMessage(hWnd,WM_LOAD_CURSOR,0,0);
