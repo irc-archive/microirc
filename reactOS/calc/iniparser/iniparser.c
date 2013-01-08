@@ -12,8 +12,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#include "util.h"
-#include "list.h"
+#include "../util/util.h"
+#include "../list/list.h"
 #include "iniparser.h"
 
 char *iniparser_rightstrip(char *s){

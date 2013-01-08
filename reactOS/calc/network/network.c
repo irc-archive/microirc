@@ -26,8 +26,8 @@
    #include <sys/socket.h>
    #include <netdb.h>
 #endif
-#include "util.h"
-#include "buffer.h"
+#include "../util/util.h"
+#include "../buffer/buffer.h"
 #include "network.h"
 
 int get_last_error(){

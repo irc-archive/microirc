@@ -1,4 +1,4 @@
-#include "calc.h"
+#include "calc2.h"
 
 #define HTMLHELP_PATH(_pt)  TEXT("%systemroot%\\Help\\calc.chm::") TEXT(_pt)
 
@@ -1690,12 +1690,17 @@ static INT_PTR CALLBACK DlgMainProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
     return FALSE;
 }
 
+int WINAPI WinMain2(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow);
+
 #if defined(__GNUC__) && !defined(__REACTOS__)
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 #else
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nShowCmd)
 #endif
 {
+    if(1)
+    return WinMain2(hInstance, hPrevInstance, lpCmdLine, nShowCmd);
+
     MSG msg;
     DWORD dwLayout;
 

@@ -12,10 +12,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
-#include "util.h"
-#include "buffer.h"
-#include "network.h"
-#include "list.h"
+#include "../util/util.h"
+#include "../buffer/buffer.h"
+#include "../network/network.h"
+#include "../list/list.h"
 #include "ircprotocol.h"
 
 char *tokens_required(char *str, char character, int n_tokens, char **d_tokens, int *s_tokens){

@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "util.h"
+#include "../util/util.h"
 #include "buffer.h"
 
 int grow(buffer_t *buffer, int needed_size, int start_new_size, int n_times){
