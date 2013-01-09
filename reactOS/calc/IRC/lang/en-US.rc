@@ -8,11 +8,11 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 IDD_ABOUTBOX DIALOG  0, 0, 130, 100
 STYLE DS_SETFONT | WS_POPUP | WS_CAPTION
 EXSTYLE 0x80000000L
-CAPTION "About µIRC"
+CAPTION "About ÂµIRC"
 FONT 8, "MS Sans Serif"
 BEGIN
     ICON            IDI_IRC,IDC_STATIC,12,12,21,20,SS_REALSIZEIMAGE
-    LTEXT           "µIRC(C) 2009-2010 http://code.google.com/p/microirc",IDC_STATIC,7,38,116,20,SS_NOPREFIX
+    LTEXT           "ÂµIRC(C) 2009-2010 http://code.google.com/p/microirc",IDC_STATIC,7,38,116,20,SS_NOPREFIX
     LTEXT           "This program is licenced under the GPL version 2.",IDC_STATIC,7,60,116,19
     LTEXT           "For details see COPYING.txt.",IDC_STATIC,7,85,116,8
 END
@@ -138,28 +138,13 @@ BEGIN
 END
 
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// Accelerator
-//
 
-IDC_IRC ACCELERATORS 
-BEGIN
-    "A",            IDM_OPTIONS_PREFERENCES, VIRTKEY, CONTROL, NOINVERT
-    //"Q",            IDM_OPENURL,            VIRTKEY, CONTROL, NOINVERT
-END
 
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // String Table
 //
-
-STRINGTABLE 
-BEGIN
-    IDS_APP_TITLE           "µIRC"
-    IDS_WNDCLASS_IRC        "microirc"
-END
 
 STRINGTABLE 
 BEGIN

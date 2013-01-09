@@ -2,6 +2,9 @@
 
 #include "resource.h"
 
+// UTF-8
+#pragma code_page(65001)
+
 #ifndef IDC_STATIC
 #define IDC_STATIC    -1
 #endif
@@ -11,7 +14,9 @@
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
+//
 // Neutral resources
+//
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 
@@ -29,8 +34,33 @@ IDI_IRC                 ICON    DISCARDABLE     "res/microirc.ico"
 
 IDB_ROS                 BITMAP  DISCARDABLE     "res/ROS_logo.bmp"
 
-// UTF-8
-#pragma code_page(65001)
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDC_IRC ACCELERATORS 
+BEGIN
+    "A",            IDM_OPTIONS_PREFERENCES, VIRTKEY, CONTROL, NOINVERT
+    //"Q",            IDM_OPENURL,            VIRTKEY, CONTROL, NOINVERT
+END
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_APP_TITLE           "µIRC"
+    IDS_WNDCLASS_IRC        "microirc"
+END
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Load extra resources by Language
+//
+
 #ifdef LANGUAGE_EN_US
     #include "lang/en-US.rc"
 #endif

@@ -63,26 +63,28 @@
 #define HIDPI 96
 
 typedef struct config_t{
-   HINSTANCE h_instance;
-   wchar_t window_class[IRC_SIZE_SMALL];
-   wchar_t window_title[IRC_SIZE_SMALL];
-   wchar_t module_path[IRC_SIZE_SMALL];
-   
-   int text_color;
-   int background_color;
+    HINSTANCE h_instance;
+    wchar_t window_class[IRC_SIZE_SMALL];
+    wchar_t window_title[IRC_SIZE_SMALL];
+    wchar_t module_path[IRC_SIZE_SMALL];
+    
+    int text_color;
+    int background_color;
+    unsigned int LOG_PIXELS_X;
+    unsigned int LOG_PIXELS_Y;
 }config_t;
 
 typedef struct ircconfig_t{
-   int connect_on_startup;
-   int reconnect_retries;
-   char part[IRC_SIZE_SMALL];
-   char kick[IRC_SIZE_SMALL];
-   char quit[IRC_SIZE_SMALL];
-   int encoding;
-   int bubble;
-   int sounds;
-   int led_number;
-   int led_interval;
+    int connect_on_startup;
+    int reconnect_retries;
+    char part[IRC_SIZE_SMALL];
+    char kick[IRC_SIZE_SMALL];
+    char quit[IRC_SIZE_SMALL];
+    int encoding;
+    int bubble;
+    int sounds;
+    int led_number;
+    int led_interval;
 }ircconfig_t;//move to irconfig
 
 typedef struct guiclient_t{
@@ -90,8 +92,8 @@ typedef struct guiclient_t{
 }guiclient_t;
 
 typedef struct guimanager_t{
-   HWND connect_handles[IRC_PROFILE_LIMIT];
-   int connect_size;
+    HWND connect_handles[IRC_PROFILE_LIMIT];
+    int connect_size;
 }guimanager_t;
 
 //global
@@ -114,7 +116,13 @@ void guimanager_destroy();
 
 //function
 int update_title(wchar_t *window_title, wchar_t *cmd_line);
-
+int get_screen_caps_x();
+int get_screen_caps_y();
+inline int HIDPIMulDiv(int x, int y, int z);
+inline int SCALEX(int argX);
+inline int SCALEY(int argY);
+inline int UNSCALEX(int argX);
+inline int UNSCALEY(int argY);
 
 LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);

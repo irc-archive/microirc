@@ -138,9 +138,9 @@ int GetScreenCapsX(){
    if(hDC == NULL){
       return -1;
    }
-   int i = GetDeviceCaps(hDC, LOGPIXELSX);
+   int x = GetDeviceCaps(hDC, LOGPIXELSX);
    ReleaseDC(NULL, hDC);
-   return i;
+   return x;
 }
 
 int GetScreenCapsY(){
@@ -148,12 +148,12 @@ int GetScreenCapsY(){
    if(hDC == NULL){
       return -1;
    }
-   int i = GetDeviceCaps(hDC, LOGPIXELSY);
+   int y = GetDeviceCaps(hDC, LOGPIXELSY);
    ReleaseDC(NULL, hDC);
-   return i;
+   return y;
 }
 
-inline int HIDPIMulDiv(int x, int y, int z){
+/*inline int HIDPIMulDiv(int x, int y, int z){
    return ((((abs(x)*(y))+((z)>>1))/(z))*(((x)<0)?-1:1));
 }
 
@@ -171,7 +171,7 @@ inline int UNSCALEX(int argX){
 
 inline int UNSCALEY(int argY){
    return HIDPIMulDiv(argY, HIDPI, LOG_PIXELS_Y);
-}
+}*/
 
 void refresh_client_sizes(int width, int height){
    BORDER = SCALEX(1);
