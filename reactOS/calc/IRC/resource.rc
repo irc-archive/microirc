@@ -1,0 +1,36 @@
+#include <windows.h>
+
+#include "resource.h"
+
+#ifndef IDC_STATIC
+#define IDC_STATIC    -1
+#endif
+
+#ifndef DS_SHELLFONT
+#define DS_SHELLFONT DS_SETFONT|DS_FIXEDSYS
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+// Neutral resources
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+IDI_IRC                 ICON    DISCARDABLE     "res/microirc.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_ROS                 BITMAP  DISCARDABLE     "res/ROS_logo.bmp"
+
+// UTF-8
+#pragma code_page(65001)
+#ifdef LANGUAGE_EN_US
+    #include "lang/en-US.rc"
+#endif

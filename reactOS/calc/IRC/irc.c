@@ -9,40 +9,15 @@
 * This code is licenced under the GPL version 2. For details see COPYING.txt file.
 */
 
-//#define CLIENT_ONLY
-
-//#pragma comment(lib, "aygshell.lib")
-//#pragma comment(lib, "commctrl.lib")
-//#pragma comment(lib, "richink.lib")
-//#pragma comment(lib, "ws2.lib")
-//#pragma comment(lib, "mmtimer.lib")
-//#pragma comment(lib, "riched20.lib")
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <windows.h>
-#include <windowsx.h>
-//#include <aygshell.h>
-#include <commctrl.h>
-//#include <richink.h>
-//#include <inkx.h>
-#include <winsock2.h>
-#include <ws2tcpip.h>
-//#include <nled.h>
-
-//#include "richink.h"
-//#include "richinkstyle.h"
-//#include "richedit.h"
-#include "resource.h"
 #include "irc.h"
-#include "../util/util.h"
-#include "../buffer/buffer.h"
-#include "../network/network.h"
-#include "../list/list.h"
-#include "../iniparser/iniparser.h"
-#include "../ircprotocol/ircprotocol.h"
 
-#include <richedit.h>
+config_t g_config;
+
+
+
+
+
+
 
 //global
 int color_background;
@@ -128,75 +103,89 @@ HWND static_label2_handle;
 #include "client.h"
 #include "manager.h"
 
+
+
+
+
+
+
 //MessageBox(NULL,L"LOL",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
-int WINAPI WinMain2(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow){
-color_background = 0x00FFFFFF;
-color_text = 0x00000000;
-   app_instance = hInstance;
-   wchar_t window_class[IRC_SIZE_SMALL];
-   LoadString(hInstance, IDS_WNDCLASS_IRC, window_class, IRC_SIZE_SMALL);
-   LoadString(hInstance, IDS_APP_TITLE, window_title, IRC_SIZE_SMALL);
-   if(GetModuleFileName(NULL,module_path,IRC_SIZE_SMALL)==0){
-      return 0;
-   }
+int WINAPI WinMain2(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow) {
+    /* Load extra richedit library */
+    if(LoadLibrary(L"Msftedit.dll") < 0){
+        return 0;
+    }
+    
+    /* Load global properties and set defaults */
+    g_config.h_instance = hInstance;
+    LoadString(hInstance, IDS_WNDCLASS_IRC, g_config.window_class, IRC_SIZE_SMALL);
+    LoadString(hInstance, IDS_APP_TITLE, g_config.window_title, IRC_SIZE_SMALL);
+    g_config.background_color = 0x00FFFFFF;
+    g_config.text_color = 0x00000000;
+    if(GetModuleFileName(NULL,g_config.module_path,IRC_SIZE_SMALL)<=0){
+        return 0;
+    }
 #ifdef CLIENT_ONLY
-   if(title(window_title,L"Client.ini")!=0){
+    if(update_title(g_config.window_title,L"Client.ini")!=0){
 #else
-   if(title(window_title,lpCmdLine)!=0){
+    if(update_title(g_config.window_title,lpCmdLine)!=0){
 #endif
-      return 0;
-   }
-   if(FindWindow(window_class, window_title)!=NULL){
-      return 0;
-   }
-   INITCOMMONCONTROLSEX icex;
-   memset(&icex, 0, sizeof(INITCOMMONCONTROLSEX));
-   icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
-   icex.dwICC = ICC_BAR_CLASSES|ICC_TAB_CLASSES;
-   InitCommonControlsEx(&icex);
-   //InitRichInkDLL();
-   LoadLibrary(L"riched20.dll");
-   //SHInitExtraControls();
-   WNDCLASS wc;
-   memset(&wc, 0, sizeof(WNDCLASS));
-   wc.style = CS_HREDRAW|CS_VREDRAW;
-   wc.cbClsExtra = 0;
-   wc.cbWndExtra = 0;
-   wc.hInstance = hInstance;
-   wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_IRC));
-   wc.hCursor = 0;
-   wc.hbrBackground = GetSysColorBrush(COLOR_WINDOW);
-   wc.lpszMenuName = 0;
-   wc.lpszClassName = window_class;
+        return 0;
+    }
+    if(FindWindow(g_config.window_class, g_config.window_title)!=NULL){
+        return 0;
+    }
+    INITCOMMONCONTROLSEX icex;
+    memset(&icex, 0, sizeof(icex));
+    icex.dwSize = sizeof(icex);
+    icex.dwICC = ICC_BAR_CLASSES|ICC_TAB_CLASSES;
+    if (!InitCommonControlsEx(&icex)){
+        return 0;
+    }
+    
+    WNDCLASS wc;
+    memset(&wc, 0, sizeof(wc));
+    wc.style = CS_HREDRAW|CS_VREDRAW;
+    wc.cbClsExtra = 0;
+    wc.cbWndExtra = 0;
+    wc.hInstance = hInstance;
+    wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_IRC));
+    wc.hCursor = 0;
+    wc.hbrBackground = GetSysColorBrush(COLOR_WINDOW);
+    wc.lpszMenuName = 0;
+    wc.lpszClassName = g_config.window_class;
 #ifdef CLIENT_ONLY
-   wc.lpfnWndProc = WindowProcClient;
+    wc.lpfnWndProc = WindowProcClient;
 #else
-   if(wcslen(lpCmdLine)==0){
-      wc.lpfnWndProc = WindowProcManager;
-   }else{
-      wc.lpfnWndProc = WindowProcClient;
-   }
+    if(wcslen(lpCmdLine)==0){
+        wc.lpfnWndProc = WindowProcManager;
+    }else{
+        wc.lpfnWndProc = WindowProcClient;
+    }
 #endif
-   if(RegisterClass(&wc)==0){
-      return 0;
-   }
+    if(RegisterClass(&wc)==0){
+        return 0;
+    }
+
+    //HWND hwndEdit= CreateWindowEx(0, MSFTEDIT_CLASS, TEXT("Type here"), ES_MULTILINE | WS_VISIBLE | WS_CHILD | WS_BORDER | WS_TABSTOP, x, y, width, height, hwndOwner, NULL, hinst, NULL);
+
 #ifdef CLIENT_ONLY
-   HWND hWnd_Main = CreateWindowEx(0, window_class, window_title, WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL,(HMENU)0, hInstance, L"options.ini");
+    HWND hWndMain = CreateWindowEx(0, g_config.window_class, g_config.window_title, WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL,(HMENU)0, hInstance, L"options.ini");
 #else
-   HWND hWnd_Main = CreateWindowEx(0, window_class, window_title, WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL,(HMENU)0, hInstance, lpCmdLine);
+    HWND hWndMain = CreateWindowEx(0, g_config.window_class, g_config.window_title, WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL,(HMENU)0, hInstance, lpCmdLine);
 #endif
-   if(hWnd_Main==NULL){
-      return 0;
-   }
-   ShowWindow(hWnd_Main, nCmdShow);
-   UpdateWindow(hWnd_Main);
-   MSG msg;
-   HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_IRC));
-   while(GetMessage(&msg, NULL, 0, 0)){
-      if(!TranslateAccelerator(msg.hwnd, hAccelTable, &msg)){
-         TranslateMessage(&msg);
-         DispatchMessage(&msg);
-      }
-   }
-   return (int)msg.wParam;
+    if(hWndMain==NULL){
+        return 0;
+    }
+    ShowWindow(hWndMain, nCmdShow);
+    UpdateWindow(hWndMain);
+    MSG msg;
+    HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_IRC));
+    while(GetMessage(&msg, NULL, 0, 0)){
+        if(!TranslateAccelerator(msg.hwnd, hAccelTable, &msg)){
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+    }
+    return (int)msg.wParam;
 }

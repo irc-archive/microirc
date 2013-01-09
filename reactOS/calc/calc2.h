@@ -34,7 +34,7 @@
 
 #endif
 
-#include "resource2.h"
+#include "resource.h"
 
 #ifndef IDC_STATIC
 #define IDC_STATIC  ((DWORD)-1)

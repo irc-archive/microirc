@@ -9,6 +9,26 @@
 * This code is licenced under the GPL version 2. For details see COPYING.txt file.
 */
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <windows.h>
+#include <windowsx.h>
+#include <commctrl.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#include <richedit.h>
+
+#include "resource.h"
+
+#include "../util/util.h"
+#include "../buffer/buffer.h"
+#include "../network/network.h"
+#include "../list/list.h"
+#include "../iniparser/iniparser.h"
+#include "../ircprotocol/ircprotocol.h"
+
+//#define CLIENT_ONLY
+
 #define IRC_SIZE_SMALL 256
 #define IRC_SIZE_MEDIUM 1024
 
@@ -42,6 +62,16 @@
 
 #define HIDPI 96
 
+typedef struct config_t{
+   HINSTANCE h_instance;
+   wchar_t window_class[IRC_SIZE_SMALL];
+   wchar_t window_title[IRC_SIZE_SMALL];
+   wchar_t module_path[IRC_SIZE_SMALL];
+   
+   int text_color;
+   int background_color;
+}config_t;
+
 typedef struct ircconfig_t{
    int connect_on_startup;
    int reconnect_retries;
@@ -64,6 +94,9 @@ typedef struct guimanager_t{
    int connect_size;
 }guimanager_t;
 
+//global
+extern config_t g_config;
+
 //client
 LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 void *receiverThreadProc(void *window_handle);
@@ -77,3 +110,11 @@ void guiclient_disconnecting(HWND hWnd);
 LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 int guimanager_init(HWND hWnd);
 void guimanager_destroy();
+
+
+//function
+int update_title(wchar_t *window_title, wchar_t *cmd_line);
+
+
+LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
