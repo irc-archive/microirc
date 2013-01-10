@@ -85,19 +85,82 @@ typedef struct ircconfig_t{
     int sounds;
     int led_number;
     int led_interval;
-}ircconfig_t;//move to irconfig
+}ircconfig_t;
 
 typedef struct guiclient_t{
-
+	wchar_t profile[IRC_SIZE_SMALL];
+	wchar_t sound_alert[IRC_SIZE_SMALL];
+	HWND tabcontrol_chatview_handle;
+	HWND button_closetab_handle;
+	HWND button_chatsend_handle;
+	HWND edit_chatinput_handle;
+	HWND sippref_handle;
+	HCURSOR loadcursor_icon;
+	MMRESULT timer_led;
+	HANDLE receiver_thread;
+	HANDLE receiver_thread_event;
+	int receiver_active;
+	irc_t irc;
+	ircconfig_t config;
+	int connected;
 }guiclient_t;
 
 typedef struct guimanager_t{
     HWND connect_handles[IRC_PROFILE_LIMIT];
     int connect_size;
+	HWND static_label1_handle;
+	HWND static_label2_handle;
 }guimanager_t;
+
+typedef struct resize_t{
+	//client
+	unsigned int BORDER;
+	unsigned int CLOSETAB_WIDTH;
+	unsigned int CLOSETAB_HEIGHT;
+	unsigned int BUTTONCHAT_WIDTH;
+	unsigned int BUTTONCHAT_HEIGHT;
+	unsigned int TABCONTROLCHAT_WIDTH;
+	unsigned int TABCONTROLCHAT_HEIGHT;
+	unsigned int EDITCHAT_WIDTH;
+	unsigned int EDITCHAT_HEIGHT;
+	unsigned int TABALL_HEIGHT;
+	unsigned int TABTALK_STATUS_WIDTH;
+	unsigned int TABNICK_CHAT_WIDTH;
+	unsigned int TABTALK_CHAT_WIDTH;
+
+	unsigned int CLOSETAB_TOP;
+	unsigned int CLOSETAB_LEFT;
+	unsigned int BUTTONCHAT_TOP;
+	unsigned int BUTTONCHAT_LEFT;
+	unsigned int TABCONTROLCHAT_TOP;
+	unsigned int TABCONTROLCHAT_LEFT;
+	unsigned int EDITCHAT_TOP;
+	unsigned int EDITCHAT_LEFT;
+	unsigned int TABTALK_TOP;
+	unsigned int TABTALK_LEFT;
+	unsigned int TABNICK_TOP;
+	unsigned int TABNICK_LEFT;
+
+	//manager
+	unsigned int STATIC_WIDTH;
+	unsigned int STATIC_HEIGHT;
+	unsigned int RADIO_WIDTH;
+	unsigned int RADIO_HEIGHT;
+
+	unsigned int STATIC_TOP;
+	unsigned int STATIC_LEFT;
+	unsigned int STATIC_LEFT_SECOND;
+	unsigned int RADIO_TOP_DISTANCE;
+	unsigned int RADIO_TOP;
+	unsigned int RADIO_LEFT;
+}resize_t;
 
 //global
 extern config_t g_config;
+//extern ircconfig_t ircconfig;
+extern guiclient_t client;
+extern guimanager_t manager;
+extern resize_t resize;
 
 //client
 LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -113,6 +176,11 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 int guimanager_init(HWND hWnd);
 void guimanager_destroy();
 
+//checkbox manager
+/*int checkbox_create(wchar_t *text, HWND hWnd);
+void checkbox_getselected(int *d_result, int *s_result);
+int checkbox_delete(int index);
+void checkbox_resize_all();*/
 
 //function
 int update_title(wchar_t *window_title, wchar_t *cmd_line);

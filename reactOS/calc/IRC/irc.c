@@ -11,103 +11,20 @@
 
 #include "irc.h"
 
-config_t g_config;
-
-
-
-
-
-
-
-//global
-int color_background;
-int color_text;
-unsigned int LOG_PIXELS_X;
-unsigned int LOG_PIXELS_Y;
-
-//client
-unsigned int BORDER;
-unsigned int CLOSETAB_WIDTH;
-unsigned int CLOSETAB_HEIGHT;
-unsigned int BUTTONCHAT_WIDTH;
-unsigned int BUTTONCHAT_HEIGHT;
-unsigned int TABCONTROLCHAT_WIDTH;
-unsigned int TABCONTROLCHAT_HEIGHT;
-unsigned int EDITCHAT_WIDTH;
-unsigned int EDITCHAT_HEIGHT;
-unsigned int TABALL_HEIGHT;
-unsigned int TABTALK_STATUS_WIDTH;
-unsigned int TABNICK_CHAT_WIDTH;
-unsigned int TABTALK_CHAT_WIDTH;
-
-unsigned int CLOSETAB_TOP;
-unsigned int CLOSETAB_LEFT;
-unsigned int BUTTONCHAT_TOP;
-unsigned int BUTTONCHAT_LEFT;
-unsigned int TABCONTROLCHAT_TOP;
-unsigned int TABCONTROLCHAT_LEFT;
-unsigned int EDITCHAT_TOP;
-unsigned int EDITCHAT_LEFT;
-unsigned int TABTALK_TOP;
-unsigned int TABTALK_LEFT;
-unsigned int TABNICK_TOP;
-unsigned int TABNICK_LEFT;
-
-//manager
-unsigned int STATIC_WIDTH;
-unsigned int STATIC_HEIGHT;
-unsigned int RADIO_WIDTH;
-unsigned int RADIO_HEIGHT;
-
-unsigned int STATIC_TOP;
-unsigned int STATIC_LEFT;
-unsigned int STATIC_LEFT_SECOND;
-unsigned int RADIO_TOP_DISTANCE;
-unsigned int RADIO_TOP;
-unsigned int RADIO_LEFT;
-
-//global
-HINSTANCE app_instance;
-HWND menu_bar_handle;
-wchar_t window_title[IRC_SIZE_SMALL];
-wchar_t module_path[IRC_SIZE_SMALL];
-
-//client
-wchar_t profile[IRC_SIZE_SMALL];
-wchar_t sound_alert[IRC_SIZE_SMALL];
-HWND tabcontrol_chatview_handle;
-HWND button_closetab_handle;
-HWND button_chatsend_handle;
-HWND edit_chatinput_handle;
-HWND sippref_handle;
-HCURSOR loadcursor_icon;
-MMRESULT timer_led;
-HANDLE receiver_thread;
-HANDLE receiver_thread_event;
-int receiver_active;
-irc_t irc;
-ircconfig_t config;
-int connected;
-
-//manager
+config_t config;
+ircconfig_t ircconfig;
+guiclient_t client;
 guimanager_t manager;
-HWND static_label1_handle;
-HWND static_label2_handle;
+resize_t resize;
 
 #include "functions.h"
 #include "ircconfig.h"
-#include "checkbox_manager.h"
+#include "checkbox_manager.c"
 #include "tab_manager.h"
 #include "dialogs_functions.h"
 #include "gui_functions.h"
-#include "client.h"
+//#include "client.h"
 #include "manager.h"
-
-
-
-
-
-
 
 //MessageBox(NULL,L"LOL",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
 int WINAPI WinMain2(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow) {
@@ -117,22 +34,22 @@ int WINAPI WinMain2(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLi
     }
     
     /* Load global properties and set defaults */
-    g_config.h_instance = hInstance;
-    LoadString(hInstance, IDS_WNDCLASS_IRC, g_config.window_class, IRC_SIZE_SMALL);
-    LoadString(hInstance, IDS_APP_TITLE, g_config.window_title, IRC_SIZE_SMALL);
-    g_config.background_color = 0x00FFFFFF;
-    g_config.text_color = 0x00000000;
-    if(GetModuleFileName(NULL,g_config.module_path,IRC_SIZE_SMALL)<=0){
+    config.h_instance = hInstance;
+    LoadString(hInstance, IDS_WNDCLASS_IRC, config.window_class, IRC_SIZE_SMALL);
+    LoadString(hInstance, IDS_APP_TITLE, config.window_title, IRC_SIZE_SMALL);
+    config.background_color = 0x00FFFFFF;
+    config.text_color = 0x00000000;
+    if(GetModuleFileName(NULL,config.module_path,IRC_SIZE_SMALL)<=0){
         return 0;
     }
 #ifdef CLIENT_ONLY
-    if(update_title(g_config.window_title,L"Client.ini")!=0){
+    if(update_title(config.window_title,L"Client.ini")!=0){
 #else
-    if(update_title(g_config.window_title,lpCmdLine)!=0){
+    if(update_title(config.window_title,lpCmdLine)!=0){
 #endif
         return 0;
     }
-    if(FindWindow(g_config.window_class, g_config.window_title)!=NULL){
+    if(FindWindow(config.window_class, config.window_title)!=NULL){
         return 0;
     }
     INITCOMMONCONTROLSEX icex;
@@ -153,7 +70,7 @@ int WINAPI WinMain2(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLi
     wc.hCursor = 0;
     wc.hbrBackground = GetSysColorBrush(COLOR_WINDOW);
     wc.lpszMenuName = 0;
-    wc.lpszClassName = g_config.window_class;
+    wc.lpszClassName = config.window_class;
 #ifdef CLIENT_ONLY
     wc.lpfnWndProc = WindowProcClient;
 #else
@@ -170,9 +87,9 @@ int WINAPI WinMain2(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLi
     //HWND hwndEdit= CreateWindowEx(0, MSFTEDIT_CLASS, TEXT("Type here"), ES_MULTILINE | WS_VISIBLE | WS_CHILD | WS_BORDER | WS_TABSTOP, x, y, width, height, hwndOwner, NULL, hinst, NULL);
 
 #ifdef CLIENT_ONLY
-    HWND hWndMain = CreateWindowEx(0, g_config.window_class, g_config.window_title, WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL,(HMENU)0, hInstance, L"options.ini");
+    HWND hWndMain = CreateWindowEx(0, config.window_class, config.window_title, WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL,(HMENU)0, hInstance, L"options.ini");
 #else
-    HWND hWndMain = CreateWindowEx(0, g_config.window_class, g_config.window_title, WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL,(HMENU)0, hInstance, lpCmdLine);
+    HWND hWndMain = CreateWindowEx(0, config.window_class, config.window_title, WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL,(HMENU)0, hInstance, lpCmdLine);
 #endif
     if(hWndMain==NULL){
         return 0;

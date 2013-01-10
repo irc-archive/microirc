@@ -124,8 +124,8 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
          break;
       }
       case WM_SIZE:{
-         LOG_PIXELS_X = GetScreenCapsX();
-         LOG_PIXELS_Y = GetScreenCapsY();
+         g_config.LOG_PIXELS_X = get_screen_caps_x();
+         g_config.LOG_PIXELS_Y = get_screen_caps_y();
 
          refresh_manager_sizes();
 
@@ -146,8 +146,8 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
          //memset(&s_sai, 0, sizeof(SHACTIVATEINFO));
          //s_sai.cbSize = sizeof(SHACTIVATEINFO);
 
-         LOG_PIXELS_X = GetScreenCapsX();
-         LOG_PIXELS_Y = GetScreenCapsY();
+         g_config.LOG_PIXELS_X = get_screen_caps_x();
+         g_config.LOG_PIXELS_Y = get_screen_caps_y();
 
          if(guimanager_init(hWnd)!=0){
             PostQuitMessage(0);

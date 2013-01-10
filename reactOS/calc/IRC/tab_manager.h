@@ -28,7 +28,7 @@ typedef struct style_text_t{
 void set_style(style_text_t *style, CHARFORMAT2 *format){
    if(style==NULL){
       format->dwMask = CFM_COLOR;
-      format->crTextColor = color_text;
+      format->crTextColor = config.text_color;
    }else{
       format->dwMask = CFM_COLOR;
       format->crTextColor = style->color;
@@ -123,7 +123,7 @@ WNDPROC old_ChatViewTextProc;
 LRESULT CALLBACK ChatViewTextProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
    switch (uMsg){
       case WM_LBUTTONUP:{
-         SetFocus(edit_chatinput_handle);
+         SetFocus(client.edit_chatinput_handle);
          SendMessage(hWnd, EM_SETSEL, EDITCHATVIEWTEXT_LIMIT, EDITCHATVIEWTEXT_LIMIT);
          break;
       }
@@ -151,15 +151,15 @@ LRESULT CALLBACK ChatViewNickProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                if(wcslen(wnick)<1){
                   break;
                }
-               WideCharToMultiByte(config.encoding,0,wnick,-1,nick,IRC_SIZE_SMALL,NULL,NULL);
-               char *nick_ptr = irc_get_nick(&irc,nick);
+               WideCharToMultiByte(client.config.encoding,0,wnick,-1,nick,IRC_SIZE_SMALL,NULL,NULL);
+               char *nick_ptr = irc_get_nick(&client.irc,nick);
                if(nick_ptr==NULL){
                   break;
                }
                tab_get_name_current(tabcontrol_chatview_handle,wchannel,IRC_SIZE_SMALL);
-               WideCharToMultiByte(config.encoding,0,wchannel,-1,channel,IRC_SIZE_SMALL,NULL,NULL);
-               char *send[3] = {channel,nick_ptr,config.kick};
-               irc_send_message(&irc,SEND_KICK,send,3);
+               WideCharToMultiByte(client.config.encoding,0,wchannel,-1,channel,IRC_SIZE_SMALL,NULL,NULL);
+               char *send[3] = {channel,nick_ptr,client.config.kick};
+               irc_send_message(&client.irc,SEND_KICK,send,3);
                break;
             }
             case IDM_CHATBOX_KICKBAN:{
@@ -168,16 +168,16 @@ LRESULT CALLBACK ChatViewNickProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                if(wcslen(wnick)<1){
                   break;
                }
-               WideCharToMultiByte(config.encoding,0,wnick,-1,nick,IRC_SIZE_SMALL,NULL,NULL);
-               char *nick_ptr = irc_get_nick(&irc,nick);
+               WideCharToMultiByte(client.config.encoding,0,wnick,-1,nick,IRC_SIZE_SMALL,NULL,NULL);
+               char *nick_ptr = irc_get_nick(&client.irc,nick);
                if(nick_ptr==NULL){
                   break;
                }
                tab_get_name_current(tabcontrol_chatview_handle,wchannel,IRC_SIZE_SMALL);
-               WideCharToMultiByte(config.encoding,0,wchannel,-1,channel,IRC_SIZE_SMALL,NULL,NULL);
-               char *send[6] = {channel,nick_ptr,config.kick,channel,"+b",nick_ptr};
-               irc_send_message(&irc,SEND_KICK,send,3);
-               irc_send_message(&irc,SEND_CHANNEL_MODE,&send[3],3);
+               WideCharToMultiByte(client.config.encoding,0,wchannel,-1,channel,IRC_SIZE_SMALL,NULL,NULL);
+               char *send[6] = {channel,nick_ptr,client.config.kick,channel,"+b",nick_ptr};
+               irc_send_message(&client.irc,SEND_KICK,send,3);
+               irc_send_message(&client.irc,SEND_CHANNEL_MODE,&send[3],3);
                break;
             }
             case IDM_CHATBOX_BAN:{
@@ -186,15 +186,15 @@ LRESULT CALLBACK ChatViewNickProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                if(wcslen(wnick)<1){
                   break;
                }
-               WideCharToMultiByte(config.encoding,0,wnick,-1,nick,IRC_SIZE_SMALL,NULL,NULL);
-               char *nick_ptr = irc_get_nick(&irc,nick);
+               WideCharToMultiByte(client.config.encoding,0,wnick,-1,nick,IRC_SIZE_SMALL,NULL,NULL);
+               char *nick_ptr = irc_get_nick(&client.irc,nick);
                if(nick_ptr==NULL){
                   break;
                }
                tab_get_name_current(tabcontrol_chatview_handle,wchannel,IRC_SIZE_SMALL);
-               WideCharToMultiByte(config.encoding,0,wchannel,-1,channel,IRC_SIZE_SMALL,NULL,NULL);
+               WideCharToMultiByte(client.config.encoding,0,wchannel,-1,channel,IRC_SIZE_SMALL,NULL,NULL);
                char *send[3] = {channel,"+b",nick_ptr};
-               irc_send_message(&irc,SEND_CHANNEL_MODE,send,3);
+               irc_send_message(&client.irc,SEND_CHANNEL_MODE,send,3);
                break;
             }
             /*case IDM_CHATBOX_WHOIS:{
@@ -207,12 +207,12 @@ LRESULT CALLBACK ChatViewNickProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                if(wcslen(wnick)<1){
                   break;
                }
-               WideCharToMultiByte(config.encoding,0,wnick,-1,nick,IRC_SIZE_SMALL,NULL,NULL);
-               char *nick_ptr = irc_get_nick(&irc,nick);
+               WideCharToMultiByte(client.config.encoding,0,wnick,-1,nick,IRC_SIZE_SMALL,NULL,NULL);
+               char *nick_ptr = irc_get_nick(&client.irc,nick);
                if(nick_ptr==NULL){
                   break;
                }
-               MultiByteToWideChar(config.encoding,0,nick_ptr,-1,wnick,IRC_SIZE_SMALL);
+               MultiByteToWideChar(client.config.encoding,0,nick_ptr,-1,wnick,IRC_SIZE_SMALL);
                wchar_t wtext[IRC_SIZE_MEDIUM];
                Edit_GetText(edit_chatinput_handle,wtext,IRC_SIZE_MEDIUM);
                wcscat(wtext,wnick);
