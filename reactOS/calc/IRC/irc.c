@@ -22,9 +22,7 @@ guimanager_t manager;
 #include "tab_manager.h"
 #include "dialogs_functions.h"
 #include "gui_functions.h"
-//#include "client.h"
-LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){return 0;
-}
+#include "client.h"
 #include "manager.h"
 
 //MessageBox(NULL,L"LOL",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
