@@ -9,7 +9,8 @@
 * This code is licenced under the GPL version 2. For details see COPYING.txt file.
 */
 
-/*void set_led(int led_num, int state){
+/*
+void set_led(int led_num, int state){
    NLED_SETTINGS_INFO settings;
    settings.LedNum=led_num;
    settings.OffOnBlink=state;
@@ -29,7 +30,8 @@ void activate_led(){
    if(timer_led!=NULL){
       set_led(config.led_number,1);
    }
-}*/
+}
+*/
 
 char *alias_tokens(char *str, char character, int n_tokens, char **d_tokens, int *s_tokens){
    int in = 0;
@@ -76,7 +78,7 @@ void parsing_alias(irc_t *irc, char *chat_destination, char *chat_text){
    }
 }
 
-/*int title(wchar_t *window_title, wchar_t *cmd_line){
+int update_title(wchar_t *window_title, wchar_t *cmd_line){
    if(wcslen(cmd_line)==0){
       wcscat(window_title,L" Profile Manager");
    }else{
@@ -94,7 +96,7 @@ void parsing_alias(irc_t *irc, char *chat_destination, char *chat_text){
       wcsncat(window_title,start,end-start);
    }
    return 0;
-}*/
+}
 
 int validate_name(wchar_t *str){
    while(*str!='\0'){
@@ -113,7 +115,7 @@ int validate_name(wchar_t *str){
 }
 
 void wfile_to_fullpath(wchar_t *wfilename, wchar_t *wfullpath){
-   wcsncpy(wfullpath,g_config.module_path,IRC_SIZE_SMALL);
+   wcsncpy(wfullpath,config.module_path,IRC_SIZE_SMALL);
    wcscpy(wcsrchr(wfullpath,'\\')+1,wfilename);
 }
 
@@ -133,7 +135,7 @@ int winiparser_store(iniparser_t *iniparser, wchar_t *wfilename){
    return iniparser_store(iniparser,fullpath);
 }
 
-int GetScreenCapsX(){
+int get_screen_caps_x(){
    HDC hDC = GetDC(NULL);
    if(hDC == NULL){
       return -1;
@@ -143,7 +145,7 @@ int GetScreenCapsX(){
    return x;
 }
 
-int GetScreenCapsY(){
+int get_screen_caps_y(){
    HDC hDC = GetDC(NULL);
    if(hDC == NULL){
       return -1;
@@ -153,54 +155,53 @@ int GetScreenCapsY(){
    return y;
 }
 
-/*inline int HIDPIMulDiv(int x, int y, int z){
+inline int HIDPIMulDiv(int x, int y, int z){
    return ((((abs(x)*(y))+((z)>>1))/(z))*(((x)<0)?-1:1));
 }
 
 inline int SCALEX(int argX){
-   return HIDPIMulDiv(argX, LOG_PIXELS_X, HIDPI);
+   return HIDPIMulDiv(argX, config.LOG_PIXELS_X, HIDPI);
 }
 
 inline int SCALEY(int argY){
-   return HIDPIMulDiv(argY, LOG_PIXELS_Y, HIDPI);
+   return HIDPIMulDiv(argY, config.LOG_PIXELS_Y, HIDPI);
 }
 
 inline int UNSCALEX(int argX){
-   return HIDPIMulDiv(argX, HIDPI, LOG_PIXELS_X);
+   return HIDPIMulDiv(argX, HIDPI, config.LOG_PIXELS_X);
 }
 
 inline int UNSCALEY(int argY){
-   return HIDPIMulDiv(argY, HIDPI, LOG_PIXELS_Y);
-}*/
+   return HIDPIMulDiv(argY, HIDPI, config.LOG_PIXELS_Y);
+}
 
-/*
 void refresh_client_sizes(int width, int height){
    resize.BORDER = SCALEX(1);
    resize.CLOSETAB_WIDTH = SCALEX(20);
    resize.CLOSETAB_HEIGHT = SCALEY(20);
    resize.BUTTONCHAT_WIDTH = SCALEY(40);
    resize.BUTTONCHAT_HEIGHT = SCALEY(20);
-   resize.TABCONTROLCHAT_WIDTH = width-(BORDER+BORDER+BORDER+CLOSETAB_WIDTH);
+   resize.TABCONTROLCHAT_WIDTH = width-(resize.BORDER+resize.BORDER+resize.BORDER+resize.CLOSETAB_WIDTH);
    resize.TABCONTROLCHAT_HEIGHT = SCALEY(20);
-   resize.EDITCHAT_WIDTH = width-(BORDER+BORDER+BORDER+BUTTONCHAT_WIDTH);
+   resize.EDITCHAT_WIDTH = width-(resize.BORDER+resize.BORDER+resize.BORDER+resize.BUTTONCHAT_WIDTH);
    resize.EDITCHAT_HEIGHT = SCALEY(20);
-   resize.TABALL_HEIGHT = height-(BORDER+BORDER+BORDER+BORDER+TABCONTROLCHAT_HEIGHT+EDITCHAT_HEIGHT);
-   resize.TABTALK_STATUS_WIDTH = width-(BORDER+BORDER);
+   resize.TABALL_HEIGHT = height-(resize.BORDER+resize.BORDER+resize.BORDER+resize.BORDER+resize.TABCONTROLCHAT_HEIGHT+resize.EDITCHAT_HEIGHT);
+   resize.TABTALK_STATUS_WIDTH = width-(resize.BORDER+resize.BORDER);
    resize.TABNICK_CHAT_WIDTH = SCALEX(70);
-   resize.TABTALK_CHAT_WIDTH = width-(BORDER+BORDER+BORDER+TABNICK_CHAT_WIDTH);
+   resize.TABTALK_CHAT_WIDTH = width-(resize.BORDER+resize.BORDER+resize.BORDER+resize.TABNICK_CHAT_WIDTH);
 
-   resize.CLOSETAB_TOP = BORDER;
-   resize.CLOSETAB_LEFT = BORDER+BORDER+TABCONTROLCHAT_WIDTH;
-   resize.BUTTONCHAT_TOP = BORDER+BORDER+BORDER+TABCONTROLCHAT_HEIGHT+TABALL_HEIGHT;
-   resize.BUTTONCHAT_LEFT = BORDER+BORDER+EDITCHAT_WIDTH;
-   resize.TABCONTROLCHAT_TOP = BORDER;
-   resize.TABCONTROLCHAT_LEFT = BORDER;
-   resize.EDITCHAT_TOP = BORDER+BORDER+BORDER+TABCONTROLCHAT_HEIGHT+TABALL_HEIGHT;
-   resize.EDITCHAT_LEFT = BORDER;
-   resize.TABTALK_TOP = BORDER+BORDER+TABCONTROLCHAT_HEIGHT;
-   resize.TABTALK_LEFT = BORDER;
-   resize.TABNICK_TOP = BORDER+BORDER+TABCONTROLCHAT_HEIGHT;
-   resize.TABNICK_LEFT = BORDER+BORDER+TABTALK_CHAT_WIDTH;
+   resize.CLOSETAB_TOP = resize.BORDER;
+   resize.CLOSETAB_LEFT = resize.BORDER+resize.BORDER+resize.TABCONTROLCHAT_WIDTH;
+   resize.BUTTONCHAT_TOP = resize.BORDER+resize.BORDER+resize.BORDER+resize.TABCONTROLCHAT_HEIGHT+resize.TABALL_HEIGHT;
+   resize.BUTTONCHAT_LEFT = resize.BORDER+resize.BORDER+resize.EDITCHAT_WIDTH;
+   resize.TABCONTROLCHAT_TOP = resize.BORDER;
+   resize.TABCONTROLCHAT_LEFT = resize.BORDER;
+   resize.EDITCHAT_TOP = resize.BORDER+resize.BORDER+resize.BORDER+resize.TABCONTROLCHAT_HEIGHT+resize.TABALL_HEIGHT;
+   resize.EDITCHAT_LEFT = resize.BORDER;
+   resize.TABTALK_TOP = resize.BORDER+resize.BORDER+resize.TABCONTROLCHAT_HEIGHT;
+   resize.TABTALK_LEFT = resize.BORDER;
+   resize.TABNICK_TOP = resize.BORDER+resize.BORDER+resize.TABCONTROLCHAT_HEIGHT;
+   resize.TABNICK_LEFT = resize.BORDER+resize.BORDER+resize.TABTALK_CHAT_WIDTH;
 }
 
 void refresh_manager_sizes(){
@@ -216,4 +217,3 @@ void refresh_manager_sizes(){
    resize.RADIO_TOP = SCALEY(20);
    resize.RADIO_LEFT = SCALEX(5);
 }
-*/

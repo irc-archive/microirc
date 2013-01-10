@@ -1,7 +1,7 @@
 /*
 * checkbox_manager.h
 *
-* This file contains an implementation of a radio manager to use on irc client.
+* This file contains an implementation of a radio button manager to use on irc client.
 *
 * Copyright(C) 2009-2010, Diogo Reis <diogoandre12@gmail.com>
 * Copyright(C) 2010-2010, José Pedroso <josedpedroso@gmail.com>
@@ -21,7 +21,7 @@ int checkbox_create(wchar_t *text, HWND hWnd){
          return -2;
       }
    }
-   manager.connect_handles[manager.connect_size]=CreateWindowEx(0,L"BUTTON",text,BS_LEFTTEXT|BS_AUTOCHECKBOX|WS_CHILD|WS_VISIBLE,RADIO_LEFT,RADIO_TOP_DISTANCE+(RADIO_TOP*manager.connect_size),RADIO_WIDTH,RADIO_HEIGHT,hWnd,(HMENU)NULL,app_instance,NULL);
+   manager.connect_handles[manager.connect_size]=CreateWindowEx(0,L"BUTTON",text,BS_LEFTTEXT|BS_AUTOCHECKBOX|WS_CHILD|WS_VISIBLE,resize.RADIO_LEFT,resize.RADIO_TOP_DISTANCE+(resize.RADIO_TOP*manager.connect_size),resize.RADIO_WIDTH,resize.RADIO_HEIGHT,hWnd,(HMENU)NULL,config.h_instance,NULL);
    Button_SetCheck(manager.connect_handles[manager.connect_size],BST_CHECKED);
    manager.connect_size++;
    return 0;
@@ -60,6 +60,6 @@ int checkbox_delete(int index){
 void checkbox_resize_all(){
    int i;
    for(i=0;i<manager.connect_size;i++){
-      MoveWindow(manager.connect_handles[i],RADIO_LEFT,RADIO_TOP_DISTANCE+(RADIO_TOP*i),RADIO_WIDTH,RADIO_HEIGHT,TRUE);
+      MoveWindow(manager.connect_handles[i],resize.RADIO_LEFT,resize.RADIO_TOP_DISTANCE+(resize.RADIO_TOP*i),resize.RADIO_WIDTH,resize.RADIO_HEIGHT,TRUE);
    }
 }

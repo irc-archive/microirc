@@ -143,20 +143,20 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
             settext_fromint(hDlg,IDC_EDIT16,iniparser_getint(&iniparser, "miscellaneous", "led_number", -1));
             settext_fromint(hDlg,IDC_EDIT17,iniparser_getint(&iniparser, "miscellaneous", "led_interval", 500));
          }else if(wcscmp(parameters[0],L"client")==0){
-            setcheck_fromint(hDlg,IDC_CHECK1,config.connect_on_startup);
-            settext_fromint(hDlg,IDC_EDIT11,config.reconnect_retries);
-            settext_fromstr(hDlg,IDC_EDIT12,config.part);
-            settext_fromstr(hDlg,IDC_EDIT13,config.kick);
-            settext_fromstr(hDlg,IDC_EDIT14,config.quit);
-            if(config.encoding==CP_UTF8){
+            setcheck_fromint(hDlg,IDC_CHECK1,client.config.connect_on_startup);
+            settext_fromint(hDlg,IDC_EDIT11,client.config.reconnect_retries);
+            settext_fromstr(hDlg,IDC_EDIT12,client.config.part);
+            settext_fromstr(hDlg,IDC_EDIT13,client.config.kick);
+            settext_fromstr(hDlg,IDC_EDIT14,client.config.quit);
+            if(client.config.encoding==CP_UTF8){
                setcombo_fromint(hDlg,IDC_COMBO1,1);
             }else{
                setcombo_fromint(hDlg,IDC_COMBO1,0);
             }
-            settext_fromint(hDlg,IDC_EDIT15,config.bubble);
-            setcheck_fromint(hDlg,IDC_CHECK2,config.sounds);
-            settext_fromint(hDlg,IDC_EDIT16,config.led_number);
-            settext_fromint(hDlg,IDC_EDIT17,config.led_interval);
+            settext_fromint(hDlg,IDC_EDIT15,client.config.bubble);
+            setcheck_fromint(hDlg,IDC_CHECK2,client.config.sounds);
+            settext_fromint(hDlg,IDC_EDIT16,client.config.led_number);
+            settext_fromint(hDlg,IDC_EDIT17,client.config.led_interval);
          }
          iniparser_destroy(&iniparser);
          return TRUE;
@@ -265,20 +265,20 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
             iniparser_setint(&iniparser, "miscellaneous", "led_number", led_number);
             iniparser_setint(&iniparser, "miscellaneous", "led_interval", led_interval);
             if(wcscmp(type,L"client")==0){
-               config.connect_on_startup = connect_on_startup;
-               config.reconnect_retries = reconnect_retries;
-               strncpy0(config.part,part,IRC_SIZE_SMALL);
-               strncpy0(config.kick,kick,IRC_SIZE_SMALL);
-               strncpy0(config.quit,quit,IRC_SIZE_SMALL);
+               client.config.connect_on_startup = connect_on_startup;
+               client.config.reconnect_retries = reconnect_retries;
+               strncpy0(client.config.part,part,IRC_SIZE_SMALL);
+               strncpy0(client.config.kick,kick,IRC_SIZE_SMALL);
+               strncpy0(client.config.quit,quit,IRC_SIZE_SMALL);
                if(encoding!=0){
-                  config.encoding=CP_UTF8;
+                  client.config.encoding=CP_UTF8;
                }else{
-                  config.encoding=CP_ACP;
+                  client.config.encoding=CP_ACP;
                }
-               config.bubble=bubble;
-               config.sounds=sounds;
-               config.led_number=led_number;
-               config.led_interval=led_interval;
+               client.config.bubble=bubble;
+               client.config.sounds=sounds;
+               client.config.led_number=led_number;
+               client.config.led_interval=led_interval;
             }
             if(winiparser_store(&iniparser,profile)!=0){
                iniparser_destroy(&iniparser);

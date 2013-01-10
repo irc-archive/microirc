@@ -9,10 +9,10 @@
 * This code is licenced under the GPL version 2. For details see COPYING.txt file.
 */
 
-typedef enum {STATUS,CHAT} TAB_TYPE;
-typedef enum {HIDE,SHOW} TAB_VISIBLE_ACTION;
-typedef enum {APPEND,REMOVE} TAB_TEXT_ACTION;
-typedef enum {TSTRUE,TSFALSE} TAB_TIMESTAMP;
+typedef enum {STATUS,CHAT}TAB_TYPE;
+typedef enum {HIDE,SHOW}TAB_VISIBLE_ACTION;
+typedef enum {APPEND,REMOVE}TAB_TEXT_ACTION;
+typedef enum {TSTRUE,TSFALSE}TAB_TIMESTAMP;
 
 typedef struct tab_t{
    HWND text;
@@ -156,7 +156,7 @@ LRESULT CALLBACK ChatViewNickProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                if(nick_ptr==NULL){
                   break;
                }
-               tab_get_name_current(tabcontrol_chatview_handle,wchannel,IRC_SIZE_SMALL);
+               tab_get_name_current(client.tabcontrol_chatview_handle,wchannel,IRC_SIZE_SMALL);
                WideCharToMultiByte(client.config.encoding,0,wchannel,-1,channel,IRC_SIZE_SMALL,NULL,NULL);
                char *send[3] = {channel,nick_ptr,client.config.kick};
                irc_send_message(&client.irc,SEND_KICK,send,3);
@@ -173,7 +173,7 @@ LRESULT CALLBACK ChatViewNickProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                if(nick_ptr==NULL){
                   break;
                }
-               tab_get_name_current(tabcontrol_chatview_handle,wchannel,IRC_SIZE_SMALL);
+               tab_get_name_current(client.tabcontrol_chatview_handle,wchannel,IRC_SIZE_SMALL);
                WideCharToMultiByte(client.config.encoding,0,wchannel,-1,channel,IRC_SIZE_SMALL,NULL,NULL);
                char *send[6] = {channel,nick_ptr,client.config.kick,channel,"+b",nick_ptr};
                irc_send_message(&client.irc,SEND_KICK,send,3);
@@ -191,7 +191,7 @@ LRESULT CALLBACK ChatViewNickProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                if(nick_ptr==NULL){
                   break;
                }
-               tab_get_name_current(tabcontrol_chatview_handle,wchannel,IRC_SIZE_SMALL);
+               tab_get_name_current(client.tabcontrol_chatview_handle,wchannel,IRC_SIZE_SMALL);
                WideCharToMultiByte(client.config.encoding,0,wchannel,-1,channel,IRC_SIZE_SMALL,NULL,NULL);
                char *send[3] = {channel,"+b",nick_ptr};
                irc_send_message(&client.irc,SEND_CHANNEL_MODE,send,3);
@@ -214,32 +214,32 @@ LRESULT CALLBACK ChatViewNickProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                }
                MultiByteToWideChar(client.config.encoding,0,nick_ptr,-1,wnick,IRC_SIZE_SMALL);
                wchar_t wtext[IRC_SIZE_MEDIUM];
-               Edit_GetText(edit_chatinput_handle,wtext,IRC_SIZE_MEDIUM);
+               Edit_GetText(client.edit_chatinput_handle,wtext,IRC_SIZE_MEDIUM);
                wcscat(wtext,wnick);
                wcscat(wtext,L" ");
-               Edit_SetText(edit_chatinput_handle,wtext);
-               element = Edit_GetTextLength(edit_chatinput_handle);
-               SendMessage(edit_chatinput_handle, EM_SETSEL, element, element);
-               SetFocus(edit_chatinput_handle);
+               Edit_SetText(client.edit_chatinput_handle,wtext);
+               element = Edit_GetTextLength(client.edit_chatinput_handle);
+               SendMessage(client.edit_chatinput_handle, EM_SETSEL, element, element);
+               SetFocus(client.edit_chatinput_handle);
                break;
             }
          }
          break;
       }
-      /*case WM_LBUTTONDOWN:{
-         SHRGINFO shrg;
+      case WM_LBUTTONDOWN:{
+         /*SHRGINFO shrg;
          shrg.cbSize = sizeof(shrg);
          shrg.hwndClient = hWnd;
          shrg.ptDown.x = LOWORD(lParam);
          shrg.ptDown.y = HIWORD(lParam);
          shrg.dwFlags = SHRG_RETURNCMD;
          if(SHRecognizeGesture(&shrg) == GN_CONTEXTMENU){
-            HMENU menu = LoadMenu(app_instance, MAKEINTRESOURCE(IDR_CHATBOX_MENU));
+            HMENU menu = LoadMenu(config.h_instance, MAKEINTRESOURCE(IDR_CHATBOX_MENU));
             menu = GetSubMenu(menu, 0);
             TrackPopupMenuEx(menu,TPM_LEFTALIGN,TABNICK_LEFT+LOWORD(lParam),TABNICK_TOP+HIWORD(lParam),hWnd,NULL);
-         }
+         }*/
          break;
-      }*/
+      }
    }
    return CallWindowProc(old_ChatViewNickProc, hWnd, uMsg, wParam, lParam);
 }
@@ -254,21 +254,21 @@ int tab_create(HWND hWnd, HWND tab_control, wchar_t *tab_name, TAB_TYPE type){
       return -1;
    }
    if(type==STATUS){
-      //new_tab->text=CreateWindowEx(0,L"RICHINK",NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|ES_MULTILINE|ES_READONLY,TABTALK_LEFT,TABTALK_TOP,TABTALK_STATUS_WIDTH,TABALL_HEIGHT,hWnd,(HMENU)EDIT_CHATVIEW_TEXT,app_instance,NULL);
-      new_tab->text=CreateWindowEx(WS_EX_STATICEDGE,L"RICHEDIT50W",NULL,WS_CHILD|WS_VISIBLE|ES_MULTILINE|ES_READONLY,TABTALK_LEFT,TABTALK_TOP,TABTALK_STATUS_WIDTH,TABALL_HEIGHT,hWnd,(HMENU)EDIT_CHATVIEW_TEXT,app_instance,NULL);
+      //new_tab->text=CreateWindowEx(0,L"RICHINK",NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|ES_MULTILINE|ES_READONLY,TABTALK_LEFT,TABTALK_TOP,TABTALK_STATUS_WIDTH,TABALL_HEIGHT,hWnd,(HMENU)EDIT_CHATVIEW_TEXT,config.h_instance,NULL);
+      new_tab->text=CreateWindowEx(WS_EX_STATICEDGE,L"RICHEDIT50W",NULL,WS_CHILD|WS_VISIBLE|ES_MULTILINE|ES_READONLY,resize.TABTALK_LEFT,resize.TABTALK_TOP,resize.TABTALK_STATUS_WIDTH,resize.TABALL_HEIGHT,hWnd,(HMENU)EDIT_CHATVIEW_TEXT,config.h_instance,NULL);
       if(new_tab->text==NULL){
          free(new_tab);
          return -1;
       }
       new_tab->nick=NULL;
    }else if(type==CHAT){
-      //new_tab->text=CreateWindowEx(0,L"RICHINK",NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|ES_MULTILINE|ES_READONLY,TABTALK_LEFT,TABTALK_TOP,TABTALK_STATUS_WIDTH,TABALL_HEIGHT,hWnd,(HMENU)EDIT_CHATVIEW_TEXT,app_instance,NULL);
-      new_tab->text=CreateWindowEx(WS_EX_STATICEDGE,L"RICHEDIT50W",NULL,WS_CHILD|WS_VISIBLE|ES_MULTILINE|ES_READONLY,TABTALK_LEFT,TABTALK_TOP,TABTALK_CHAT_WIDTH,TABALL_HEIGHT,hWnd,(HMENU)EDIT_CHATVIEW_TEXT,app_instance,NULL);
+      //new_tab->text=CreateWindowEx(0,L"RICHINK",NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|ES_MULTILINE|ES_READONLY,TABTALK_LEFT,TABTALK_TOP,TABTALK_STATUS_WIDTH,TABALL_HEIGHT,hWnd,(HMENU)EDIT_CHATVIEW_TEXT,config.h_instance,NULL);
+      new_tab->text=CreateWindowEx(WS_EX_STATICEDGE,L"RICHEDIT50W",NULL,WS_CHILD|WS_VISIBLE|ES_MULTILINE|ES_READONLY,resize.TABTALK_LEFT,resize.TABTALK_TOP,resize.TABTALK_CHAT_WIDTH,resize.TABALL_HEIGHT,hWnd,(HMENU)EDIT_CHATVIEW_TEXT,config.h_instance,NULL);
       if(new_tab->text==NULL){
          free(new_tab);
          return -1;
       }
-      new_tab->nick=CreateWindowEx(0,L"LISTBOX",NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|WS_HSCROLL|LBS_SORT|LBS_HASSTRINGS|LBS_NOINTEGRALHEIGHT|LBS_NOTIFY,TABNICK_LEFT,TABNICK_TOP,TABNICK_CHAT_WIDTH,TABALL_HEIGHT,hWnd,(HMENU)LIST_CHATVIEW_NICK,app_instance,NULL);
+      new_tab->nick=CreateWindowEx(0,L"LISTBOX",NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|WS_HSCROLL|LBS_SORT|LBS_HASSTRINGS|LBS_NOINTEGRALHEIGHT|LBS_NOTIFY,resize.TABNICK_LEFT,resize.TABNICK_TOP,resize.TABNICK_CHAT_WIDTH,resize.TABALL_HEIGHT,hWnd,(HMENU)LIST_CHATVIEW_NICK,config.h_instance,NULL);
       if(new_tab->nick==NULL){
          DestroyWindow(new_tab->text);
          free(new_tab);
@@ -285,7 +285,7 @@ int tab_create(HWND hWnd, HWND tab_control, wchar_t *tab_name, TAB_TYPE type){
    SendMessage(new_tab->text,EM_AUTOURLDETECT,TRUE,0);
    SendMessage(new_tab->text,EM_SETEVENTMASK,0,ENM_LINK);
    SendMessage(new_tab->text,EM_EXLIMITTEXT,0,EDITCHATVIEWTEXT_LIMIT);
-   SendMessage(new_tab->text,EM_SETBKGNDCOLOR,0,color_background);
+   SendMessage(new_tab->text,EM_SETBKGNDCOLOR,0,config.background_color);
    tab_index = SendMessage(tab_control,TCM_GETITEMCOUNT,0,0);
    if(tab_insert_index(tab_control,tab_index,tab_name,new_tab)==-1){
       DestroyWindow(new_tab->text);
@@ -379,14 +379,14 @@ int write_nick_index(HWND tab_control, int tab_index, wchar_t *nick, TAB_TEXT_AC
          char *secondptr;
          //LRESULT result;
          int i;
-         WideCharToMultiByte(config.encoding,0,nick,-1,secondnick,IRC_SIZE_SMALL,NULL,NULL);
-         secondptr = irc_get_nick(&irc,secondnick);
+         WideCharToMultiByte(client.config.encoding,0,nick,-1,secondnick,IRC_SIZE_SMALL,NULL,NULL);
+         secondptr = irc_get_nick(&client.irc,secondnick);
          if(secondptr!=NULL){
             for(i=0;i<listsize;i++){
                //result = 
                SendMessage(write_tab->nick,LB_GETTEXT,i,(LPARAM)wcurrent);
-               WideCharToMultiByte(config.encoding,0,wcurrent,-1,firstnick,IRC_SIZE_SMALL,NULL,NULL);
-               firstptr = irc_get_nick(&irc,firstnick);
+               WideCharToMultiByte(client.config.encoding,0,wcurrent,-1,firstnick,IRC_SIZE_SMALL,NULL,NULL);
+               firstptr = irc_get_nick(&client.irc,firstnick);
                if(firstptr!=NULL){
                   if(strcmp(firstptr,secondptr)==0){
                      SendMessage(write_tab->nick,LB_DELETESTRING,i,0);
@@ -534,10 +534,10 @@ void tab_resize_all(HWND tab_control){
    for(size--;size>=0;size--){
       if(tab_get_parameters_index(tab_control,size,&tab)!=-1){
          if(tab->nick==NULL){
-            MoveWindow(tab->text,TABTALK_LEFT,TABTALK_TOP,TABTALK_STATUS_WIDTH,TABALL_HEIGHT,FALSE);
+            MoveWindow(tab->text,resize.TABTALK_LEFT,resize.TABTALK_TOP,resize.TABTALK_STATUS_WIDTH,resize.TABALL_HEIGHT,FALSE);
          }else{
-            MoveWindow(tab->text,TABTALK_LEFT,TABTALK_TOP,TABTALK_CHAT_WIDTH,TABALL_HEIGHT,FALSE);
-            MoveWindow(tab->nick,TABNICK_LEFT,TABNICK_TOP,TABNICK_CHAT_WIDTH,TABALL_HEIGHT,FALSE);
+            MoveWindow(tab->text,resize.TABTALK_LEFT,resize.TABTALK_TOP,resize.TABTALK_CHAT_WIDTH,resize.TABALL_HEIGHT,FALSE);
+            MoveWindow(tab->nick,resize.TABNICK_LEFT,resize.TABNICK_TOP,resize.TABNICK_CHAT_WIDTH,resize.TABALL_HEIGHT,FALSE);
          }
          SendMessage(tab->text,WM_VSCROLL,SB_LINEDOWN,0);
       }
@@ -565,11 +565,11 @@ void tab_refresh_nicklist(HWND tab_control, wchar_t *channel, char **d_nicklist,
             for(i=0;i<listsize;i++){
                //result = 
                SendMessage(tab->nick,LB_GETTEXT,i,(LPARAM)wcurrent);
-               WideCharToMultiByte(config.encoding,0,wcurrent,-1,current,IRC_SIZE_SMALL,NULL,NULL);
-               firstptr = irc_get_nick(&irc,current);
+               WideCharToMultiByte(client.config.encoding,0,wcurrent,-1,current,IRC_SIZE_SMALL,NULL,NULL);
+               firstptr = irc_get_nick(&client.irc,current);
                if(firstptr!=NULL){
                   for(j=0;j<s_nicklist;j++){
-                     secondptr = irc_get_nick(&irc,d_nicklist[j]);
+                     secondptr = irc_get_nick(&client.irc,d_nicklist[j]);
                      if(secondptr!=NULL){
                         if(strcmp(firstptr,secondptr)==0){
                            if(strcmp(current,d_nicklist[j])!=0){
@@ -588,7 +588,7 @@ void tab_refresh_nicklist(HWND tab_control, wchar_t *channel, char **d_nicklist,
                }
             }
             for(i=0;i<updatesize;i++){
-               MultiByteToWideChar(config.encoding,0,d_nicklist[updatelist[i]],-1,wcurrent,IRC_SIZE_MEDIUM);
+               MultiByteToWideChar(client.config.encoding,0,d_nicklist[updatelist[i]],-1,wcurrent,IRC_SIZE_MEDIUM);
                SendMessage(tab->nick,LB_ADDSTRING,0,(LPARAM)wcurrent);
             }
             for(i=0;i<s_nicklist;i++){
@@ -600,7 +600,7 @@ void tab_refresh_nicklist(HWND tab_control, wchar_t *channel, char **d_nicklist,
                   }
                }
                if(listsize==0){
-                  MultiByteToWideChar(config.encoding,0,d_nicklist[i],-1,wcurrent,IRC_SIZE_MEDIUM);
+                  MultiByteToWideChar(client.config.encoding,0,d_nicklist[i],-1,wcurrent,IRC_SIZE_MEDIUM);
                   SendMessage(tab->nick,LB_ADDSTRING,0,(LPARAM)wcurrent);
                }
             }

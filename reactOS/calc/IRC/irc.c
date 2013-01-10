@@ -12,18 +12,19 @@
 #include "irc.h"
 
 config_t config;
-ircconfig_t ircconfig;
+resize_t resize;
 guiclient_t client;
 guimanager_t manager;
-resize_t resize;
 
 #include "functions.h"
 #include "ircconfig.h"
-#include "checkbox_manager.c"
+#include "checkbox_manager.h"
 #include "tab_manager.h"
 #include "dialogs_functions.h"
 #include "gui_functions.h"
 //#include "client.h"
+LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){return 0;
+}
 #include "manager.h"
 
 //MessageBox(NULL,L"LOL",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);

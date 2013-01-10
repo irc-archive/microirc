@@ -13,7 +13,6 @@ network/network.c
 util/util.c
 IRC/irc.c
 IRC/resource.rc
-IRC/function.c
     )
 
 set_module_type(calc2 win32gui UNICODE)

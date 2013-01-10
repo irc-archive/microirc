@@ -67,6 +67,7 @@ typedef struct config_t{
     wchar_t window_class[IRC_SIZE_SMALL];
     wchar_t window_title[IRC_SIZE_SMALL];
     wchar_t module_path[IRC_SIZE_SMALL];
+    HWND menu_bar_handle;
     
     int text_color;
     int background_color;
@@ -157,10 +158,9 @@ typedef struct resize_t{
 
 //global
 extern config_t g_config;
-//extern ircconfig_t ircconfig;
+extern resize_t resize;
 extern guiclient_t client;
 extern guimanager_t manager;
-extern resize_t resize;
 
 //client
 LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -175,22 +175,3 @@ void guiclient_disconnecting(HWND hWnd);
 LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 int guimanager_init(HWND hWnd);
 void guimanager_destroy();
-
-//checkbox manager
-/*int checkbox_create(wchar_t *text, HWND hWnd);
-void checkbox_getselected(int *d_result, int *s_result);
-int checkbox_delete(int index);
-void checkbox_resize_all();*/
-
-//function
-int update_title(wchar_t *window_title, wchar_t *cmd_line);
-int get_screen_caps_x();
-int get_screen_caps_y();
-inline int HIDPIMulDiv(int x, int y, int z);
-inline int SCALEX(int argX);
-inline int SCALEY(int argY);
-inline int UNSCALEX(int argX);
-inline int UNSCALEY(int argY);
-
-LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);

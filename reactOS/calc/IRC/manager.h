@@ -66,7 +66,7 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                iniparser_destroy(&iniparser);
 
                wchar_t *parameters[2]={L"manager",wprofile_name};
-               if(!DialogBoxParam(app_instance, (LPCTSTR)IDD_PREFERENCES, hWnd, PreferencesProc, (LPARAM)parameters)){
+               if(!DialogBoxParam(config.h_instance, (LPCTSTR)IDD_PREFERENCES, hWnd, PreferencesProc, (LPARAM)parameters)){
                   checkbox_delete(manager.connect_size-1);
                }
                break;
@@ -79,7 +79,7 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                for(i=0;i<s_index;i++){
                   Button_GetText(manager.connect_handles[d_index[i]],wprofile_name,IRC_SIZE_SMALL);
                   wchar_t *parameters[2]={L"manager",wprofile_name};
-                  DialogBoxParam(app_instance, (LPCTSTR)IDD_PREFERENCES, hWnd, PreferencesProc, (LPARAM)parameters);
+                  DialogBoxParam(config.h_instance, (LPCTSTR)IDD_PREFERENCES, hWnd, PreferencesProc, (LPARAM)parameters);
                }
                break;
             }
@@ -109,7 +109,7 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                for(i=0;i<s_index;i++){
                   Button_GetText(manager.connect_handles[d_index[i]],wprofile_name,IRC_SIZE_SMALL);
                   //CreateProcess(module_path,wprofile_name,NULL,NULL,FALSE,INHERIT_CALLER_PRIORITY,NULL,NULL,NULL,NULL);
-                  CreateProcess(module_path,wprofile_name,NULL,NULL,FALSE,NORMAL_PRIORITY_CLASS,NULL,NULL,NULL,NULL);
+                  CreateProcess(config.module_path,wprofile_name,NULL,NULL,FALSE,NORMAL_PRIORITY_CLASS,NULL,NULL,NULL,NULL);
                }
                if(s_index>0){
                   SendMessage(hWnd,WM_CLOSE,0,0);
@@ -124,13 +124,13 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
          break;
       }
       case WM_SIZE:{
-         g_config.LOG_PIXELS_X = get_screen_caps_x();
-         g_config.LOG_PIXELS_Y = get_screen_caps_y();
+         config.LOG_PIXELS_X = get_screen_caps_x();
+         config.LOG_PIXELS_Y = get_screen_caps_y();
 
          refresh_manager_sizes();
 
-         MoveWindow(static_label1_handle,STATIC_LEFT,STATIC_TOP,STATIC_WIDTH,STATIC_HEIGHT,FALSE);
-         MoveWindow(static_label2_handle,STATIC_LEFT_SECOND,STATIC_TOP,STATIC_WIDTH,STATIC_HEIGHT,FALSE);
+         MoveWindow(manager.static_label1_handle,resize.STATIC_LEFT,resize.STATIC_TOP,resize.STATIC_WIDTH,resize.STATIC_HEIGHT,FALSE);
+         MoveWindow(manager.static_label2_handle,resize.STATIC_LEFT_SECOND,resize.STATIC_TOP,resize.STATIC_WIDTH,resize.STATIC_HEIGHT,FALSE);
          checkbox_resize_all();
          break;
       }
@@ -146,17 +146,17 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
          //memset(&s_sai, 0, sizeof(SHACTIVATEINFO));
          //s_sai.cbSize = sizeof(SHACTIVATEINFO);
 
-         g_config.LOG_PIXELS_X = get_screen_caps_x();
-         g_config.LOG_PIXELS_Y = get_screen_caps_y();
+         config.LOG_PIXELS_X = get_screen_caps_x();
+         config.LOG_PIXELS_Y = get_screen_caps_y();
 
          if(guimanager_init(hWnd)!=0){
             PostQuitMessage(0);
          }
-         if(menu_bar_handle!=NULL){
+         if(config.menu_bar_handle!=NULL){
             RECT rcMainWindow;
             RECT rcMenuBar;
             GetWindowRect(hWnd, &rcMainWindow);
-            GetWindowRect(menu_bar_handle, &rcMenuBar);
+            GetWindowRect(config.menu_bar_handle, &rcMenuBar);
             rcMainWindow.bottom -= (rcMenuBar.bottom - rcMenuBar.top);
             MoveWindow(hWnd, rcMainWindow.left, rcMainWindow.top, rcMainWindow.right-rcMainWindow.left, rcMainWindow.bottom-rcMainWindow.top, FALSE);
          }
