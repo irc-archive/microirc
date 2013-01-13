@@ -66,7 +66,7 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                iniparser_destroy(&iniparser);
 
                wchar_t *parameters[2]={L"manager",wprofile_name};
-               if(!DialogBoxParam(config.h_instance, (LPCTSTR)IDD_PREFERENCES, hWnd, PreferencesProc, (LPARAM)parameters)){
+               if(!DialogBoxParam(config.h_instance, MAKEINTRESOURCE(IDD_PREFERENCES), hWnd, PreferencesProc, (LPARAM)parameters)){
                   checkbox_delete(manager.connect_size-1);
                }
                break;
@@ -79,7 +79,7 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                for(i=0;i<s_index;i++){
                   Button_GetText(manager.connect_handles[d_index[i]],wprofile_name,IRC_SIZE_SMALL);
                   wchar_t *parameters[2]={L"manager",wprofile_name};
-                  DialogBoxParam(config.h_instance, (LPCTSTR)IDD_PREFERENCES, hWnd, PreferencesProc, (LPARAM)parameters);
+                  DialogBoxParam(config.h_instance, MAKEINTRESOURCE(IDD_PREFERENCES), hWnd, PreferencesProc, (LPARAM)parameters);
                }
                break;
             }
@@ -109,7 +109,19 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                for(i=0;i<s_index;i++){
                   Button_GetText(manager.connect_handles[d_index[i]],wprofile_name,IRC_SIZE_SMALL);
                   //CreateProcess(module_path,wprofile_name,NULL,NULL,FALSE,INHERIT_CALLER_PRIORITY,NULL,NULL,NULL,NULL);
-                  CreateProcess(config.module_path,wprofile_name,NULL,NULL,FALSE,NORMAL_PRIORITY_CLASS,NULL,NULL,NULL,NULL);
+PROCESS_INFORMATION processInformation;
+STARTUPINFO startupInfo;
+memset(&processInformation, 0, sizeof(processInformation));
+memset(&startupInfo, 0, sizeof(startupInfo));
+startupInfo.cb = sizeof(startupInfo);
+
+wchar_t aa[1000];
+swprintf(aa, L"%s %s", config.module_path, wprofile_name);//, sizeof(wprofile_name),wcslen(wprofile_name));
+//config.module_path,wprofile_name
+CreateProcess(NULL,aa   ,NULL,NULL,FALSE,NORMAL_PRIORITY_CLASS,NULL,NULL,&startupInfo, &processInformation);
+
+//WTF FIXE ME
+
                }
                if(s_index>0){
                   SendMessage(hWnd,WM_CLOSE,0,0);
@@ -156,7 +168,7 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             RECT rcMainWindow;
             RECT rcMenuBar;
             GetWindowRect(hWnd, &rcMainWindow);
-            GetWindowRect(config.menu_bar_handle, &rcMenuBar);
+            GetWindowRect((HWND)config.menu_bar_handle, &rcMenuBar);
             rcMainWindow.bottom -= (rcMenuBar.bottom - rcMenuBar.top);
             MoveWindow(hWnd, rcMainWindow.left, rcMainWindow.top, rcMainWindow.right-rcMainWindow.left, rcMainWindow.bottom-rcMainWindow.top, FALSE);
          }
@@ -180,21 +192,22 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 }
 
 int guimanager_init(HWND hWnd){
-   memset(&manager,0,sizeof(struct guimanager_t));
-   wchar_t wfilespath[IRC_SIZE_SMALL];
-   wfile_to_fullpath(L"*.ini",wfilespath);
-   WIN32_FIND_DATA find;
-   HANDLE findhwnd = FindFirstFile(wfilespath,&find);
-   if(findhwnd!=INVALID_HANDLE_VALUE){
-      checkbox_create(find.cFileName,hWnd);
-      while(FindNextFile(findhwnd,&find)){
-         checkbox_create(find.cFileName,hWnd);
-      }
-      FindClose(findhwnd);
-   }
-   init_menu_bar(hWnd,IDR_MAIN_MENU_MANAGER);
-   init_profile_screen(hWnd);
-   return 0;
+	memset(&manager,0,sizeof(manager));
+	wchar_t wfilespath[IRC_SIZE_SMALL];
+	wfile_to_fullpath(L"*.ini",wfilespath);
+	WIN32_FIND_DATA find;
+	memset(&find,0,sizeof(find));
+	HANDLE findhwnd = FindFirstFile(wfilespath,&find);
+	if(findhwnd!=INVALID_HANDLE_VALUE){
+		checkbox_create(find.cFileName,hWnd);
+		while(FindNextFile(findhwnd,&find)){
+			checkbox_create(find.cFileName,hWnd);
+		}
+		FindClose(findhwnd);
+	}
+	init_menu_bar(hWnd,IDR_MAIN_MENU_MANAGER);
+	init_profile_screen(hWnd);
+	return 0;
 }
 
 void guimanager_destroy(){

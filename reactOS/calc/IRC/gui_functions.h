@@ -10,22 +10,17 @@
 */
 
 void init_menu_bar(HWND hWnd, int barId){
-   /*SHMENUBARINFO mbi;
-   memset(&mbi, 0, sizeof(SHMENUBARINFO));
-   mbi.cbSize = sizeof(SHMENUBARINFO);
-   mbi.hwndParent = hWnd;
-   mbi.nToolBarId = barId;
-   mbi.hInstRes = app_instance;
-   if(!SHCreateMenuBar(&mbi)){
-      menu_bar_handle = NULL;
-   }else{
-      menu_bar_handle = mbi.hwndMB;
-   }*/
+	config.menu_bar_handle = LoadMenu(config.h_instance, MAKEINTRESOURCE(barId));
+	if(config.menu_bar_handle != NULL){
+		SetMenu(hWnd, config.menu_bar_handle);
+	}
 }
 
-/*void destroy_menu_bar(){
-   CommandBar_Destroy(menu_bar_handle);
-}*/
+void destroy_menu_bar(){
+	if(config.menu_bar_handle != NULL){
+		DestroyMenu(config.menu_bar_handle);
+	}
+}
 
 void init_loading_screen(HWND hWnd){
    SendMessage(hWnd,WM_LOAD_CURSOR,0,0);
@@ -54,7 +49,6 @@ void init_chat_screen(HWND hWnd){
    client.button_chatsend_handle = CreateWindowEx(0,L"BUTTON",TEXT("Send"),WS_CHILD|WS_VISIBLE|BS_DEFPUSHBUTTON|BS_CENTER|BS_VCENTER,resize.BUTTONCHAT_LEFT,resize.BUTTONCHAT_TOP,resize.BUTTONCHAT_WIDTH,resize.BUTTONCHAT_HEIGHT,hWnd,(HMENU)BUTTON_CHATSEND,config.h_instance,NULL);
    client.tabcontrol_chatview_handle = CreateWindowEx(0,L"SYSTABCONTROL32",NULL,WS_CHILD|WS_VISIBLE|TCS_FOCUSNEVER|TCS_BUTTONS|TCS_FLATBUTTONS,resize.TABCONTROLCHAT_LEFT,resize.TABCONTROLCHAT_TOP,resize.TABCONTROLCHAT_WIDTH,resize.TABCONTROLCHAT_HEIGHT,hWnd,(HMENU)TABCONTROL_CHATVIEW,config.h_instance,NULL);
    client.button_closetab_handle = CreateWindowEx(0,L"BUTTON",TEXT("x"),WS_CHILD|WS_VISIBLE|BS_CENTER|BS_VCENTER,resize.CLOSETAB_LEFT,resize.CLOSETAB_TOP,resize.CLOSETAB_WIDTH,resize.CLOSETAB_HEIGHT,hWnd,(HMENU)BUTTON_CLOSETAB,config.h_instance,NULL);
-   client.sippref_handle = CreateWindowEx(0,L"SIPPREF",NULL,WS_CHILD,0,0,0,0,hWnd,(HMENU)NULL,config.h_instance,NULL);
 
    old_ChatSendProc = (WNDPROC)GetWindowLong(client.edit_chatinput_handle,GWL_WNDPROC);
    SetWindowLong(client.edit_chatinput_handle,GWL_WNDPROC,(LONG)ChatSendProc);
@@ -65,7 +59,6 @@ void init_chat_screen(HWND hWnd){
 }
 
 void destroy_chat_screen(){
-   DestroyWindow(client.sippref_handle);
    DestroyWindow(client.edit_chatinput_handle);
    DestroyWindow(client.button_chatsend_handle);
    while(tab_delete_current(client.tabcontrol_chatview_handle)!=-1);
@@ -86,7 +79,7 @@ void destroy_profile_screen(){
 int open_input_box(HWND parent_window, wchar_t *title, wchar_t *text, wchar_t *result, unsigned int result_len){
    //result will be null string if DialogBoxParam fails or user provides no text
    wchar_t *titletext[2]={title,text};
-   wchar_t *temp = (wchar_t*)DialogBoxParam(config.h_instance, (LPCTSTR)IDD_INPUTBOX, parent_window, InputBoxProc, (LPARAM)titletext);
+   wchar_t *temp = (wchar_t*)DialogBoxParam(config.h_instance, MAKEINTRESOURCE(IDD_INPUTBOX), parent_window, InputBoxProc, (LPARAM)titletext);
    if(temp!=NULL){
       //copy result to the provided buffer and deallocate
       wcsncpy(result, temp, result_len-1);

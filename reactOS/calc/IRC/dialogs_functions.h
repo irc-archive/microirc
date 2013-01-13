@@ -97,7 +97,7 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
          shidi.dwMask = SHIDIM_FLAGS;
          shidi.dwFlags = SHIDIF_DONEBUTTON |SHIDIF_SIZEDLGFULLSCREEN | SHIDIF_SIPDOWN | SHIDIF_EMPTYMENU;
          shidi.hDlg = hDlg;
-         SHInitDialog(&shidi);*
+         SHInitDialog(&shidi);
 
          SHMENUBARINFO mbi;
          memset(&mbi, 0, sizeof(SHMENUBARINFO));

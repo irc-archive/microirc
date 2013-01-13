@@ -67,7 +67,7 @@ typedef struct config_t{
     wchar_t window_class[IRC_SIZE_SMALL];
     wchar_t window_title[IRC_SIZE_SMALL];
     wchar_t module_path[IRC_SIZE_SMALL];
-    HWND menu_bar_handle;
+    HMENU menu_bar_handle;
     
     int text_color;
     int background_color;
@@ -95,7 +95,6 @@ typedef struct guiclient_t{
 	HWND button_closetab_handle;
 	HWND button_chatsend_handle;
 	HWND edit_chatinput_handle;
-	HWND sippref_handle;
 	HCURSOR loadcursor_icon;
 	MMRESULT timer_led;
 	HANDLE receiver_thread;

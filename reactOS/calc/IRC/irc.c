@@ -26,12 +26,13 @@ guimanager_t manager;
 #include "manager.h"
 
 //MessageBox(NULL,L"LOL",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+//wchar_t aa[100];
+//swprintf(aa, L"%d\n", aaa);
 int WINAPI WinMain2(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow) {
     /* Load extra richedit library */
     if(LoadLibrary(L"Msftedit.dll") < 0){
         return 0;
     }
-    
     /* Load global properties and set defaults */
     config.h_instance = hInstance;
     LoadString(hInstance, IDS_WNDCLASS_IRC, config.window_class, IRC_SIZE_SMALL);
@@ -70,6 +71,7 @@ int WINAPI WinMain2(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLi
     wc.hbrBackground = GetSysColorBrush(COLOR_WINDOW);
     wc.lpszMenuName = 0;
     wc.lpszClassName = config.window_class;
+	//wc.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_IRC));
 #ifdef CLIENT_ONLY
     wc.lpfnWndProc = WindowProcClient;
 #else
@@ -86,7 +88,9 @@ int WINAPI WinMain2(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLi
     //HWND hwndEdit= CreateWindowEx(0, MSFTEDIT_CLASS, TEXT("Type here"), ES_MULTILINE | WS_VISIBLE | WS_CHILD | WS_BORDER | WS_TABSTOP, x, y, width, height, hwndOwner, NULL, hinst, NULL);
 
 #ifdef CLIENT_ONLY
-    HWND hWndMain = CreateWindowEx(0, config.window_class, config.window_title, WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL,(HMENU)0, hInstance, L"options.ini");
+    HWND hWndMain = CreateWindowEx(0, config.window_class, config.window_title, ES_MULTILINE | WS_VISIBLE | WS_CHILD | WS_BORDER | WS_TABSTOP
+	//WS_VISIBLE
+	, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL,(HMENU)0, hInstance, L"options.ini");
 #else
     HWND hWndMain = CreateWindowEx(0, config.window_class, config.window_title, WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL,(HMENU)0, hInstance, lpCmdLine);
 #endif
@@ -96,6 +100,7 @@ int WINAPI WinMain2(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLi
     ShowWindow(hWndMain, nCmdShow);
     UpdateWindow(hWndMain);
     MSG msg;
+	memset(&msg, 0, sizeof(msg));
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_IRC));
     while(GetMessage(&msg, NULL, 0, 0)){
         if(!TranslateAccelerator(msg.hwnd, hAccelTable, &msg)){
