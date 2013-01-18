@@ -10,7 +10,6 @@
 */
 
 LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
-   //static SHACTIVATEINFO s_sai;
    switch(uMsg){
       case WM_COMMAND:{
          //int wmEvent = HIWORD(wParam);
@@ -120,7 +119,7 @@ swprintf(aa, L"%s %s", config.module_path, wprofile_name);//, sizeof(wprofile_na
 //config.module_path,wprofile_name
 CreateProcess(NULL,aa   ,NULL,NULL,FALSE,NORMAL_PRIORITY_CLASS,NULL,NULL,&startupInfo, &processInformation);
 
-//WTF FIXE ME
+//WTF FIX ME
 
                }
                if(s_index>0){
@@ -155,15 +154,13 @@ CreateProcess(NULL,aa   ,NULL,NULL,FALSE,NORMAL_PRIORITY_CLASS,NULL,NULL,&startu
          break;
       }
       case WM_CREATE:{
-         //memset(&s_sai, 0, sizeof(SHACTIVATEINFO));
-         //s_sai.cbSize = sizeof(SHACTIVATEINFO);
-
          config.LOG_PIXELS_X = get_screen_caps_x();
          config.LOG_PIXELS_Y = get_screen_caps_y();
 
          if(guimanager_init(hWnd)!=0){
             PostQuitMessage(0);
          }
+         break;// FIX ME
          if(config.menu_bar_handle!=NULL){
             RECT rcMainWindow;
             RECT rcMenuBar;

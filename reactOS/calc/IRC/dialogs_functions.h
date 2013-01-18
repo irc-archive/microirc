@@ -92,22 +92,6 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
          return TRUE;
       }
       case WM_INITDIALOG:{
-         /*SHINITDLGINFO shidi;
-         memset(&shidi, 0, sizeof(SHINITDLGINFO));
-         shidi.dwMask = SHIDIM_FLAGS;
-         shidi.dwFlags = SHIDIF_DONEBUTTON |SHIDIF_SIZEDLGFULLSCREEN | SHIDIF_SIPDOWN | SHIDIF_EMPTYMENU;
-         shidi.hDlg = hDlg;
-         SHInitDialog(&shidi);
-
-         SHMENUBARINFO mbi;
-         memset(&mbi, 0, sizeof(SHMENUBARINFO));
-         mbi.cbSize = sizeof(SHMENUBARINFO);
-         mbi.hwndParent = hDlg;
-         mbi.nToolBarId = IDR_PREFERENCES_MENU;
-         mbi.hInstRes = app_instance;
-         if(!SHCreateMenuBar(&mbi)){
-            break;
-         }*/
          SetScrollRange(hDlg,SB_VERT,SCROLL_PREFERENCES_MIN_POSITIONS,SCROLL_PREFERENCES_MAX_POSITIONS,TRUE);
          UpdateWindow(hDlg);
 

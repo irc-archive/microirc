@@ -17,7 +17,6 @@ typedef enum {TSTRUE,TSFALSE}TAB_TIMESTAMP;
 typedef struct tab_t{
    HWND text;
    HWND nick;
-   //wchar_t lasturl[IRC_SIZE_MEDIUM];
 }tab_t;
 
 typedef struct style_text_t{
@@ -226,18 +225,10 @@ LRESULT CALLBACK ChatViewNickProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
          }
          break;
       }
-      case WM_LBUTTONDOWN:{
-         /*SHRGINFO shrg;
-         shrg.cbSize = sizeof(shrg);
-         shrg.hwndClient = hWnd;
-         shrg.ptDown.x = LOWORD(lParam);
-         shrg.ptDown.y = HIWORD(lParam);
-         shrg.dwFlags = SHRG_RETURNCMD;
-         if(SHRecognizeGesture(&shrg) == GN_CONTEXTMENU){
-            HMENU menu = LoadMenu(config.h_instance, MAKEINTRESOURCE(IDR_CHATBOX_MENU));
-            menu = GetSubMenu(menu, 0);
-            TrackPopupMenuEx(menu,TPM_LEFTALIGN,TABNICK_LEFT+LOWORD(lParam),TABNICK_TOP+HIWORD(lParam),hWnd,NULL);
-         }*/
+      case WM_RBUTTONDOWN:{
+        HMENU menu = LoadMenu(config.h_instance, MAKEINTRESOURCE(IDR_CHATBOX_MENU));
+        menu = GetSubMenu(menu, 0);
+        TrackPopupMenuEx(menu,TPM_LEFTALIGN,resize.TABNICK_LEFT+LOWORD(lParam),resize.TABNICK_TOP+HIWORD(lParam),hWnd,NULL);
          break;
       }
    }
@@ -300,7 +291,6 @@ int tab_create(HWND hWnd, HWND tab_control, wchar_t *tab_name, TAB_TYPE type){
       SendMessage(new_tab->nick,LB_SETHORIZONTALEXTENT,SCALEX(150),0);
       ShowWindow(new_tab->nick,SW_HIDE);
    }
-   //wcscpy(new_tab->lasturl,L"");
    tab_refresh(tab_control,SHOW);
    return 0;
 }
@@ -458,15 +448,6 @@ int write_text_index(HWND tab_control, int tab_index, wchar_t *text, style_text_
    if(tab_index != SendMessage(tab_control,TCM_GETCURSEL,0,0)){
       SendMessage(tab_control,TCM_HIGHLIGHTITEM,tab_index,LOWORD(TRUE));
    }
-   /*wchar_t *start = wcsstr(text,L"http://");
-   if(start!=NULL){
-      wchar_t *end = wcschr(start,' ');
-      if(end==NULL){
-         end = start+wcslen(start);
-      }
-      wcscpy(write_tab->lasturl,L"");
-      wcsncat(write_tab->lasturl,start,end-start);
-   }*/
    return 0;
 }
 

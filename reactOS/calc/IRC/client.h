@@ -279,7 +279,6 @@ void *receiverThreadProc(void *window_handle){
 }
 
 LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
-   //static SHACTIVATEINFO s_sai;
    switch(uMsg){
       case WM_CREATE_TAB:{
          wchar_t *tab_name=(wchar_t*)lParam;
@@ -323,23 +322,24 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                switch(notification->code){
                   case EN_LINK:{
                      ENLINK *link = (ENLINK*)lParam;
-                     wchar_t wlink[IRC_SIZE_MEDIUM];
-                     TEXTRANGE textrange;
-                     memcpy(&textrange.chrg,&link->chrg,sizeof(CHARRANGE));
-                     textrange.lpstrText = wlink;
-                     SendMessage(notification->hwndFrom,EM_GETTEXTRANGE,0,(LPARAM)&textrange);
-
-                     SHELLEXECUTEINFO ShExecInfo = {0};
-                     ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-                     ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-                     ShExecInfo.hwnd = NULL;
-                     ShExecInfo.lpVerb = L"open";
-                     ShExecInfo.lpFile = wlink;
-                     ShExecInfo.lpParameters = NULL;
-                     ShExecInfo.lpDirectory = NULL;
-                     ShExecInfo.nShow = SW_SHOW;
-                     ShExecInfo.hInstApp = NULL;
-                     ShellExecuteEx(&ShExecInfo);
+                     if(link->msg == WM_LBUTTONUP){
+                         wchar_t wlink[IRC_SIZE_MEDIUM];
+                         TEXTRANGE textrange;
+                         memcpy(&textrange.chrg,&link->chrg,sizeof(textrange.chrg));
+                         textrange.lpstrText = wlink;
+                         SendMessage(notification->hwndFrom,EM_GETTEXTRANGE,0,(LPARAM)&textrange);
+                         SHELLEXECUTEINFO ShExecInfo = {0};
+                         ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+                         ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+                         ShExecInfo.hwnd = NULL;
+                         ShExecInfo.lpVerb = L"open";
+                         ShExecInfo.lpFile = wlink;
+                         ShExecInfo.lpParameters = NULL;
+                         ShExecInfo.lpDirectory = NULL;
+                         ShExecInfo.nShow = SW_SHOW;
+                         ShExecInfo.hInstApp = NULL;
+                         ShellExecuteEx(&ShExecInfo);
+                     }
                      break;
                   }
                }
@@ -355,10 +355,10 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                      tab_refresh(client.tabcontrol_chatview_handle,SHOW);
                      break;
                   }
-                  case NM_RCLICK:{
+                  /*case NM_RCLICK:{
                      tab_delete_current(client.tabcontrol_chatview_handle);
                      break;
-                  }
+                  }*/
                }
                break;
             }
@@ -405,8 +405,10 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                tab_get_name_current(client.tabcontrol_chatview_handle,wtab_close,IRC_SIZE_SMALL);
                WideCharToMultiByte(client.config.encoding,0,wtab_close,-1,tab_close,IRC_SIZE_SMALL,NULL,NULL);
                if(memcmp(tab_close,".status",7)!=0){
-                  if(irc_validate_channel(&client.irc,tab_close)==0){
-                     irc_send_message(&client.irc,SEND_PART,send,2);
+                  if(client.connected!=0){
+                      if(irc_validate_channel(&client.irc,tab_close)==0){
+                         irc_send_message(&client.irc,SEND_PART,send,2);
+                      }
                   }
                   tab_delete_current(client.tabcontrol_chatview_handle);
                }else{
@@ -490,40 +492,6 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                irc_send_message(&client.irc,SEND_JOIN,send,1);
                break;
             }
-            /*case IDM_OPENURL:{
-               wchar_t wurl[IRC_SIZE_MEDIUM]=L"http://";
-               tab_t *current_tab;
-               if(tab_get_parameters_current(tabcontrol_chatview_handle,&current_tab)==0){
-                  if(wcslen(current_tab->lasturl)!=0){
-                     wcscpy(wurl,current_tab->lasturl);
-                  }
-               }
-               wchar_t wresult_text[IRC_SIZE_SMALL];
-               if(open_input_box(hWnd, L"Open URL", wurl, wresult_text, IRC_SIZE_SMALL)!=0){
-                  break;
-               }
-               if(wcslen(wresult_text)==0){
-                  break;
-               }
-               wchar_t wreturn_text[IRC_SIZE_SMALL];
-               if(wcsncmp(L"http://",wresult_text,7)==0){
-                  wsprintf(wreturn_text,L"%s",wresult_text);
-               }else{
-                  wsprintf(wreturn_text,L"http://%s",wresult_text);
-               }
-               SHELLEXECUTEINFO ShExecInfo = {0};
-               ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-               ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-               ShExecInfo.hwnd = NULL;
-               ShExecInfo.lpVerb = L"open";
-               ShExecInfo.lpFile = wreturn_text;
-               ShExecInfo.lpParameters = NULL;
-               ShExecInfo.lpDirectory = NULL;
-               ShExecInfo.nShow = SW_SHOW;
-               ShExecInfo.hInstApp = NULL;
-               ShellExecuteEx(&ShExecInfo);
-               break;
-            }*/
             case IDM_OPTIONS_ABOUT:{
                DialogBoxParam(config.h_instance, (LPCTSTR)IDD_ABOUTBOX, hWnd, AboutProc, (LPARAM )NULL);
                break;
@@ -624,9 +592,6 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
          break;
       }
       case WM_CREATE:{
-         /*memset(&s_sai, 0, sizeof(SHACTIVATEINFO));
-         s_sai.cbSize = sizeof(SHACTIVATEINFO);*/
-
          config.LOG_PIXELS_X = get_screen_caps_x();
          config.LOG_PIXELS_Y = get_screen_caps_y();
 
@@ -635,7 +600,7 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
          if(guiclient_init(hWnd)!=0){
             PostQuitMessage(0);
          }
-         break;
+         break;// FIX ME
          if(config.menu_bar_handle!=NULL){
             RECT rcMainWindow;
             RECT rcMenuBar;

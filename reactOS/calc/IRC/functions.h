@@ -187,7 +187,7 @@ void refresh_client_sizes(int width, int height){
    resize.EDITCHAT_HEIGHT = SCALEY(20);
    resize.TABALL_HEIGHT = height-(resize.BORDER+resize.BORDER+resize.BORDER+resize.BORDER+resize.TABCONTROLCHAT_HEIGHT+resize.EDITCHAT_HEIGHT);
    resize.TABTALK_STATUS_WIDTH = width-(resize.BORDER+resize.BORDER);
-   resize.TABNICK_CHAT_WIDTH = SCALEX(70);
+   resize.TABNICK_CHAT_WIDTH = SCALEX(150);
    resize.TABTALK_CHAT_WIDTH = width-(resize.BORDER+resize.BORDER+resize.BORDER+resize.TABNICK_CHAT_WIDTH);
 
    resize.CLOSETAB_TOP = resize.BORDER;
