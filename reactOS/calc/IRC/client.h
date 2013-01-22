@@ -355,10 +355,10 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                      tab_refresh(client.tabcontrol_chatview_handle,SHOW);
                      break;
                   }
-                  /*case NM_RCLICK:{
-                     tab_delete_current(client.tabcontrol_chatview_handle);
-                     break;
-                  }*/
+                  //case NM_RCLICK:{
+                  //   tab_delete_current(client.tabcontrol_chatview_handle);
+                  //   break;
+                  //}
                }
                break;
             }
@@ -369,15 +369,15 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
          int wmEvent = HIWORD(wParam);
          HWND control_handler = (HWND)lParam;
          switch (LOWORD(wParam)){
-            case EDIT_CHATVIEW_TEXT:{
-               switch(wmEvent){
-                  case EN_KILLFOCUS:{
-                     SendMessage(control_handler,WM_COPY,0,0);
-                     break;
-                  }
-               }
-               break;
-            }
+            //case EDIT_CHATVIEW_TEXT:{
+            //   switch(wmEvent){
+            //      case EN_KILLFOCUS:{
+            //         SendMessage(control_handler,WM_COPY,0,0);
+            //         break;
+            //      }
+            //   }
+            //   break;
+            //}
             case LIST_CHATVIEW_NICK:{
                if(wmEvent==LBN_DBLCLK){
                   wchar_t wnick[IRC_SIZE_SMALL];
@@ -585,7 +585,6 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
       }
       case WM_ACTIVATE:{
          //SHHandleWMActivate(hWnd, wParam, lParam, &s_sai, FALSE);
-         break;
       }
       case WM_SETTINGCHANGE:{
          //SHHandleWMSettingChange(hWnd, wParam, lParam, &s_sai);
@@ -600,23 +599,12 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
          if(guiclient_init(hWnd)!=0){
             PostQuitMessage(0);
          }
-         break;// FIX ME
-         if(config.menu_bar_handle!=NULL){
-            RECT rcMainWindow;
-            RECT rcMenuBar;
-            GetWindowRect(hWnd, &rcMainWindow);
-            GetWindowRect((HWND)config.menu_bar_handle, &rcMenuBar);
-            rcMainWindow.bottom -= (rcMenuBar.bottom - rcMenuBar.top);
-            MoveWindow(hWnd, rcMainWindow.left, rcMainWindow.top, rcMainWindow.right-rcMainWindow.left, rcMainWindow.bottom-rcMainWindow.top, FALSE);
-         }
          break;
       }
       case WM_QUIT:{
          //called on PostQuitMessage(0);
          break;
       }
-      //case WM_HIBERNATE:{
-      //}
       case WM_CLOSE:{
       }
       case WM_DESTROY:{

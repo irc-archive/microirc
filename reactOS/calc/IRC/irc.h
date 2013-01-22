@@ -27,7 +27,9 @@
 #include "../iniparser/iniparser.h"
 #include "../ircprotocol/ircprotocol.h"
 
-//#define CLIENT_ONLY
+/* Compile client only, with hardcoded Client.ini configuration*/
+#define CLIENT_ONLY
+/**/
 
 #define IRC_SIZE_SMALL 256
 #define IRC_SIZE_MEDIUM 1024

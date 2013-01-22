@@ -122,7 +122,8 @@ WNDPROC old_ChatViewTextProc;
 LRESULT CALLBACK ChatViewTextProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
    switch (uMsg){
       case WM_LBUTTONUP:{
-         SetFocus(client.edit_chatinput_handle);
+         //SetFocus(client.edit_chatinput_handle);
+         SendMessage(hWnd,WM_COPY,0,0);
          SendMessage(hWnd, EM_SETSEL, EDITCHATVIEWTEXT_LIMIT, EDITCHATVIEWTEXT_LIMIT);
          break;
       }
@@ -130,6 +131,13 @@ LRESULT CALLBACK ChatViewTextProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
          SendMessage(hWnd, WM_VSCROLL, SB_BOTTOM, 0);
          break;
       }
+      /*case WM_MOUSEMOVE:{
+         HWND focus = GetFocus();
+         if(focus != hWnd){
+            SetFocus(hWnd);
+         }
+         break;
+      }*/
    }
    return CallWindowProc(old_ChatViewTextProc, hWnd, uMsg, wParam, lParam);
 }
@@ -245,16 +253,14 @@ int tab_create(HWND hWnd, HWND tab_control, wchar_t *tab_name, TAB_TYPE type){
       return -1;
    }
    if(type==STATUS){
-      //new_tab->text=CreateWindowEx(0,L"RICHINK",NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|ES_MULTILINE|ES_READONLY,TABTALK_LEFT,TABTALK_TOP,TABTALK_STATUS_WIDTH,TABALL_HEIGHT,hWnd,(HMENU)EDIT_CHATVIEW_TEXT,config.h_instance,NULL);
-      new_tab->text=CreateWindowEx(WS_EX_STATICEDGE,L"RICHEDIT50W",NULL,WS_CHILD|WS_VISIBLE|ES_MULTILINE|ES_READONLY,resize.TABTALK_LEFT,resize.TABTALK_TOP,resize.TABTALK_STATUS_WIDTH,resize.TABALL_HEIGHT,hWnd,(HMENU)EDIT_CHATVIEW_TEXT,config.h_instance,NULL);
+      new_tab->text=CreateWindowEx(WS_EX_STATICEDGE,L"RICHEDIT50W",NULL,WS_CHILD|WS_VISIBLE|ES_MULTILINE|ES_READONLY|ES_NOHIDESEL,resize.TABTALK_LEFT,resize.TABTALK_TOP,resize.TABTALK_STATUS_WIDTH,resize.TABALL_HEIGHT,hWnd,(HMENU)EDIT_CHATVIEW_TEXT,config.h_instance,NULL);
       if(new_tab->text==NULL){
          free(new_tab);
          return -1;
       }
       new_tab->nick=NULL;
    }else if(type==CHAT){
-      //new_tab->text=CreateWindowEx(0,L"RICHINK",NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|WS_VSCROLL|ES_MULTILINE|ES_READONLY,TABTALK_LEFT,TABTALK_TOP,TABTALK_STATUS_WIDTH,TABALL_HEIGHT,hWnd,(HMENU)EDIT_CHATVIEW_TEXT,config.h_instance,NULL);
-      new_tab->text=CreateWindowEx(WS_EX_STATICEDGE,L"RICHEDIT50W",NULL,WS_CHILD|WS_VISIBLE|ES_MULTILINE|ES_READONLY,resize.TABTALK_LEFT,resize.TABTALK_TOP,resize.TABTALK_CHAT_WIDTH,resize.TABALL_HEIGHT,hWnd,(HMENU)EDIT_CHATVIEW_TEXT,config.h_instance,NULL);
+      new_tab->text=CreateWindowEx(WS_EX_STATICEDGE,L"RICHEDIT50W",NULL,WS_CHILD|WS_VISIBLE|ES_MULTILINE|ES_READONLY|ES_NOHIDESEL,resize.TABTALK_LEFT,resize.TABTALK_TOP,resize.TABTALK_CHAT_WIDTH,resize.TABALL_HEIGHT,hWnd,(HMENU)EDIT_CHATVIEW_TEXT,config.h_instance,NULL);
       if(new_tab->text==NULL){
          free(new_tab);
          return -1;

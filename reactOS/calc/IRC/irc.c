@@ -33,6 +33,11 @@ int WINAPI WinMain2(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLi
     if(LoadLibrary(L"Msftedit.dll") < 0){
         return 0;
     }
+    
+#ifdef CLIENT_ONLY
+    lpCmdLine = L"Client.ini";
+#endif
+    
     /* Load global properties and set defaults */
     config.h_instance = hInstance;
     LoadString(hInstance, IDS_WNDCLASS_IRC, config.window_class, IRC_SIZE_SMALL);
@@ -42,16 +47,15 @@ int WINAPI WinMain2(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLi
     if(GetModuleFileName(NULL,config.module_path,IRC_SIZE_SMALL)<=0){
         return 0;
     }
-#ifdef CLIENT_ONLY
-    if(update_title(config.window_title,L"Client.ini")!=0){
-#else
+    
     if(update_title(config.window_title,lpCmdLine)!=0){
-#endif
         return 0;
     }
+    
     if(FindWindow(config.window_class, config.window_title)!=NULL){
         return 0;
     }
+    
     INITCOMMONCONTROLSEX icex;
     memset(&icex, 0, sizeof(icex));
     icex.dwSize = sizeof(icex);
@@ -60,44 +64,35 @@ int WINAPI WinMain2(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLi
         return 0;
     }
     
-    WNDCLASS wc;
-    memset(&wc, 0, sizeof(wc));
-    wc.style = CS_HREDRAW|CS_VREDRAW;
-    wc.cbClsExtra = 0;
-    wc.cbWndExtra = 0;
-    wc.hInstance = hInstance;
-    wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_IRC));
-    wc.hCursor = 0;
-    wc.hbrBackground = GetSysColorBrush(COLOR_WINDOW);
-    wc.lpszMenuName = 0;
-    wc.lpszClassName = config.window_class;
-	//wc.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_IRC));
-#ifdef CLIENT_ONLY
-    wc.lpfnWndProc = WindowProcClient;
-#else
+    WNDCLASSEX wcex;
+    memset(&wcex, 0, sizeof(wcex));
+    wcex.cbSize = sizeof(wcex);
+    wcex.style = CS_HREDRAW|CS_VREDRAW;
+    wcex.cbClsExtra = 0;
+    wcex.cbWndExtra = 0;
+    wcex.hInstance = hInstance;
+    wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_IRC));
+    wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
+    wcex.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
+    wcex.lpszMenuName = 0;
+    wcex.lpszClassName = config.window_class;
+	wcex.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_IRC));
     if(wcslen(lpCmdLine)==0){
-        wc.lpfnWndProc = WindowProcManager;
+        wcex.lpfnWndProc = WindowProcManager;
     }else{
-        wc.lpfnWndProc = WindowProcClient;
+        wcex.lpfnWndProc = WindowProcClient;
     }
-#endif
-    if(RegisterClass(&wc)==0){
+    
+    if(RegisterClassEx(&wcex)==0){
         return 0;
     }
-
-    //HWND hwndEdit= CreateWindowEx(0, MSFTEDIT_CLASS, TEXT("Type here"), ES_MULTILINE | WS_VISIBLE | WS_CHILD | WS_BORDER | WS_TABSTOP, x, y, width, height, hwndOwner, NULL, hinst, NULL);
-
-#ifdef CLIENT_ONLY
-    HWND hWndMain = CreateWindowEx(0, config.window_class, config.window_title, ES_MULTILINE | WS_VISIBLE | WS_CHILD | WS_BORDER | WS_TABSTOP
-	//WS_VISIBLE
-	, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL,(HMENU)0, hInstance, L"options.ini");
-#else
-    HWND hWndMain = CreateWindowEx(0, config.window_class, config.window_title, WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL,(HMENU)0, hInstance, lpCmdLine);
-#endif
+    
+    HWND hWndMain = CreateWindowEx(0, config.window_class, config.window_title, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL,NULL, hInstance, lpCmdLine);
     if(hWndMain==NULL){
         return 0;
     }
-    ShowWindow(hWndMain, nCmdShow);
+    
+    ShowWindow(hWndMain, SW_SHOWMAXIMIZED);
     UpdateWindow(hWndMain);
     MSG msg;
 	memset(&msg, 0, sizeof(msg));

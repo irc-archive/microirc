@@ -160,23 +160,12 @@ CreateProcess(NULL,aa   ,NULL,NULL,FALSE,NORMAL_PRIORITY_CLASS,NULL,NULL,&startu
          if(guimanager_init(hWnd)!=0){
             PostQuitMessage(0);
          }
-         break;// FIX ME
-         if(config.menu_bar_handle!=NULL){
-            RECT rcMainWindow;
-            RECT rcMenuBar;
-            GetWindowRect(hWnd, &rcMainWindow);
-            GetWindowRect((HWND)config.menu_bar_handle, &rcMenuBar);
-            rcMainWindow.bottom -= (rcMenuBar.bottom - rcMenuBar.top);
-            MoveWindow(hWnd, rcMainWindow.left, rcMainWindow.top, rcMainWindow.right-rcMainWindow.left, rcMainWindow.bottom-rcMainWindow.top, FALSE);
-         }
          break;
       }
       case WM_QUIT:{
          //called on PostQuitMessage(0);
          break;
       }
-      //case WM_HIBERNATE:{
-      //}
       case WM_CLOSE:{
       }
       case WM_DESTROY:{
