@@ -369,15 +369,16 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
          int wmEvent = HIWORD(wParam);
          HWND control_handler = (HWND)lParam;
          switch (LOWORD(wParam)){
-            //case EDIT_CHATVIEW_TEXT:{
-            //   switch(wmEvent){
-            //      case EN_KILLFOCUS:{
-            //         SendMessage(control_handler,WM_COPY,0,0);
-            //         break;
-            //      }
-            //   }
-            //   break;
-            //}
+            case EDIT_CHATVIEW_TEXT:{
+               switch(wmEvent){
+                  case EN_KILLFOCUS:{
+                     SendMessage(control_handler,WM_COPY,0,0);
+                     //SendMessage(hWnd, EM_SETSEL, EDITCHATVIEWTEXT_LIMIT, EDITCHATVIEWTEXT_LIMIT);
+                     break;
+                  }
+               }
+               break;
+            }
             case LIST_CHATVIEW_NICK:{
                if(wmEvent==LBN_DBLCLK){
                   wchar_t wnick[IRC_SIZE_SMALL];
@@ -570,6 +571,12 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
          TextOut(lpdis->hDC,lpdis->rcItem.left,lpdis->rcItem.top,tci.pszText,wcslen(tci.pszText));
          break;
       }*/
+      case WM_MOUSEWHEEL:{
+         /* Redirect scroll events to the main chat window */
+         tab_t* tab;
+         tab_get_parameters_current(client.tabcontrol_chatview_handle,&tab);
+         return ChatViewTextProc(tab->text, uMsg, wParam, lParam);
+      }
       case WM_SIZE:{
          config.LOG_PIXELS_X = get_screen_caps_x();
          config.LOG_PIXELS_Y = get_screen_caps_y();
@@ -585,6 +592,7 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
       }
       case WM_ACTIVATE:{
          //SHHandleWMActivate(hWnd, wParam, lParam, &s_sai, FALSE);
+         break;
       }
       case WM_SETTINGCHANGE:{
          //SHHandleWMSettingChange(hWnd, wParam, lParam, &s_sai);

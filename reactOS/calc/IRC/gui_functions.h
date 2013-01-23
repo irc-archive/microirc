@@ -40,6 +40,17 @@ LRESULT CALLBACK ChatSendProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
          }
          break;
       }
+      case WM_KEYDOWN:{
+      }
+      case WM_KEYUP:{
+         /* Redirect page up/down and up/down arrow events to the main chat window */
+         if(wParam == VK_PRIOR || wParam == VK_NEXT || wParam == VK_UP || wParam == VK_DOWN){
+             tab_t* tab;
+             tab_get_parameters_current(client.tabcontrol_chatview_handle,&tab);
+             return ChatViewTextProc(tab->text, uMsg, wParam, lParam);
+         }
+         break;
+      }
    }
    return CallWindowProc(old_ChatSendProc, hWnd, uMsg, wParam, lParam);
 }

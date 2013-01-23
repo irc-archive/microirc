@@ -122,22 +122,25 @@ WNDPROC old_ChatViewTextProc;
 LRESULT CALLBACK ChatViewTextProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
    switch (uMsg){
       case WM_LBUTTONUP:{
-         //SetFocus(client.edit_chatinput_handle);
-         SendMessage(hWnd,WM_COPY,0,0);
-         SendMessage(hWnd, EM_SETSEL, EDITCHATVIEWTEXT_LIMIT, EDITCHATVIEWTEXT_LIMIT);
+         SetFocus(client.edit_chatinput_handle);
          break;
       }
       case EM_SCROLLCARET:{
          SendMessage(hWnd, WM_VSCROLL, SB_BOTTOM, 0);
          break;
       }
-      /*case WM_MOUSEMOVE:{
-         HWND focus = GetFocus();
-         if(focus != hWnd){
-            SetFocus(hWnd);
+      case WM_KEYDOWN:{
+         /* Up and down arrow keys, just move the cursor inside richedit, we want to move one unit of scroll */
+         if(wParam == VK_UP){
+            tab_t* tab;
+            tab_get_parameters_current(client.tabcontrol_chatview_handle,&tab);
+            SendMessage(tab->text, WM_VSCROLL, SB_LINEUP, 0);
+         }else if(wParam == VK_DOWN){
+            tab_t* tab;
+            tab_get_parameters_current(client.tabcontrol_chatview_handle,&tab);
+            SendMessage(tab->text, WM_VSCROLL, SB_LINEDOWN, 0);
          }
-         break;
-      }*/
+      }
    }
    return CallWindowProc(old_ChatViewTextProc, hWnd, uMsg, wParam, lParam);
 }
