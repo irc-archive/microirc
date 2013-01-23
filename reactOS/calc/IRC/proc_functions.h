@@ -334,3 +334,39 @@ INT_PTR CALLBACK InputBoxProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
    }
    return FALSE;
 }
+
+int open_input_box(HWND parent_window, wchar_t *title, wchar_t *text, wchar_t *result, unsigned int result_len){
+   //result will be null string if DialogBoxParam fails or user provides no text
+   wchar_t *titletext[2]={title,text};
+   wchar_t *temp = (wchar_t*)DialogBoxParam(config.h_instance, MAKEINTRESOURCE(IDD_INPUTBOX), parent_window, InputBoxProc, (LPARAM)titletext);
+   if(temp!=NULL){
+      //copy result to the provided buffer and deallocate
+      wcsncpy(result, temp, result_len-1);
+      free(temp);
+      return 0;
+   }else{
+      *result = '\0';
+      return -1;
+   }
+}
+
+void init_menu_bar(HWND hWnd, int barId){
+	config.menu_bar_handle = LoadMenu(config.h_instance, MAKEINTRESOURCE(barId));
+	if(config.menu_bar_handle != NULL){
+		SetMenu(hWnd, config.menu_bar_handle);
+	}
+}
+
+void destroy_menu_bar(){
+	if(config.menu_bar_handle != NULL){
+		DestroyMenu(config.menu_bar_handle);
+	}
+}
+
+void init_loading_screen(HWND hWnd){
+   SendMessage(hWnd,WM_LOAD_CURSOR,0,0);
+}
+
+void destroy_loading_screen(HWND hWnd){
+   SendMessage(hWnd,WM_UNLOAD_CURSOR,0,0);
+}

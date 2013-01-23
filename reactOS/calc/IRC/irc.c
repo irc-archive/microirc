@@ -20,8 +20,7 @@ guimanager_t manager;
 #include "ircconfig.h"
 #include "checkbox_manager.h"
 #include "tab_manager.h"
-#include "dialogs_functions.h"
-#include "gui_functions.h"
+#include "proc_functions.h"
 #include "client.h"
 #include "manager.h"
 
@@ -30,6 +29,7 @@ guimanager_t manager;
 //swprintf(aa, L"OI\n", uMsg, wParam, lParam, mitab->text, a);
 //write_text_current(client.tabcontrol_chatview_handle, aa, NULL, TSTRUE);
 //MessageBox(NULL,L"LOL",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+//ChooseColor
 int WINAPI WinMain2(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow) {
     /* Load extra richedit library */
     if(LoadLibrary(L"Msftedit.dll") < 0){

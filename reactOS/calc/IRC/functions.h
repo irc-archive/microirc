@@ -33,6 +33,12 @@ void activate_led(){
 }
 */
 
+const wchar_t* StaticLoadString(unsigned int var){
+    static wchar_t buffer[IRC_SIZE_SMALL];
+    LoadString(config.h_instance, var, buffer, IRC_SIZE_SMALL);
+    return buffer;
+}
+
 char *alias_tokens(char *str, char character, int n_tokens, char **d_tokens, int *s_tokens){
    int in = 0;
    while(*str!=CHAR_TERMINATOR){

@@ -25,14 +25,14 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 // Icon
 //
 
-IDI_IRC                 ICON    DISCARDABLE     "res/microirc.ico"
+IDI_IRC                 ICON         "res/microirc.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Bitmap
 //
 
-IDB_ROS                 BITMAP  DISCARDABLE     "res/ROS_logo.bmp"
+IDB_ROS                 BITMAP       "res/ROS_logo.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //

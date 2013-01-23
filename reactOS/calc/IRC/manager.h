@@ -9,6 +9,8 @@
 * This code is licenced under the GPL version 2. For details see COPYING.txt file.
 */
 
+#include "manager_proc.h"
+
 LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
    switch(uMsg){
       case WM_COMMAND:{
@@ -175,32 +177,4 @@ CreateProcess(NULL,aa   ,NULL,NULL,FALSE,NORMAL_PRIORITY_CLASS,NULL,NULL,&startu
       }
    }
    return DefWindowProc(hWnd, uMsg, wParam, lParam);
-}
-
-int guimanager_init(HWND hWnd){
-	memset(&manager,0,sizeof(manager));
-	wchar_t wfilespath[IRC_SIZE_SMALL];
-	wfile_to_fullpath(L"*.ini",wfilespath);
-	WIN32_FIND_DATA find;
-	memset(&find,0,sizeof(find));
-	HANDLE findhwnd = FindFirstFile(wfilespath,&find);
-	if(findhwnd!=INVALID_HANDLE_VALUE){
-		checkbox_create(find.cFileName,hWnd);
-		while(FindNextFile(findhwnd,&find)){
-			checkbox_create(find.cFileName,hWnd);
-		}
-		FindClose(findhwnd);
-	}
-	init_menu_bar(hWnd,IDR_MAIN_MENU_MANAGER);
-	init_profile_screen(hWnd);
-	return 0;
-}
-
-void guimanager_destroy(){
-   int i;
-   for(i=0;i<manager.connect_size;i++){
-      DestroyWindow(manager.connect_handles[i]);
-   }
-   destroy_profile_screen();
-   memset(&manager,0,sizeof(struct guimanager_t));
 }

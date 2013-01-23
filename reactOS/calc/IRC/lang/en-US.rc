@@ -5,9 +5,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOG  0, 0, 130, 100
-STYLE DS_SETFONT | WS_POPUP | WS_CAPTION
-EXSTYLE 0x80000000L
+IDD_ABOUTBOX DIALOG 20, 20, 130, 100
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU | DS_CENTER | DS_SETFONT
 CAPTION "About µIRC"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -18,7 +17,7 @@ BEGIN
 END
 
 IDD_INPUTBOX DIALOG  0, 0, 122, 50
-STYLE DS_SETFONT | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU | DS_CENTER | DS_SETFONT //DS_FIXEDSYS
 FONT 8, "MS Shell Dlg"
 BEGIN
     EDITTEXT        IDC_EDIT1,8,7,105,13,ES_AUTOHSCROLL
@@ -89,7 +88,6 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,63,360,50,14
 END
 
-
 /////////////////////////////////////////////////////////////////////////////
 //
 // Menu
@@ -98,37 +96,46 @@ END
 IDR_MAIN_MENU_MANAGER MENU
 BEGIN
     POPUP "File"
-        BEGIN
-            MENUITEM "New",                     IDM_NEW
-            MENUITEM "Edit",                    IDM_EDIT
-            MENUITEM "Remove",                  IDM_REMOVE
-            MENUITEM "Exit",                    IDM_EXIT
-            MENUITEM "Launch",                  IDM_LAUNCH
-        END
+    BEGIN
+        MENUITEM "Exit",                        IDM_EXIT
+    END
+    POPUP "Options"
+    BEGIN
+        MENUITEM "New",                         IDM_NEW
+        MENUITEM "Edit",                        IDM_EDIT
+        MENUITEM "Remove",                      IDM_REMOVE
+        MENUITEM "Launch",                      IDM_LAUNCH
+    END
 END
 
 IDR_MAIN_MENU_OFFLINE MENU 
 BEGIN
-    POPUP "Offline"
+    POPUP "File"
     BEGIN
-        MENUITEM "About",                       IDM_OPTIONS_ABOUT
-        MENUITEM "Help",                        IDM_OPTIONS_HELP
+        MENUITEM "Connect",                     IDM_OPTIONS_CONNECT
         MENUITEM SEPARATOR
         MENUITEM "Exit",                        IDM_OPTIONS_EXIT
-        MENUITEM "Connect",                     IDM_OPTIONS_CONNECT
+    END
+    POPUP "Options"
+    BEGIN
         MENUITEM "Preferences",                 IDM_OPTIONS_PREFERENCES
+    END
+    POPUP "Help"
+    BEGIN
+        MENUITEM "About",                       IDM_OPTIONS_ABOUT
     END
 END
 
 IDR_MAIN_MENU_ONLINE MENU 
 BEGIN
-    POPUP "Online"
+    POPUP "File"
     BEGIN
-        MENUITEM "About",                       IDM_OPTIONS_ABOUT
-        MENUITEM "Help",                        IDM_OPTIONS_HELP
+        MENUITEM "Disconnect",                  IDM_OPTIONS_DISCONNECT
         MENUITEM SEPARATOR
         MENUITEM "Exit",                        IDM_OPTIONS_EXIT
-        MENUITEM "Disconnect",                  IDM_OPTIONS_DISCONNECT
+    END
+    POPUP "Options"
+    BEGIN
         MENUITEM "Preferences",                 IDM_OPTIONS_PREFERENCES
         MENUITEM SEPARATOR
         MENUITEM "Set Topic",                   IDM_OPTIONS_SETTOPIC
@@ -136,6 +143,10 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Open Private",                IDM_OPTIONS_OPENPRIVATE
         MENUITEM "Join Channel",                IDM_OPTIONS_JOINCHANNEL
+    END
+    POPUP "Help"
+    BEGIN
+        MENUITEM "About",                       IDM_OPTIONS_ABOUT
     END
 END
 
@@ -152,70 +163,55 @@ BEGIN
     END
 END
 
-
-
-
-
 /////////////////////////////////////////////////////////////////////////////
 //
 // String Table
 //
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
-    IDS_CONNECT             "Connect"
-    IDS_DISCONNECT          "Disconnect"
-    IDS_OPTIONS             "Options"
-    IDS_OK                  "OK"
-    IDS_CANCEL              "Cancel"
-END
+    IDS_INFO_MSG1                "FAILED TO CONNECT"
+    IDS_INFO_MSG2                "FAILED TO RECONNECT"
+    IDS_INFO_MSG3                "CONNECTED"
+    IDS_INFO_MSG4                "DISCONNECTED"
 
-STRINGTABLE 
-BEGIN
-    IDS_NEW                 "New"
-    IDS_EDIT                "Edit"
-    IDS_REMOVE              "Remove"
-    IDS_EXIT                "Exit"
-    IDS_LAUNCH              "Launch"
-END
+    IDS_PART_MSG1                " sets modes: "
+    IDS_PART_MSG2                " joined"
+    IDS_PART_MSG3                " kicked by "
+    IDS_PART_MSG4                "nickchange "
+    IDS_PART_MSG5                "nick already in use"
+    IDS_PART_MSG6                " parted"
+    IDS_PART_MSG7                " quit"
+    IDS_PART_MSG8                "Topic is "
+    IDS_PART_MSG9                "Topic changed by "
+    IDS_PART_MSG10               " to "
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// MENU BAR
-//
-/*
-IDR_MAIN_MENU_MANAGER SHMENUBAR DISCARDABLE
-BEGIN
-    IDR_MAIN_MENU_MANAGER, 9,
-    I_IMAGENONE, IDM_NEW, TBSTATE_ENABLED, TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE, IDS_NEW, 0, NOMENU,
-    I_IMAGENONE, 0, TBSTATE_ENABLED, TBSTYLE_SEP, 0, 0, NOMENU,
-    I_IMAGENONE, IDM_EDIT, TBSTATE_ENABLED, TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE,IDS_EDIT, 0, NOMENU,
-    I_IMAGENONE, 0, TBSTATE_ENABLED, TBSTYLE_SEP, 0, 0, NOMENU,
-    I_IMAGENONE, IDM_REMOVE, TBSTATE_ENABLED, TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE,IDS_REMOVE, 0, NOMENU,
-    I_IMAGENONE, 0, TBSTATE_ENABLED, TBSTYLE_SEP, 0, 0, NOMENU,
-    I_IMAGENONE, IDM_EXIT, TBSTATE_ENABLED, TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE, IDS_EXIT, 0, NOMENU,
-    I_IMAGENONE, 0, TBSTATE_ENABLED, TBSTYLE_SEP, 0, 0, NOMENU,
-    I_IMAGENONE, IDM_LAUNCH, TBSTATE_ENABLED, TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE, IDS_LAUNCH, 0, NOMENU,
-END
+    IDS_QUEST_MSG1               "Do you really want to reconnect?"
+    IDS_QUEST_MSG2               "Reconnect"
+    IDS_QUEST_MSG3               "About to disconnect. Do you wish to reconnect?"
+    IDS_QUEST_MSG4               "Disconnect"
+    IDS_QUEST_MSG5               "Are you sure you want to remove the selected profile(s)? This cannot be undone."
+    IDS_QUEST_MSG6               "Confirmation"
 
-IDR_MAIN_MENU_OFFLINE SHMENUBAR DISCARDABLE
-BEGIN
-    IDR_MAIN_MENU_OFFLINE, 2,
-    I_IMAGENONE, IDM_CONNECT, TBSTATE_ENABLED, TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE, IDS_CONNECT, 0, NOMENU,
-    I_IMAGENONE, IDM_OPTIONS, TBSTATE_ENABLED, TBSTYLE_DROPDOWN | TBSTYLE_AUTOSIZE, IDS_OPTIONS, 0, 0,
-END
+    IDS_MSG1                     "Open Private"
+    IDS_MSG2                     "Join Channel"
+    IDS_MSG3                     "Set Topic"
+    IDS_MSG4                     "New Profile"
+    IDS_MSG5                     "Profiles"
+    IDS_MSG6                     "Selected"
 
-IDR_MAIN_MENU_ONLINE SHMENUBAR DISCARDABLE
-BEGIN
-    IDR_MAIN_MENU_ONLINE, 2,
-    I_IMAGENONE, IDM_DISCONNECT, TBSTATE_ENABLED, TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE, IDS_DISCONNECT, 0, NOMENU,
-    I_IMAGENONE, IDM_OPTIONS, TBSTATE_ENABLED, TBSTYLE_DROPDOWN | TBSTYLE_AUTOSIZE, IDS_OPTIONS, 0, 0,
+    IDS_ERROR_MSG1               "Host is invalid."
+    IDS_ERROR_MSG2               "Port is invalid."
+    IDS_ERROR_MSG3               "User is invalid."
+    IDS_ERROR_MSG4               "Name is invalid. "
+    IDS_ERROR_MSG5               "Nick is invalid."
+    IDS_ERROR_MSG6               "Auto-join Delay is invalid."
+    IDS_ERROR_MSG7               "Reconnect Retries is invalid."
+    IDS_ERROR_MSG8               "Bubble Duration is invalid."
+    IDS_ERROR_MSG9               "Led Interval is invalid."
+    IDS_ERROR_MSG10              "Critical error, operation failed: "
+    IDS_ERROR_MSG11              "Config file is invalid."
+    IDS_ERROR_MSG12              "Invalid Profile Name."
+    IDS_ERROR_MSG13              "Cannot create more profiles."
+    IDS_ERROR_MSG14              "A profile with that name already exists."
 END
-
-IDR_PREFERENCES_MENU SHMENUBAR DISCARDABLE
-BEGIN
-    IDR_PREFERENCES_MENU, 2,
-    I_IMAGENONE, IDOK, TBSTATE_ENABLED, TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE, IDS_OK, 0, NOMENU,
-    I_IMAGENONE, IDCANCEL, TBSTATE_ENABLED, TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE, IDS_CANCEL, 0, NOMENU,
-END
-*/

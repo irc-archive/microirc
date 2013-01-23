@@ -1,36 +1,38 @@
-//{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ generated include file.
-// Used by menu.rc
+// Used by resource.rc
 //
+
+// Global
+#define IDC_STATIC                      -1
+
+// Global Strings
 #define IDS_APP_TITLE                   1
 #define IDS_WNDCLASS_IRC                2
+
+// Icons
 #define IDI_IRC                         101
-#define IDC_SIP1                        102
-#define IDC_SIP2                        103
+
+//#define IDC_SIP1                        102
+//#define IDC_SIP2                        103
+
+// Accelarators
 #define IDC_IRC                         104
+
+// Menus
 #define IDR_MAIN_MENU_OFFLINE           201
 #define IDR_MAIN_MENU_ONLINE            202
 #define IDR_PREFERENCES_MENU            203
 #define IDR_CHATBOX_MENU                204
 #define IDR_MAIN_MENU_MANAGER           205
-#define IDS_DISCONNECT                  301
-#define IDS_OPTIONS                     302
-#define IDS_OK                          303
-#define IDS_CANCEL                      304
-#define IDS_CONNECT                     305
-#define IDS_NEW                         306
-#define IDS_REMOVE                      307
-#define IDS_EXIT                        308
-#define IDS_LAUNCH                      309
-#define IDS_EDIT                        310
 #define IDD_ABOUTBOX                    401
 #define IDD_INPUTBOX                    402
 #define IDD_PREFERENCES                 403
+
+// Buttons
 #define IDM_CONNECT                     600
 #define IDM_DISCONNECT                  601
 #define IDM_OPTIONS                     602
 #define IDM_OPTIONS_ABOUT               603
-#define IDM_OPTIONS_HELP                604
+//#define IDM_OPTIONS_HELP                604
 #define IDM_OPTIONS_EXIT                605
 #define IDM_OPTIONS_PREFERENCES         606
 #define IDM_OPTIONS_SETTOPIC            607
@@ -49,6 +51,8 @@
 #define IDM_EXIT                        620
 #define IDM_LAUNCH                      621
 #define IDM_EDIT                        622
+
+//Dialogs
 #define IDC_EDIT0                       999
 #define IDC_EDIT1                       1000
 #define IDC_EDIT2                       1001
@@ -70,7 +74,18 @@
 #define IDC_CHECK1                      1028
 #define IDC_CHECK2                      1029
 #define IDC_COMBO1                      1030
-#define IDC_STATIC                      -1
+
+//Strings
+/*#define IDS_DISCONNECT                  301
+#define IDS_OPTIONS                     302
+#define IDS_OK                          303
+#define IDS_CANCEL                      304
+#define IDS_CONNECT                     305
+#define IDS_NEW                         306
+#define IDS_REMOVE                      307
+#define IDS_EXIT                        308
+#define IDS_LAUNCH                      309
+#define IDS_EDIT                        310*/
 
 // Next default values for new objects
 // 
