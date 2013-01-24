@@ -1,0 +1,69 @@
+#include <windows.h>
+
+#include "resource.h"
+
+// UTF-8
+#pragma code_page(65001)
+
+#ifndef IDC_STATIC
+#define IDC_STATIC    -1
+#endif
+
+#ifndef DS_SHELLFONT
+#define DS_SHELLFONT DS_SETFONT|DS_FIXEDSYS
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Neutral resources
+//
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+IDI_IRC                 ICON         "res/microirc.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_ROS                 BITMAP       "res/ROS_logo.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDC_IRC ACCELERATORS 
+BEGIN
+    "A",            IDM_OPTIONS_PREFERENCES, VIRTKEY, CONTROL, NOINVERT
+    //"Q",            IDM_OPENURL,            VIRTKEY, CONTROL, NOINVERT
+END
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_APP_TITLE           "µIRC"
+    IDS_WNDCLASS_IRC        "microirc"
+END
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Load extra resources by Language
+//
+
+#ifdef LANGUAGE_EN_US
+    #include "lang/en-US.rc"
+#endif
+#ifdef LANGUAGE_PT_PT
+    #include "lang/pt-PT.rc"
+#endif
