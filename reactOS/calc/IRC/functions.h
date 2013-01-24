@@ -9,6 +9,17 @@
 * This code is licenced under the GPL version 2. For details see COPYING.txt file.
 */
 
+/* Globals */
+#define IRC_CONST_CLIENT L"CLIENT"
+#define IRC_CONST_MANAGER L"MANAGER"
+#define IRC_CONST_STATUS L".status"
+#define IRC_CONST_SOUND L"alert.wav"
+#define IRC_CONST_INI L".ini"
+#define IRC_CONST_ALLINI L"*.ini"
+#define IRC_CONST_DEFAULT L"Client.ini"
+#define IRC_CONST_ANSI L"Local"
+#define IRC_CONST_UNICODE L"UTF-8"
+
 /*
 void set_led(int led_num, int state){
    NLED_SETTINGS_INFO settings;
@@ -33,9 +44,11 @@ void activate_led(){
 }
 */
 
-const wchar_t* StaticLoadString(unsigned int var){
+wchar_t* MAKEINTSTR(unsigned int index){
     static wchar_t buffer[IRC_SIZE_SMALL];
-    LoadString(config.h_instance, var, buffer, IRC_SIZE_SMALL);
+    if(LoadString(config.h_instance, index, buffer, IRC_SIZE_SMALL)<=0){
+        wcscpy(buffer, L"");
+    }
     return buffer;
 }
 
@@ -86,9 +99,9 @@ void parsing_alias(irc_t *irc, char *chat_destination, char *chat_text){
 
 int update_title(wchar_t *window_title, wchar_t *cmd_line){
    if(wcslen(cmd_line)==0){
-      wcscat(window_title,L" Profile Manager");
+      wcscat(window_title,MAKEINTSTR(IDS_MSG7));
    }else{
-      wchar_t *end = wcsstr(cmd_line,L".ini");
+      wchar_t *end = wcsstr(cmd_line,IRC_CONST_INI);
       if(end==NULL){
          return -1;
       }

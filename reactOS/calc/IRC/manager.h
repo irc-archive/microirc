@@ -19,21 +19,21 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
          wchar_t wprofile_name[IRC_SIZE_SMALL];
          switch (LOWORD(wParam)){
             case IDM_NEW:{
-               if(open_input_box(hWnd, L"New Profile", L"", wprofile_name, IRC_SIZE_SMALL)!=0){
+               if(open_input_box(hWnd, MAKEINTSTR(IDS_MSG4), L"", wprofile_name, IRC_SIZE_SMALL)!=0){
                   break;
                }
                if(wcslen(wprofile_name)==0 || validate_name(wprofile_name)!=0){
-                  MessageBox(hWnd,L"Invalid Profile Name.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+                  MessageBox(hWnd,MAKEINTSTR(IDS_ERROR_MSG12),NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                   break;
                }
-               wcscat(wprofile_name,L".ini");
+               wcscat(wprofile_name,IRC_CONST_INI);
 
                int result = checkbox_create(wprofile_name,hWnd);
                if(result==-1){
-                  MessageBox(hWnd,L"Cannot create more profiles.",NULL,MB_ICONEXCLAMATION|MB_APPLMODAL|MB_SETFOREGROUND);
+                  MessageBox(hWnd,MAKEINTSTR(IDS_ERROR_MSG13),NULL,MB_ICONEXCLAMATION|MB_APPLMODAL|MB_SETFOREGROUND);
                   break;
                }else if(result==-2){
-                  MessageBox(hWnd,L"A profile with that name already exists.",NULL,MB_ICONEXCLAMATION|MB_APPLMODAL|MB_SETFOREGROUND);
+                  MessageBox(hWnd,MAKEINTSTR(IDS_ERROR_MSG14),NULL,MB_ICONEXCLAMATION|MB_APPLMODAL|MB_SETFOREGROUND);
                   break;
                }
 
@@ -41,32 +41,32 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                if(iniparser_init(&iniparser)!=0){
                   break;
                }
-               iniparser_setstring(&iniparser, "server", "host", "chat.freenode.net");
-               iniparser_setstring(&iniparser, "server", "port", "6667");
-               iniparser_setstring(&iniparser, "server", "pass", "");
-               iniparser_setstring(&iniparser, "client", "user", "user");
-               iniparser_setstring(&iniparser, "client", "name", "Real Name");
-               iniparser_setstring(&iniparser, "client", "nick", "change_me");
-               iniparser_setstring(&iniparser, "client", "perform", "");
-               iniparser_setstring(&iniparser, "autojoin", "channels", "#microirc");
-               iniparser_setint(&iniparser, "autojoin", "delay", 5000);
-               iniparser_setint(&iniparser, "connection", "connect_on_startup", 1);
-               iniparser_setint(&iniparser, "connection", "reconnect_retries", 5);
-               iniparser_setstring(&iniparser, "messages", "part", "");
-               iniparser_setstring(&iniparser, "messages", "kick", "");
-               iniparser_setstring(&iniparser, "messages", "quit", "http://code.google.com/p/microirc/");
-               iniparser_setint(&iniparser, "miscellaneous", "encoding", 1);
-               iniparser_setint(&iniparser, "miscellaneous", "bubble", 0);
-               iniparser_setint(&iniparser, "miscellaneous", "sounds", 0);
-               iniparser_setint(&iniparser, "miscellaneous", "led_number", -1);
-               iniparser_setint(&iniparser, "miscellaneous", "led_interval", 500);
+               iniparser_setstring(&iniparser, IRC_CONF_SERVER, IRC_CONF_HOST, IRC_CONF_HOST_VAL);
+               iniparser_setstring(&iniparser, IRC_CONF_SERVER, IRC_CONF_PORT, IRC_CONF_PORT_VAL);
+               iniparser_setstring(&iniparser, IRC_CONF_SERVER, IRC_CONF_PASS, IRC_CONF_PASS_VAL);
+               iniparser_setstring(&iniparser, IRC_CONF_CLIENT, IRC_CONF_USER, IRC_CONF_USER_VAL);
+               iniparser_setstring(&iniparser, IRC_CONF_CLIENT, IRC_CONF_NAME, IRC_CONF_NAME_VAL);
+               iniparser_setstring(&iniparser, IRC_CONF_CLIENT, IRC_CONF_NICK, IRC_CONF_NICK_VAL);
+               iniparser_setstring(&iniparser, IRC_CONF_CLIENT, IRC_CONF_PERFORM, IRC_CONF_PERFORM_VAL);
+               iniparser_setstring(&iniparser, IRC_CONF_AUTOJOIN, IRC_CONF_CHANNELS, IRC_CONF_CHANNELS_VAL);
+               iniparser_setint(&iniparser, IRC_CONF_AUTOJOIN, IRC_CONF_DELAY, IRC_CONF_DELAY_VAL);
+               iniparser_setint(&iniparser, IRC_CONF_CONNECTION, IRC_CONF_STARTUP, IRC_CONF_STARTUP_VAL);
+               iniparser_setint(&iniparser, IRC_CONF_CONNECTION, IRC_CONF_RETRIES, IRC_CONF_RETRIES_VAL);
+               iniparser_setstring(&iniparser, IRC_CONF_MESSAGES, IRC_CONF_PART, IRC_CONF_PART_VAL);
+               iniparser_setstring(&iniparser, IRC_CONF_MESSAGES, IRC_CONF_KICK, IRC_CONF_KICK_VAL);
+               iniparser_setstring(&iniparser, IRC_CONF_MESSAGES, IRC_CONF_QUIT, IRC_CONF_QUIT_VAL);
+               iniparser_setint(&iniparser, IRC_CONF_MISCELLANEOUS, IRC_CONF_ENCODING, IRC_CONF_ENCODING_VAL);
+               iniparser_setint(&iniparser, IRC_CONF_MISCELLANEOUS, IRC_CONF_BUBBLE, IRC_CONF_BUBBLE_VAL);
+               iniparser_setint(&iniparser, IRC_CONF_MISCELLANEOUS, IRC_CONF_SOUNDS, IRC_CONF_SOUNDS_VAL);
+               iniparser_setint(&iniparser, IRC_CONF_MISCELLANEOUS, IRC_CONF_LEDNUMBER, IRC_CONF_LEDNUMBER_VAL);
+               iniparser_setint(&iniparser, IRC_CONF_MISCELLANEOUS, IRC_CONF_LEDINTERVAL, IRC_CONF_LEDINTERVAL_VAL);
                if(winiparser_store(&iniparser,wprofile_name)!=0){
                   iniparser_destroy(&iniparser);
                   break;
                }
                iniparser_destroy(&iniparser);
 
-               wchar_t *parameters[2]={L"manager",wprofile_name};
+               wchar_t *parameters[2]={IRC_CONST_MANAGER,wprofile_name};
                if(!DialogBoxParam(config.h_instance, MAKEINTRESOURCE(IDD_PREFERENCES), hWnd, PreferencesProc, (LPARAM)parameters)){
                   checkbox_delete(manager.connect_size-1);
                }
@@ -79,13 +79,13 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                checkbox_getselected(d_index, &s_index);
                for(i=0;i<s_index;i++){
                   Button_GetText(manager.connect_handles[d_index[i]],wprofile_name,IRC_SIZE_SMALL);
-                  wchar_t *parameters[2]={L"manager",wprofile_name};
+                  wchar_t *parameters[2]={IRC_CONST_MANAGER,wprofile_name};
                   DialogBoxParam(config.h_instance, MAKEINTRESOURCE(IDD_PREFERENCES), hWnd, PreferencesProc, (LPARAM)parameters);
                }
                break;
             }
             case IDM_REMOVE:{
-               switch(MessageBox(hWnd,L"Are you sure you want to remove the selected profile(s)? This cannot be undone.",L"Confirmation",MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2|MB_APPLMODAL|MB_SETFOREGROUND)){
+               switch(MessageBox(hWnd,MAKEINTSTR(IDS_QUEST_MSG5),MAKEINTSTR(IDS_QUEST_MSG6),MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2|MB_APPLMODAL|MB_SETFOREGROUND)){
                   case IDYES:{
                      int i;
                      int s_index=0;

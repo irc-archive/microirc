@@ -36,7 +36,7 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
       }
       case WM_CONNECTING:{
          if(guiclient_connecting(hWnd)!=0){
-            write_text_all(client.tabcontrol_chatview_handle,L"FAILED TO CONNECT",NULL,TSFALSE);
+            write_text_all(client.tabcontrol_chatview_handle,MAKEINTSTR(IDS_INFO_MSG1),NULL,TSFALSE);
          }
          break;
       }
@@ -46,7 +46,7 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
       }
       case WM_RECONNECTING:{
          if(guiclient_reconnecting(hWnd)!=0){
-            write_text_all(client.tabcontrol_chatview_handle,L"FAILED TO RECONNECT",NULL,TSFALSE);
+            write_text_all(client.tabcontrol_chatview_handle,MAKEINTSTR(IDS_INFO_MSG2),NULL,TSFALSE);
          }
          break;
       }
@@ -141,7 +141,7 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                char *send[2] = {tab_close,client.config.part};
                tab_get_name_current(client.tabcontrol_chatview_handle,wtab_close,IRC_SIZE_SMALL);
                WideCharToMultiByte(client.config.encoding,0,wtab_close,-1,tab_close,IRC_SIZE_SMALL,NULL,NULL);
-               if(memcmp(tab_close,".status",7)!=0){
+               if(wcscmp(wtab_close,IRC_CONST_STATUS)!=0){
                   if(client.connected!=0){
                       if(irc_validate_channel(&client.irc,tab_close)==0){
                          irc_send_message(&client.irc,SEND_PART,send,2);
@@ -149,23 +149,23 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                   }
                   tab_delete_current(client.tabcontrol_chatview_handle);
                }else{
-                  if(client.connected==0){
-                     break;
-                  }
-                  switch(MessageBox(hWnd,L"About to disconnect. Do you wish to reconnect?",L"Disconnect",MB_ICONQUESTION|MB_YESNOCANCEL|MB_DEFBUTTON3|MB_APPLMODAL|MB_SETFOREGROUND)){
-                     case IDYES:{
-                        SendMessage(hWnd, WM_RECONNECTING, 0, 0);
-                        break;
-                     }
-                     case IDNO:{
-                        SendMessage(hWnd, WM_DISCONNECTING, 0, 0);
-                        break;
-                     }
-                     case IDCANCEL:{
-                        break;
-                     }
+                  if(client.connected!=0){
+                      switch(MessageBox(hWnd,MAKEINTSTR(IDS_QUEST_MSG3),MAKEINTSTR(IDS_QUEST_MSG4),MB_ICONQUESTION|MB_YESNOCANCEL|MB_DEFBUTTON3|MB_APPLMODAL|MB_SETFOREGROUND)){
+                         case IDYES:{
+                            SendMessage(hWnd, WM_RECONNECTING, 0, 0);
+                            break;
+                         }
+                         case IDNO:{
+                            SendMessage(hWnd, WM_DISCONNECTING, 0, 0);
+                            break;
+                         }
+                         case IDCANCEL:{
+                            break;
+                         }
+                      }
                   }
                }
+               SetFocus(client.edit_chatinput_handle);
                break;
             }
             case BUTTON_CHATSEND:{
@@ -175,37 +175,37 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                static char chat_destination[IRC_SIZE_SMALL];
                static wchar_t wchat_nick[IRC_SIZE_SMALL];
                static wchar_t wchat_return[IRC_SIZE_MEDIUM];
-               if(client.connected==0){
-                  break;
+               if(client.connected!=0){
+                   char *send[2]={chat_destination,chat_text};
+                   GetWindowText(client.edit_chatinput_handle, wchat_text, IRC_SIZE_MEDIUM);
+                   if(wcslen(wchat_text)!=0){
+                      WideCharToMultiByte(client.config.encoding,0,wchat_text,-1,chat_text,IRC_SIZE_MEDIUM,NULL,NULL);
+                      tab_get_name_current(client.tabcontrol_chatview_handle,wchat_destination,IRC_SIZE_SMALL);
+                      WideCharToMultiByte(client.config.encoding,0,wchat_destination,-1,chat_destination,IRC_SIZE_SMALL,NULL,NULL);
+                      if(strncmp(chat_text,"/",1)==0){
+                         //parsing_alias(&client.irc,chat_destination,chat_text);
+                      }else if(wcscmp(wchat_destination,IRC_CONST_STATUS)==0){
+                         irc_send_message(&client.irc,SEND_RAW,send+1,1);
+                      }else{
+                         irc_send_message(&client.irc,SEND_PRIVMSG,send,2);
+                      }
+                      Edit_SetText(client.edit_chatinput_handle,L"");
+                      MultiByteToWideChar(client.config.encoding,0,client.irc.nick,-1,wchat_nick,IRC_SIZE_SMALL);
+                      swprintf(wchat_return,L"%s: %s",wchat_nick,wchat_text);
+                      write_text_current(client.tabcontrol_chatview_handle,wchat_return,NULL,TSTRUE);
+                   }
                }
-               char *send[2]={chat_destination,chat_text};
-               GetWindowText(client.edit_chatinput_handle, wchat_text, IRC_SIZE_MEDIUM);
-               if(wcslen(wchat_text)!=0){
-                  WideCharToMultiByte(client.config.encoding,0,wchat_text,-1,chat_text,IRC_SIZE_MEDIUM,NULL,NULL);
-                  tab_get_name_current(client.tabcontrol_chatview_handle,wchat_destination,IRC_SIZE_SMALL);
-                  WideCharToMultiByte(client.config.encoding,0,wchat_destination,-1,chat_destination,IRC_SIZE_SMALL,NULL,NULL);
-                  if(memcmp(chat_text,"/",1)==0){
-                     //parsing_alias(&client.irc,chat_destination,chat_text);
-                  }else if(memcmp(chat_destination,".status",7)==0){
-                     irc_send_message(&client.irc,SEND_RAW,send+1,1);
-                  }else{
-                     irc_send_message(&client.irc,SEND_PRIVMSG,send,2);
-                  }
-                  Edit_SetText(client.edit_chatinput_handle,L"");
-                  MultiByteToWideChar(client.config.encoding,0,client.irc.nick,-1,wchat_nick,IRC_SIZE_SMALL);
-                  swprintf(wchat_return,L"%s: %s",wchat_nick,wchat_text);
-                  write_text_current(client.tabcontrol_chatview_handle,wchat_return,NULL,TSTRUE);
-               }
+               SetFocus(client.edit_chatinput_handle);
                break;
             }
             case IDM_OPTIONS_PREFERENCES:{
-               wchar_t *parameters[2]={L"client",client.profile};
+               wchar_t *parameters[2]={IRC_CONST_CLIENT,client.profile};
                DialogBoxParam(config.h_instance, (LPCTSTR)IDD_PREFERENCES, hWnd, PreferencesProc, (LPARAM)parameters);
                break;
             }
             case IDM_OPTIONS_OPENPRIVATE:{
                wchar_t wresult_text[IRC_SIZE_SMALL];
-               if(open_input_box(hWnd, L"Open Private", L"", wresult_text, IRC_SIZE_SMALL)!=0){
+               if(open_input_box(hWnd, MAKEINTSTR(IDS_MSG1), L"", wresult_text, IRC_SIZE_SMALL)!=0){
                   break;
                }
                if(wcslen(wresult_text)==0){
@@ -217,7 +217,7 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
             }
             case IDM_OPTIONS_JOINCHANNEL:{
                wchar_t wresult_text[IRC_SIZE_SMALL];
-               if(open_input_box(hWnd, L"Join Channel", L"#", wresult_text, IRC_SIZE_SMALL)!=0){
+               if(open_input_box(hWnd, MAKEINTSTR(IDS_MSG2), L"#", wresult_text, IRC_SIZE_SMALL)!=0){
                   break;
                }
                if(wcslen(wresult_text)==0){
@@ -235,7 +235,7 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
             }
             case IDM_OPTIONS_SETTOPIC:{
                wchar_t wtopic[IRC_SIZE_SMALL];
-               if(open_input_box(hWnd, L"Set Topic", L"", wtopic, IRC_SIZE_SMALL)!=0){
+               if(open_input_box(hWnd, MAKEINTSTR(IDS_MSG3), L"", wtopic, IRC_SIZE_SMALL)!=0){
                   break;
                }
                if(wcslen(wtopic)==0){

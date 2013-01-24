@@ -37,7 +37,7 @@ int WINAPI WinMain2(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLi
     }
     
 #ifdef CLIENT_ONLY
-    lpCmdLine = L"Client.ini";
+    lpCmdLine = IRC_CONST_DEFAULT;
 #endif
     
     /* Load global properties and set defaults */

@@ -39,18 +39,18 @@ int guiclient_init(HWND hWnd){
    client.receiver_active = 1;
    client.receiver_thread_event = CreateEvent(NULL,FALSE,FALSE,NULL);
    if(client.receiver_thread_event==NULL){
-      MessageBox(hWnd,L"Critical error: CreateEvent() failed.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+      MessageBox(hWnd,MAKEINTSTR(IDS_ERROR_MSG10),NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
       return -1;
    }
    client.receiver_thread = CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)receiverThreadProc,(void*)hWnd,0,NULL);
    if(client.receiver_thread==NULL){
-      MessageBox(hWnd,L"Critical error: CreateThread() failed.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+      MessageBox(hWnd,MAKEINTSTR(IDS_ERROR_MSG15),NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
       CloseHandle(client.receiver_thread_event);
       return -1;
    }
-   wfile_to_fullpath(L"alert.wav",client.sound_alert);
+   wfile_to_fullpath(IRC_CONST_SOUND,client.sound_alert);
    if(irc_config_init(&client.irc,&client.config,client.profile)!=0){
-      MessageBox(hWnd,L"Config file is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+      MessageBox(hWnd,MAKEINTSTR(IDS_ERROR_MSG11),NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
       CloseHandle(client.receiver_thread);
       CloseHandle(client.receiver_thread_event);
       return -1;
@@ -58,7 +58,7 @@ int guiclient_init(HWND hWnd){
    //timer_led=NULL;
    init_menu_bar(hWnd,IDR_MAIN_MENU_OFFLINE);
    init_chat_screen(hWnd);
-   tab_create(hWnd,client.tabcontrol_chatview_handle,L".status",STATUS);
+   tab_create(hWnd,client.tabcontrol_chatview_handle,IRC_CONST_STATUS,STATUS);
    if(client.config.connect_on_startup){
       PostMessage(hWnd, WM_CONNECTING, 0, 0);
    }
@@ -92,7 +92,7 @@ int guiclient_connecting(HWND hWnd){
    init_loading_screen(hWnd);
    if(irc_config_reload(&client.irc,&client.config,client.profile)!=0){
       destroy_loading_screen(hWnd);
-      MessageBox(hWnd,L"Config file is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+      MessageBox(hWnd,MAKEINTSTR(IDS_ERROR_MSG11),NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
       return -1;
    }
    if(irc_connect(&client.irc)<0){
@@ -100,7 +100,7 @@ int guiclient_connecting(HWND hWnd){
       return -1;
    }
    client.connected = 1;
-   tab_connect(client.tabcontrol_chatview_handle,L"CONNECTED",NULL,TSFALSE);
+   tab_connect(client.tabcontrol_chatview_handle,MAKEINTSTR(IDS_INFO_MSG3),NULL,TSFALSE);
    destroy_menu_bar();
    init_menu_bar(hWnd,IDR_MAIN_MENU_ONLINE);
    SetEvent(client.receiver_thread_event);
@@ -115,10 +115,10 @@ int guiclient_reconnecting(HWND hWnd){
    init_loading_screen(hWnd);
    client.connected = 0;
    irc_disconnect(&client.irc,client.config.quit);
-   tab_disconnect(client.tabcontrol_chatview_handle,L"DISCONNECTED",NULL,TSFALSE);
+   tab_disconnect(client.tabcontrol_chatview_handle,MAKEINTSTR(IDS_INFO_MSG4),NULL,TSFALSE);
    if(irc_config_reload(&client.irc,&client.config,client.profile)!=0){
       destroy_loading_screen(hWnd);
-      MessageBox(hWnd,L"Config file is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+      MessageBox(hWnd,MAKEINTSTR(IDS_ERROR_MSG11),NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
       return -1;
    }
    int trys = client.config.reconnect_retries;
@@ -133,7 +133,7 @@ int guiclient_reconnecting(HWND hWnd){
       }
    }
    client.connected = 1;
-   tab_connect(client.tabcontrol_chatview_handle,L"CONNECTED",NULL,TSFALSE);
+   tab_connect(client.tabcontrol_chatview_handle,MAKEINTSTR(IDS_INFO_MSG3),NULL,TSFALSE);
    SetEvent(client.receiver_thread_event);
    destroy_loading_screen(hWnd);
    return 0;
@@ -143,7 +143,7 @@ void guiclient_disconnecting(HWND hWnd){
    if(client.connected!=0){
       client.connected = 0;
       irc_disconnect(&client.irc,client.config.quit);
-      tab_disconnect(client.tabcontrol_chatview_handle,L"DISCONNECTED",NULL,TSFALSE);
+      tab_disconnect(client.tabcontrol_chatview_handle,MAKEINTSTR(IDS_INFO_MSG4),NULL,TSFALSE);
       destroy_menu_bar();
       init_menu_bar(hWnd,IDR_MAIN_MENU_OFFLINE);
    }
@@ -175,9 +175,9 @@ void *receiverThreadProc(void *window_handle){
             case RECV_CHANNEL_MODE:{//[host OR nick user host] channel modes [arguments OR null]
                if(recv_buffer_size<5){
                   if(recv_buffer_size==3){
-                     swprintf(wresult,L"%s sets modes: %s",recv_buffer[0],recv_buffer[2]);
+                     swprintf(wresult,L"%s %s %s",recv_buffer[0],MAKEINTSTR(IDS_PART_MSG1),recv_buffer[2]);
                   }else{
-                     swprintf(wresult,L"%s sets modes: %s %s",recv_buffer[0],recv_buffer[2],recv_buffer[3]);
+                     swprintf(wresult,L"%s %s %s %s",recv_buffer[0],MAKEINTSTR(IDS_PART_MSG1),recv_buffer[2],recv_buffer[3]);
                   }
                   style_text_t style = {0,RGB(0,0,255)};
                   write_text_name(client.tabcontrol_chatview_handle,recv_buffer[1],wresult,&style,TSTRUE);
@@ -192,9 +192,9 @@ void *receiverThreadProc(void *window_handle){
                      modes++;
                   }
                   if(recv_buffer_size==5){
-                     swprintf(wresult,L"%s sets modes: %s",recv_buffer[0],recv_buffer[4]);
+                     swprintf(wresult,L"%s %s %s",recv_buffer[0],MAKEINTSTR(IDS_PART_MSG1),recv_buffer[4]);
                   }else{
-                     swprintf(wresult,L"%s sets modes: %s %s",recv_buffer[0],recv_buffer[4],recv_buffer[5]);
+                     swprintf(wresult,L"%s %s %s %s",recv_buffer[0],MAKEINTSTR(IDS_PART_MSG1),recv_buffer[4],recv_buffer[5]);
                   }
                   style_text_t style = {0,RGB(0,0,255)};
                   write_text_name(client.tabcontrol_chatview_handle,recv_buffer[3],wresult,&style,TSTRUE);
@@ -205,10 +205,10 @@ void *receiverThreadProc(void *window_handle){
                if(recv_buffer_size<5){
                   break;
                }
-               if(memcmp(recv_buffer_ptr[4],"ACTION ",7)!=0){
+               if(strncmp(recv_buffer_ptr[4],"ACTION ",7)!=0){
                   swprintf(wresult,L"%s",recv_buffer[4]);
                   //style_text_t style = {0,RGB(0,0,0)};
-                  write_text_name(client.tabcontrol_chatview_handle,L".status",wresult,NULL,TSTRUE);
+                  write_text_name(client.tabcontrol_chatview_handle,IRC_CONST_STATUS,wresult,NULL,TSTRUE);
                   break;
                }
                recv_buffer_ptr[4]+=7;
@@ -259,7 +259,7 @@ void *receiverThreadProc(void *window_handle){
                   write_text_name(client.tabcontrol_chatview_handle,recv_buffer[3],wresult,pstyle,TSTRUE);
                }else{
                   if(recv_result==RECV_NOTICE){
-                     write_text_name(client.tabcontrol_chatview_handle,L".status",wresult,pstyle,TSTRUE);
+                     write_text_name(client.tabcontrol_chatview_handle,IRC_CONST_STATUS,wresult,pstyle,TSTRUE);
                   }else{
                      SendMessage(hWnd,WM_CREATE_TAB,STATUS,(LPARAM)recv_buffer[0]);
                      write_text_name(client.tabcontrol_chatview_handle,recv_buffer[0],wresult,pstyle,TSTRUE);
@@ -274,7 +274,7 @@ void *receiverThreadProc(void *window_handle){
                if(strcmp(recv_buffer_ptr[0],client.irc.nick)==0){
                   SendMessage(hWnd,WM_CREATE_TAB,CHAT,(LPARAM)recv_buffer[3]);
                }else{
-                  swprintf(wresult,L"%s joined",recv_buffer[0]);
+                  swprintf(wresult,L"%s %s",recv_buffer[0],MAKEINTSTR(IDS_PART_MSG2));
                   style_text_t style = {0,RGB(0,128,128)};
                   write_text_name(client.tabcontrol_chatview_handle,recv_buffer[3],wresult,&style,TSTRUE);
                   write_nick_name(client.tabcontrol_chatview_handle,recv_buffer[3],recv_buffer[0],APPEND);
@@ -289,9 +289,9 @@ void *receiverThreadProc(void *window_handle){
                   write_nick_name(client.tabcontrol_chatview_handle,recv_buffer[3],NULL,REMOVE);
                }
                if(recv_buffer_size==5){
-                  swprintf(wresult,L"%s kicked by %s",recv_buffer[4],recv_buffer[0]);
+                  swprintf(wresult,L"%s %s %s",recv_buffer[4],MAKEINTSTR(IDS_PART_MSG3),recv_buffer[0]);
                }else{
-                  swprintf(wresult,L"%s kicked by %s (%s)",recv_buffer[4],recv_buffer[0],recv_buffer[5]);
+                  swprintf(wresult,L"%s %s %s (%s)",recv_buffer[4],MAKEINTSTR(IDS_PART_MSG3),recv_buffer[0],recv_buffer[5]);
                }
                style_text_t style = {0,RGB(128,128,128)};
                write_text_name(client.tabcontrol_chatview_handle,recv_buffer[3],wresult,&style,TSTRUE);
@@ -302,7 +302,7 @@ void *receiverThreadProc(void *window_handle){
                if(recv_buffer_size<4){
                   break;
                }
-               swprintf(wresult,L"nickchange %s -> %s",recv_buffer[0],recv_buffer[3]);
+               swprintf(wresult,L"%s %s -> %s",MAKEINTSTR(IDS_PART_MSG4),recv_buffer[0],recv_buffer[3]);
                style_text_t style = {0,RGB(128,0,128)};
                tab_change_nick(client.tabcontrol_chatview_handle,recv_buffer[0],recv_buffer[3],wresult,&style,TSTRUE);
                break;
@@ -322,16 +322,16 @@ void *receiverThreadProc(void *window_handle){
                if(recv_buffer_size<3){
                   break;
                }
-               swprintf(wresult,L"%s sets modes: %s %s",recv_buffer[0],recv_buffer[2],recv_buffer[1]);
+               swprintf(wresult,L"%s %s %s %s",recv_buffer[0],MAKEINTSTR(IDS_PART_MSG1),recv_buffer[2],recv_buffer[1]);
                style_text_t style = {0,RGB(0,0,255)};
-               write_text_name(client.tabcontrol_chatview_handle,L".status",wresult,&style,TSTRUE);
+               write_text_name(client.tabcontrol_chatview_handle,IRC_CONST_STATUS,wresult,&style,TSTRUE);
                break;
             }
             case RECV_NICK_TAKEN:{//host actualnick failednick [message OR null]
                if(recv_buffer_size<4){
                   break;
                }
-               swprintf(wresult,L"nick already in use");
+               swprintf(wresult,MAKEINTSTR(IDS_PART_MSG5));
                style_text_t style = {0,RGB(255,0,255)};
                write_text_current(client.tabcontrol_chatview_handle,wresult,&style,TSTRUE);
                break;
@@ -344,9 +344,9 @@ void *receiverThreadProc(void *window_handle){
                   write_nick_name(client.tabcontrol_chatview_handle,recv_buffer[3],NULL,REMOVE);
                }
                if(recv_buffer_size==4){
-                  swprintf(wresult,L"%s parted",recv_buffer[0]);
+                  swprintf(wresult,L"%s %s",recv_buffer[0],MAKEINTSTR(IDS_PART_MSG6));
                }else{
-                  swprintf(wresult,L"%s parted (%s)",recv_buffer[0],recv_buffer[4]);
+                  swprintf(wresult,L"%s %s (%s)",recv_buffer[0],MAKEINTSTR(IDS_PART_MSG6),recv_buffer[4]);
                }
                style_text_t style = {0,RGB(128,0,0)};
                write_text_name(client.tabcontrol_chatview_handle,recv_buffer[3],wresult,&style,TSTRUE);
@@ -362,7 +362,7 @@ void *receiverThreadProc(void *window_handle){
                for(i=0;i<recv_buffer_size;i++){
                   swprintf(wresult+wcslen(wresult),L"%s ",recv_buffer[i]);
                }
-               write_text_name(client.tabcontrol_chatview_handle,L".status",wresult,NULL,TSTRUE);
+               write_text_name(client.tabcontrol_chatview_handle,IRC_CONST_STATUS,wresult,NULL,TSTRUE);
                break;
             }
             case RECV_QUIT:{//nick user host [message OR null]
@@ -370,9 +370,9 @@ void *receiverThreadProc(void *window_handle){
                   break;
                }
                if(recv_buffer_size==3){
-                  swprintf(wresult,L"%s quit",recv_buffer[0]);
+                  swprintf(wresult,L"%s %s",recv_buffer[0],MAKEINTSTR(IDS_PART_MSG7));
                }else{
-                  swprintf(wresult,L"%s quit (%s)",recv_buffer[0],recv_buffer[3]);
+                  swprintf(wresult,L"%s %s (%s)",recv_buffer[0],MAKEINTSTR(IDS_PART_MSG7),recv_buffer[3]);
                }
                style_text_t style = {0,RGB(255,0,0)};
                tab_quit(client.tabcontrol_chatview_handle,recv_buffer[0],wresult,&style,TSTRUE);
@@ -382,7 +382,7 @@ void *receiverThreadProc(void *window_handle){
                if(recv_buffer_size<4){
                   break;
                }
-               swprintf(wresult,L"Topic is '%s'",recv_buffer[3]);
+               swprintf(wresult,L"%s '%s'",MAKEINTSTR(IDS_PART_MSG8),recv_buffer[3]);
                style_text_t style = {0,RGB(0,128,0)};
                write_text_name(client.tabcontrol_chatview_handle,recv_buffer[2],wresult,&style,TSFALSE);
                break;
@@ -391,7 +391,7 @@ void *receiverThreadProc(void *window_handle){
                if(recv_buffer_size<5){
                   break;
                }
-               swprintf(wresult,L"Topic changed by %s to '%s'",recv_buffer[0],recv_buffer[4]);
+               swprintf(wresult,L"%s %s %s '%s'",MAKEINTSTR(IDS_PART_MSG9),recv_buffer[0],MAKEINTSTR(IDS_PART_MSG9),recv_buffer[4]);
                style_text_t style = {0,RGB(0,255,0)};
                write_text_name(client.tabcontrol_chatview_handle,recv_buffer[3],wresult,&style,TSFALSE);
                break;
@@ -401,7 +401,7 @@ void *receiverThreadProc(void *window_handle){
       if(client.connected!=0){
          if(client.config.reconnect_retries==0){
             SendMessage(hWnd,WM_DISCONNECTING,0,0);
-            switch(MessageBox(hWnd,L"Do you really want to reconnect?",L"Reconnect",MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2|MB_APPLMODAL|MB_SETFOREGROUND)){
+            switch(MessageBox(hWnd,MAKEINTSTR(IDS_QUEST_MSG1),MAKEINTSTR(IDS_QUEST_MSG2),MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2|MB_APPLMODAL|MB_SETFOREGROUND)){
                case IDYES:{
                   SendMessage(hWnd,WM_CONNECTING,0,0);
                   break;

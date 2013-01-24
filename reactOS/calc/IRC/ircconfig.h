@@ -9,6 +9,64 @@
 * This code is licenced under the GPL version 2. For details see COPYING.txt file.
 */
 
+/* Configuration */
+#define IRC_CONF_SERVER "server"
+#define IRC_CONF_CLIENT "client"
+#define IRC_CONF_AUTOJOIN "autojoin"
+#define IRC_CONF_CONNECTION "connection"
+#define IRC_CONF_MESSAGES "messages"
+#define IRC_CONF_MISCELLANEOUS "miscellaneous"
+
+/* Server */
+#define IRC_CONF_HOST "host"
+#define IRC_CONF_HOST_VAL "chat.freenode.net"
+#define IRC_CONF_PORT "port"
+#define IRC_CONF_PORT_VAL "6667"
+#define IRC_CONF_PASS "pass"
+#define IRC_CONF_PASS_VAL ""
+
+/* Client */
+#define IRC_CONF_USER "user"
+#define IRC_CONF_USER_VAL "user"
+#define IRC_CONF_NAME "name"
+#define IRC_CONF_NAME_VAL "Real Name"
+#define IRC_CONF_NICK "nick"
+#define IRC_CONF_NICK_VAL "change_me"
+#define IRC_CONF_PERFORM "perform"
+#define IRC_CONF_PERFORM_VAL ""
+
+/* Autojoin */
+#define IRC_CONF_CHANNELS "channels"
+#define IRC_CONF_CHANNELS_VAL "#microrc"
+#define IRC_CONF_DELAY "delay"
+#define IRC_CONF_DELAY_VAL 5000
+
+/* Connection */
+#define IRC_CONF_STARTUP "connect_on_startup"
+#define IRC_CONF_STARTUP_VAL 1
+#define IRC_CONF_RETRIES "reconnect_retries"
+#define IRC_CONF_RETRIES_VAL 5
+
+/* Messages */
+#define IRC_CONF_PART "part"
+#define IRC_CONF_PART_VAL ""
+#define IRC_CONF_KICK "kick"
+#define IRC_CONF_KICK_VAL ""
+#define IRC_CONF_QUIT "quit"
+#define IRC_CONF_QUIT_VAL "http://code.google.com/p/microirc/"
+
+/* Miscellaneous */
+#define IRC_CONF_ENCODING "encoding"
+#define IRC_CONF_ENCODING_VAL 1
+#define IRC_CONF_BUBBLE "bubble"
+#define IRC_CONF_BUBBLE_VAL 0
+#define IRC_CONF_SOUNDS "sounds"
+#define IRC_CONF_SOUNDS_VAL 0
+#define IRC_CONF_LEDNUMBER "led_number"
+#define IRC_CONF_LEDNUMBER_VAL -1
+#define IRC_CONF_LEDINTERVAL "led_interval"
+#define IRC_CONF_LEDINTERVAL_VAL 500
+
 int ircconfig_init(ircconfig_t *ircconfig, int connect_on_startup, int reconnect_retries, char *part, char *kick, char *quit, int encoding, int bubble, int sounds, int led_number, int led_interval){
    memset(ircconfig,0,sizeof(ircconfig_t));
    if(reconnect_retries<0 || bubble<0 || led_interval<0){
@@ -65,30 +123,30 @@ int irc_config_init(irc_t *irc, ircconfig_t *ircconfig, wchar_t *filepath){
    int led_number;
    int led_interval;
 
-   strncpy0(host,iniparser_getstring(&iniparser, "server", "host", "chat.freenode.net"),IRCPROTOCOL_SIZE_SMALL);
-   strncpy0(port,iniparser_getstring(&iniparser, "server", "port", "6667"),IRCPROTOCOL_SIZE_SMALL);
-   strncpy0(pass,iniparser_getstring(&iniparser, "server", "pass", ""),IRCPROTOCOL_SIZE_SMALL);
-   strncpy0(user,iniparser_getstring(&iniparser, "client", "user", "user"),IRCPROTOCOL_SIZE_SMALL);
-   strncpy0(name,iniparser_getstring(&iniparser, "client", "name", "Real Name"),IRCPROTOCOL_SIZE_SMALL);
-   strncpy0(nick,iniparser_getstring(&iniparser, "client", "nick", "change_me"),IRCPROTOCOL_SIZE_SMALL);
-   strncpy0(perform,iniparser_getstring(&iniparser, "client", "perform", ""),IRCPROTOCOL_SIZE_MEDIUM);
-   strncpy0(channels,iniparser_getstring(&iniparser, "autojoin", "channels", "#microirc"),IRCPROTOCOL_SIZE_MEDIUM);
-   delay = iniparser_getint(&iniparser, "autojoin", "delay", 5000);
+   strncpy0(host,iniparser_getstring(&iniparser, IRC_CONF_SERVER, IRC_CONF_HOST, IRC_CONF_HOST_VAL),IRCPROTOCOL_SIZE_SMALL);
+   strncpy0(port,iniparser_getstring(&iniparser, IRC_CONF_SERVER, IRC_CONF_PORT, IRC_CONF_PORT_VAL),IRCPROTOCOL_SIZE_SMALL);
+   strncpy0(pass,iniparser_getstring(&iniparser, IRC_CONF_SERVER, IRC_CONF_PASS, IRC_CONF_PASS_VAL),IRCPROTOCOL_SIZE_SMALL);
+   strncpy0(user,iniparser_getstring(&iniparser, IRC_CONF_CLIENT, IRC_CONF_USER, IRC_CONF_USER_VAL),IRCPROTOCOL_SIZE_SMALL);
+   strncpy0(name,iniparser_getstring(&iniparser, IRC_CONF_CLIENT, IRC_CONF_NAME, IRC_CONF_NAME_VAL),IRCPROTOCOL_SIZE_SMALL);
+   strncpy0(nick,iniparser_getstring(&iniparser, IRC_CONF_CLIENT, IRC_CONF_NICK, IRC_CONF_NICK_VAL),IRCPROTOCOL_SIZE_SMALL);
+   strncpy0(perform,iniparser_getstring(&iniparser, IRC_CONF_CLIENT, IRC_CONF_PERFORM, IRC_CONF_PERFORM_VAL),IRCPROTOCOL_SIZE_MEDIUM);
+   strncpy0(channels,iniparser_getstring(&iniparser, IRC_CONF_AUTOJOIN, IRC_CONF_CHANNELS, IRC_CONF_CHANNELS_VAL),IRCPROTOCOL_SIZE_MEDIUM);
+   delay = iniparser_getint(&iniparser, IRC_CONF_AUTOJOIN, IRC_CONF_DELAY, IRC_CONF_DELAY_VAL);
 
-   connect_on_startup = iniparser_getint(&iniparser, "connection", "connect_on_startup", 1);
-   reconnect_retries = iniparser_getint(&iniparser, "connection", "reconnect_retries", 5);
-   strncpy0(part,iniparser_getstring(&iniparser, "messages", "part", ""),IRC_SIZE_SMALL);
-   strncpy0(kick,iniparser_getstring(&iniparser, "messages", "kick", ""),IRC_SIZE_SMALL);
-   strncpy0(quit,iniparser_getstring(&iniparser, "messages", "quit", "http://code.google.com/p/microirc/"),IRC_SIZE_SMALL);
-   if(iniparser_getint(&iniparser, "miscellaneous", "encoding", 1)){
+   connect_on_startup = iniparser_getint(&iniparser, IRC_CONF_CONNECTION, IRC_CONF_STARTUP, IRC_CONF_STARTUP_VAL);
+   reconnect_retries = iniparser_getint(&iniparser, IRC_CONF_CONNECTION, IRC_CONF_RETRIES, IRC_CONF_RETRIES_VAL);
+   strncpy0(part,iniparser_getstring(&iniparser, IRC_CONF_MESSAGES, IRC_CONF_PART, IRC_CONF_PART_VAL),IRC_SIZE_SMALL);
+   strncpy0(kick,iniparser_getstring(&iniparser, IRC_CONF_MESSAGES, IRC_CONF_KICK, IRC_CONF_KICK_VAL),IRC_SIZE_SMALL);
+   strncpy0(quit,iniparser_getstring(&iniparser, IRC_CONF_MESSAGES, IRC_CONF_QUIT, IRC_CONF_QUIT_VAL),IRC_SIZE_SMALL);
+   if(iniparser_getint(&iniparser, IRC_CONF_MISCELLANEOUS, IRC_CONF_ENCODING, IRC_CONF_ENCODING_VAL)){
       encoding = CP_UTF8;
    }else{
       encoding = CP_ACP;
    }
-   bubble = iniparser_getint(&iniparser, "miscellaneous", "bubble", 0);
-   sounds = iniparser_getint(&iniparser, "miscellaneous", "sounds", 0);
-   led_number = iniparser_getint(&iniparser, "miscellaneous", "led_number", -1);
-   led_interval = iniparser_getint(&iniparser, "miscellaneous", "led_interval", 500);
+   bubble = iniparser_getint(&iniparser, IRC_CONF_MISCELLANEOUS, IRC_CONF_BUBBLE, IRC_CONF_BUBBLE_VAL);
+   sounds = iniparser_getint(&iniparser, IRC_CONF_MISCELLANEOUS, IRC_CONF_SOUNDS, IRC_CONF_SOUNDS_VAL);
+   led_number = iniparser_getint(&iniparser, IRC_CONF_MISCELLANEOUS, IRC_CONF_LEDNUMBER, IRC_CONF_LEDNUMBER_VAL);
+   led_interval = iniparser_getint(&iniparser, IRC_CONF_MISCELLANEOUS, IRC_CONF_LEDINTERVAL, IRC_CONF_LEDINTERVAL_VAL);
    
    iniparser_destroy(&iniparser);
    if(irc_init(irc,host,port,pass,user,name,nick,perform,channels,delay)!=0){
@@ -140,13 +198,13 @@ int gettext_toint(HWND hDlg, int control){
    wchar_t wedittext[IRCPROTOCOL_SIZE_SMALL];
    HWND edithwnd = GetDlgItem(hDlg,control);
    Edit_GetText(edithwnd,wedittext,IRCPROTOCOL_SIZE_SMALL);
-   return wcstol(wedittext,L'\0',10);
+   return wcstol(wedittext,'\0',10);
 }
 
 void setcombo_fromint(HWND hDlg, int control, int combovalue){
    HWND combo = GetDlgItem(hDlg,control);
-   ComboBox_AddString(combo,L"Local");
-   ComboBox_AddString(combo,L"UTF-8");
+   ComboBox_AddString(combo,IRC_CONST_ANSI);
+   ComboBox_AddString(combo,IRC_CONST_UNICODE);
    if(combovalue){
       ComboBox_SetCurSel(combo,1);
    }else{

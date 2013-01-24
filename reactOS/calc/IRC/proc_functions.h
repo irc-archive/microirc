@@ -95,7 +95,7 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
          SetScrollRange(hDlg,SB_VERT,SCROLL_PREFERENCES_MIN_POSITIONS,SCROLL_PREFERENCES_MAX_POSITIONS,TRUE);
          UpdateWindow(hDlg);
 
-         wchar_t **parameters = (wchar_t**)lParam;//"manager" or "client", profile
+         wchar_t **parameters = (wchar_t**)lParam;//"MANAGER" or "CLIENT", profile
          iniparser_t iniparser;
          if(iniparser_init(&iniparser)!=0){
             break;
@@ -106,27 +106,27 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
          }
          settext_fromwstr(hDlg,IDC_EDIT0,parameters[0]);
          settext_fromwstr(hDlg,IDC_EDIT1,parameters[1]);
-         settext_fromstr(hDlg,IDC_EDIT2,iniparser_getstring(&iniparser, "server", "host", "chat.freenode.net"));
-         settext_fromstr(hDlg,IDC_EDIT3,iniparser_getstring(&iniparser, "server", "port", "6667"));
-         settext_fromstr(hDlg,IDC_EDIT4,iniparser_getstring(&iniparser, "server", "pass", ""));
-         settext_fromstr(hDlg,IDC_EDIT5,iniparser_getstring(&iniparser, "client", "user", "user"));
-         settext_fromstr(hDlg,IDC_EDIT6,iniparser_getstring(&iniparser, "client", "name", "Real Name"));
-         settext_fromstr(hDlg,IDC_EDIT7,iniparser_getstring(&iniparser, "client", "nick", "change_me"));
-         settext_fromstr(hDlg,IDC_EDIT8,iniparser_getstring(&iniparser, "client", "perform", ""));
-         settext_fromstr(hDlg,IDC_EDIT9,iniparser_getstring(&iniparser, "autojoin", "channels", "#microirc"));
-         settext_fromint(hDlg,IDC_EDIT10,iniparser_getint(&iniparser, "autojoin", "delay", 5000));
-         if(wcscmp(parameters[0],L"manager")==0){
-            setcheck_fromint(hDlg,IDC_CHECK1,iniparser_getint(&iniparser, "connection", "connect_on_startup", 1));
-            settext_fromint(hDlg,IDC_EDIT11,iniparser_getint(&iniparser, "connection", "reconnect_retries", 5));
-            settext_fromstr(hDlg,IDC_EDIT12,iniparser_getstring(&iniparser, "messages", "part", ""));
-            settext_fromstr(hDlg,IDC_EDIT13,iniparser_getstring(&iniparser, "messages", "kick", ""));
-            settext_fromstr(hDlg,IDC_EDIT14,iniparser_getstring(&iniparser, "messages", "quit", "http://code.google.com/p/microirc/"));
-            setcombo_fromint(hDlg,IDC_COMBO1,iniparser_getint(&iniparser, "miscellaneous", "encoding", 1));
-            settext_fromint(hDlg,IDC_EDIT15,iniparser_getint(&iniparser, "miscellaneous", "bubble", 0));
-            setcheck_fromint(hDlg,IDC_CHECK2,iniparser_getint(&iniparser, "miscellaneous", "sounds", 0));
-            settext_fromint(hDlg,IDC_EDIT16,iniparser_getint(&iniparser, "miscellaneous", "led_number", -1));
-            settext_fromint(hDlg,IDC_EDIT17,iniparser_getint(&iniparser, "miscellaneous", "led_interval", 500));
-         }else if(wcscmp(parameters[0],L"client")==0){
+         settext_fromstr(hDlg,IDC_EDIT2,iniparser_getstring(&iniparser, IRC_CONF_SERVER, IRC_CONF_HOST, IRC_CONF_HOST_VAL));
+         settext_fromstr(hDlg,IDC_EDIT3,iniparser_getstring(&iniparser, IRC_CONF_SERVER, IRC_CONF_PORT, IRC_CONF_PORT_VAL));
+         settext_fromstr(hDlg,IDC_EDIT4,iniparser_getstring(&iniparser, IRC_CONF_SERVER, IRC_CONF_PASS, IRC_CONF_PASS_VAL));
+         settext_fromstr(hDlg,IDC_EDIT5,iniparser_getstring(&iniparser, IRC_CONF_CLIENT, IRC_CONF_USER, IRC_CONF_USER_VAL));
+         settext_fromstr(hDlg,IDC_EDIT6,iniparser_getstring(&iniparser, IRC_CONF_CLIENT, IRC_CONF_NAME, IRC_CONF_NAME_VAL));
+         settext_fromstr(hDlg,IDC_EDIT7,iniparser_getstring(&iniparser, IRC_CONF_CLIENT, IRC_CONF_NICK, IRC_CONF_NICK_VAL));
+         settext_fromstr(hDlg,IDC_EDIT8,iniparser_getstring(&iniparser, IRC_CONF_CLIENT, IRC_CONF_PERFORM, IRC_CONF_PERFORM_VAL));
+         settext_fromstr(hDlg,IDC_EDIT9,iniparser_getstring(&iniparser, IRC_CONF_AUTOJOIN, IRC_CONF_CHANNELS, IRC_CONF_CHANNELS_VAL));
+         settext_fromint(hDlg,IDC_EDIT10,iniparser_getint(&iniparser, IRC_CONF_AUTOJOIN, IRC_CONF_DELAY, IRC_CONF_DELAY_VAL));
+         if(wcscmp(parameters[0],IRC_CONST_MANAGER)==0){
+            setcheck_fromint(hDlg,IDC_CHECK1,iniparser_getint(&iniparser, IRC_CONF_CONNECTION, IRC_CONF_STARTUP, IRC_CONF_STARTUP_VAL));
+            settext_fromint(hDlg,IDC_EDIT11,iniparser_getint(&iniparser, IRC_CONF_CONNECTION, IRC_CONF_RETRIES, IRC_CONF_RETRIES_VAL));
+            settext_fromstr(hDlg,IDC_EDIT12,iniparser_getstring(&iniparser, IRC_CONF_MESSAGES, IRC_CONF_PART, IRC_CONF_PART_VAL));
+            settext_fromstr(hDlg,IDC_EDIT13,iniparser_getstring(&iniparser, IRC_CONF_MESSAGES, IRC_CONF_KICK, IRC_CONF_KICK_VAL));
+            settext_fromstr(hDlg,IDC_EDIT14,iniparser_getstring(&iniparser, IRC_CONF_MESSAGES, IRC_CONF_QUIT, IRC_CONF_QUIT_VAL));
+            setcombo_fromint(hDlg,IDC_COMBO1,iniparser_getint(&iniparser, IRC_CONF_MISCELLANEOUS, IRC_CONF_ENCODING, IRC_CONF_ENCODING_VAL));
+            settext_fromint(hDlg,IDC_EDIT15,iniparser_getint(&iniparser, IRC_CONF_MISCELLANEOUS, IRC_CONF_BUBBLE, IRC_CONF_BUBBLE_VAL));
+            setcheck_fromint(hDlg,IDC_CHECK2,iniparser_getint(&iniparser, IRC_CONF_MISCELLANEOUS, IRC_CONF_SOUNDS, IRC_CONF_SOUNDS_VAL));
+            settext_fromint(hDlg,IDC_EDIT16,iniparser_getint(&iniparser, IRC_CONF_MISCELLANEOUS, IRC_CONF_LEDNUMBER, IRC_CONF_LEDNUMBER_VAL));
+            settext_fromint(hDlg,IDC_EDIT17,iniparser_getint(&iniparser, IRC_CONF_MISCELLANEOUS, IRC_CONF_LEDINTERVAL, IRC_CONF_LEDINTERVAL_VAL));
+         }else if(wcscmp(parameters[0],IRC_CONST_CLIENT)==0){
             setcheck_fromint(hDlg,IDC_CHECK1,client.config.connect_on_startup);
             settext_fromint(hDlg,IDC_EDIT11,client.config.reconnect_retries);
             settext_fromstr(hDlg,IDC_EDIT12,client.config.part);
@@ -194,61 +194,61 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
             led_number = gettext_toint(hDlg,IDC_EDIT16);
             led_interval = gettext_toint(hDlg,IDC_EDIT17);
             if(strlen(host)==0){
-               MessageBox(hDlg,L"Host is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               MessageBox(hDlg,MAKEINTSTR(IDS_ERROR_MSG1),NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                break;
             }
             if(strlen(port)==0){
-               MessageBox(hDlg,L"Port is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               MessageBox(hDlg,MAKEINTSTR(IDS_ERROR_MSG2),NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                break;
             }
             if(strlen(user)==0){
-               MessageBox(hDlg,L"User is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               MessageBox(hDlg,MAKEINTSTR(IDS_ERROR_MSG3),NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                break;
             }
             if(strlen(name)==0){
-               MessageBox(hDlg,L"Name is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               MessageBox(hDlg,MAKEINTSTR(IDS_ERROR_MSG4),NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                break;
             }
             if(strlen(nick)==0){
-               MessageBox(hDlg,L"Nick is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               MessageBox(hDlg,MAKEINTSTR(IDS_ERROR_MSG5),NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                break;
             }
             if(delay < 0){
-               MessageBox(hDlg,L"Auto-join Delay is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               MessageBox(hDlg,MAKEINTSTR(IDS_ERROR_MSG6),NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                break;
             }
             if(reconnect_retries < 0){
-               MessageBox(hDlg,L"Reconnect Retries is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               MessageBox(hDlg,MAKEINTSTR(IDS_ERROR_MSG7),NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                break;
             }
             if(bubble < 0){
-               MessageBox(hDlg,L"Bubble Duration is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               MessageBox(hDlg,MAKEINTSTR(IDS_ERROR_MSG8),NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                break;
             }
             if(led_interval < 0){
-               MessageBox(hDlg,L"Led Interval is invalid.",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               MessageBox(hDlg,MAKEINTSTR(IDS_ERROR_MSG9),NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                break;
             }
-            iniparser_setstring(&iniparser, "server", "host", host);
-            iniparser_setstring(&iniparser, "server", "port", port);
-            iniparser_setstring(&iniparser, "server", "pass", pass);
-            iniparser_setstring(&iniparser, "client", "user", user);
-            iniparser_setstring(&iniparser, "client", "name", name);
-            iniparser_setstring(&iniparser, "client", "nick", nick);
-            iniparser_setstring(&iniparser, "client", "perform", perform);
-            iniparser_setstring(&iniparser, "autojoin", "channels", channels);
-            iniparser_setint(&iniparser, "autojoin", "delay", delay);
-            iniparser_setint(&iniparser, "connection", "connect_on_startup", connect_on_startup);
-            iniparser_setint(&iniparser, "connection", "reconnect_retries", reconnect_retries);
-            iniparser_setstring(&iniparser, "messages", "part", part);
-            iniparser_setstring(&iniparser, "messages", "kick", kick);
-            iniparser_setstring(&iniparser, "messages", "quit", quit);
-            iniparser_setint(&iniparser, "miscellaneous", "encoding", encoding);
-            iniparser_setint(&iniparser, "miscellaneous", "bubble", bubble);
-            iniparser_setint(&iniparser, "miscellaneous", "sounds", sounds);
-            iniparser_setint(&iniparser, "miscellaneous", "led_number", led_number);
-            iniparser_setint(&iniparser, "miscellaneous", "led_interval", led_interval);
-            if(wcscmp(type,L"client")==0){
+            iniparser_setstring(&iniparser, IRC_CONF_SERVER, IRC_CONF_HOST, host);
+            iniparser_setstring(&iniparser, IRC_CONF_SERVER, IRC_CONF_PORT, port);
+            iniparser_setstring(&iniparser, IRC_CONF_SERVER, IRC_CONF_PASS, pass);
+            iniparser_setstring(&iniparser, IRC_CONF_CLIENT, IRC_CONF_USER, user);
+            iniparser_setstring(&iniparser, IRC_CONF_CLIENT, IRC_CONF_NAME, name);
+            iniparser_setstring(&iniparser, IRC_CONF_CLIENT, IRC_CONF_NICK, nick);
+            iniparser_setstring(&iniparser, IRC_CONF_CLIENT, IRC_CONF_PERFORM, perform);
+            iniparser_setstring(&iniparser, IRC_CONF_AUTOJOIN, IRC_CONF_CHANNELS, channels);
+            iniparser_setint(&iniparser, IRC_CONF_AUTOJOIN, IRC_CONF_DELAY, delay);
+            iniparser_setint(&iniparser, IRC_CONF_CONNECTION, IRC_CONF_STARTUP, connect_on_startup);
+            iniparser_setint(&iniparser, IRC_CONF_CONNECTION, IRC_CONF_RETRIES, reconnect_retries);
+            iniparser_setstring(&iniparser, IRC_CONF_MESSAGES, IRC_CONF_PART, part);
+            iniparser_setstring(&iniparser, IRC_CONF_MESSAGES, IRC_CONF_KICK, kick);
+            iniparser_setstring(&iniparser, IRC_CONF_MESSAGES, IRC_CONF_QUIT, quit);
+            iniparser_setint(&iniparser, IRC_CONF_MISCELLANEOUS, IRC_CONF_ENCODING, encoding);
+            iniparser_setint(&iniparser, IRC_CONF_MISCELLANEOUS, IRC_CONF_BUBBLE, bubble);
+            iniparser_setint(&iniparser, IRC_CONF_MISCELLANEOUS, IRC_CONF_SOUNDS, sounds);
+            iniparser_setint(&iniparser, IRC_CONF_MISCELLANEOUS, IRC_CONF_LEDNUMBER, led_number);
+            iniparser_setint(&iniparser, IRC_CONF_MISCELLANEOUS, IRC_CONF_LEDINTERVAL, led_interval);
+            if(wcscmp(type,IRC_CONST_CLIENT)==0){
                client.config.connect_on_startup = connect_on_startup;
                client.config.reconnect_retries = reconnect_retries;
                strncpy0(client.config.part,part,IRC_SIZE_SMALL);

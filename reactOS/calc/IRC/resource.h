@@ -105,6 +105,7 @@
 #define IDS_MSG4                        10026
 #define IDS_MSG5                        10027
 #define IDS_MSG6                        10028
+#define IDS_MSG7                        10029
 
 #define IDS_ERROR_MSG1                  10030
 #define IDS_ERROR_MSG2                  10031
@@ -120,6 +121,7 @@
 #define IDS_ERROR_MSG12                 10041
 #define IDS_ERROR_MSG13                 10042
 #define IDS_ERROR_MSG14                 10043
+#define IDS_ERROR_MSG15                 10044
 
 // Next default values for new objects
 // 

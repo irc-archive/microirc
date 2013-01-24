@@ -10,8 +10,8 @@
 */
 
 void init_profile_screen(HWND hWnd){
-   manager.static_label1_handle = CreateWindowEx(0,L"STATIC",L"Profiles",WS_CHILD|WS_VISIBLE,resize.STATIC_LEFT,resize.STATIC_TOP,resize.STATIC_WIDTH,resize.STATIC_HEIGHT,hWnd,(HMENU)NULL,config.h_instance,NULL);
-   manager.static_label2_handle = CreateWindowEx(0,L"STATIC",L"Selected",WS_CHILD|WS_VISIBLE,resize.STATIC_LEFT_SECOND,resize.STATIC_TOP,resize.STATIC_WIDTH,resize.STATIC_HEIGHT,hWnd,(HMENU)NULL,config.h_instance,NULL);
+   manager.static_label1_handle = CreateWindowEx(0,L"STATIC",MAKEINTSTR(IDS_MSG5),WS_CHILD|WS_VISIBLE,resize.STATIC_LEFT,resize.STATIC_TOP,resize.STATIC_WIDTH,resize.STATIC_HEIGHT,hWnd,(HMENU)NULL,config.h_instance,NULL);
+   manager.static_label2_handle = CreateWindowEx(0,L"STATIC",MAKEINTSTR(IDS_MSG6),WS_CHILD|WS_VISIBLE,resize.STATIC_LEFT_SECOND,resize.STATIC_TOP,resize.STATIC_WIDTH,resize.STATIC_HEIGHT,hWnd,(HMENU)NULL,config.h_instance,NULL);
 }
 
 void destroy_profile_screen(){
@@ -22,7 +22,7 @@ void destroy_profile_screen(){
 int guimanager_init(HWND hWnd){
 	memset(&manager,0,sizeof(manager));
 	wchar_t wfilespath[IRC_SIZE_SMALL];
-	wfile_to_fullpath(L"*.ini",wfilespath);
+	wfile_to_fullpath(IRC_CONST_ALLINI,wfilespath);
 	WIN32_FIND_DATA find;
 	memset(&find,0,sizeof(find));
 	HANDLE findhwnd = FindFirstFile(wfilespath,&find);
