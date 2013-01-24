@@ -76,16 +76,50 @@
 #define IDC_COMBO1                      1030
 
 //Strings
-/*#define IDS_DISCONNECT                  301
-#define IDS_OPTIONS                     302
-#define IDS_OK                          303
-#define IDS_CANCEL                      304
-#define IDS_CONNECT                     305
-#define IDS_NEW                         306
-#define IDS_REMOVE                      307
-#define IDS_EXIT                        308
-#define IDS_LAUNCH                      309
-#define IDS_EDIT                        310*/
+#define IDS_INFO_MSG1                   10000
+#define IDS_INFO_MSG2                   10001
+#define IDS_INFO_MSG3                   10002
+#define IDS_INFO_MSG4                   10003
+
+#define IDS_PART_MSG1                   10005
+#define IDS_PART_MSG2                   10006
+#define IDS_PART_MSG3                   10007
+#define IDS_PART_MSG4                   10008
+#define IDS_PART_MSG5                   10009
+#define IDS_PART_MSG6                   10010
+#define IDS_PART_MSG7                   10011
+#define IDS_PART_MSG8                   10012
+#define IDS_PART_MSG9                   10013
+#define IDS_PART_MSG10                  10014
+
+#define IDS_QUEST_MSG1                  10016
+#define IDS_QUEST_MSG2                  10017
+#define IDS_QUEST_MSG3                  10018
+#define IDS_QUEST_MSG4                  10019
+#define IDS_QUEST_MSG5                  10020
+#define IDS_QUEST_MSG6                  10021
+
+#define IDS_MSG1                        10023
+#define IDS_MSG2                        10024
+#define IDS_MSG3                        10025
+#define IDS_MSG4                        10026
+#define IDS_MSG5                        10027
+#define IDS_MSG6                        10028
+
+#define IDS_ERROR_MSG1                  10030
+#define IDS_ERROR_MSG2                  10031
+#define IDS_ERROR_MSG3                  10032
+#define IDS_ERROR_MSG4                  10033
+#define IDS_ERROR_MSG5                  10034
+#define IDS_ERROR_MSG6                  10035
+#define IDS_ERROR_MSG7                  10036
+#define IDS_ERROR_MSG8                  10037
+#define IDS_ERROR_MSG9                  10038
+#define IDS_ERROR_MSG10                 10039
+#define IDS_ERROR_MSG11                 10040
+#define IDS_ERROR_MSG12                 10041
+#define IDS_ERROR_MSG13                 10042
+#define IDS_ERROR_MSG14                 10043
 
 // Next default values for new objects
 // 
