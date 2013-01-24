@@ -1,7 +1,7 @@
 /*
 * irc.h
 *
-* This file contains an irc client gui implementation with ircprotocol lib.
+* This file contains necessary metadata for irc.c.
 *
 * Copyright(C) 2009-2010, Diogo Reis <diogoandre12@gmail.com>
 * Copyright(C) 2010-2010, José Pedroso <josedpedroso@gmail.com>

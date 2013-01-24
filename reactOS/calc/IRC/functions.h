@@ -99,6 +99,7 @@ void parsing_alias(irc_t *irc, char *chat_destination, char *chat_text){
 
 int update_title(wchar_t *window_title, wchar_t *cmd_line){
    if(wcslen(cmd_line)==0){
+      wcscat(window_title,L" ");
       wcscat(window_title,MAKEINTSTR(IDS_MSG7));
    }else{
       wchar_t *end = wcsstr(cmd_line,IRC_CONST_INI);

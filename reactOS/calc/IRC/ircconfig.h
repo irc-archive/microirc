@@ -1,7 +1,7 @@
 /*
 * ircconfig.h
 *
-* This file contains some functions according to irconfig.
+* This file contains some functions to manage irc configuration.
 *
 * Copyright(C) 2009-2010, Diogo Reis <diogoandre12@gmail.com>
 * Copyright(C) 2010-2010, José Pedroso <josedpedroso@gmail.com>

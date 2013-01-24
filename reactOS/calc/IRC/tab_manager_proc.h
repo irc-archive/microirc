@@ -1,5 +1,5 @@
 /*
-* tab_manager.h
+* tab_manager_proc.h
 *
 * This file contains an implementation of a tab manager to use on irc client.
 *
@@ -36,7 +36,7 @@ void set_style(style_text_t *style, CHARFORMAT2 *format){
 
 int tab_get_parameters_index(HWND tab_control, int tab_index, tab_t **result){
    TCITEM tab_item;
-   memset(&tab_item,0,sizeof(TCITEM));
+   memset(&tab_item,0,sizeof(tab_item));
    tab_item.mask = TCIF_PARAM;
    if(SendMessage(tab_control,TCM_GETITEM,(int)tab_index,(LPARAM)&tab_item)==FALSE){
       return -1;
@@ -55,7 +55,7 @@ int tab_get_parameters_current(HWND tab_control, tab_t **result){
 
 int tab_get_name_index(HWND tab_control, int tab_index, wchar_t *d_result, int s_result){
    TCITEM tab_item;
-   memset(&tab_item,0,sizeof(TCITEM));
+   memset(&tab_item,0,sizeof(tab_item));
    tab_item.mask = TCIF_TEXT;
    tab_item.pszText=d_result;
    tab_item.cchTextMax=s_result;
@@ -75,7 +75,7 @@ int tab_get_name_current(HWND tab_control, wchar_t *d_result, int s_result){
 
 int tab_insert_index(HWND tab_control, int tab_index, wchar_t *tab_name, tab_t *tab_parameters){
    TCITEM tab_item;
-   memset(&tab_item,0,sizeof(TCITEM));
+   memset(&tab_item,0,sizeof(tab_item));
    tab_item.mask = TCIF_TEXT | TCIF_PARAM;
    tab_item.pszText = tab_name;
    tab_item.lParam=(long)tab_parameters;
@@ -300,8 +300,8 @@ int write_text_index(HWND tab_control, int tab_index, wchar_t *text, style_text_
    }
    //|CFM_FACE; wcscpy(format.szFaceName, L"Courier new");
    CHARFORMAT2 format;
-   memset(&format,0,sizeof(CHARFORMAT2));
-   format.cbSize = sizeof(CHARFORMAT2);
+   memset(&format,0,sizeof(format));
+   format.cbSize = sizeof(format);
    set_style(style,&format);
    SendMessage(write_tab->text, EM_SETSEL, EDITCHATVIEWTEXT_LIMIT, EDITCHATVIEWTEXT_LIMIT);
    SendMessage(write_tab->text, EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM)&format);
@@ -314,8 +314,8 @@ int write_text_index(HWND tab_control, int tab_index, wchar_t *text, style_text_
    }else if(ts == TSFALSE){
       SendMessage(write_tab->text, EM_REPLACESEL, 0, (LPARAM)L"\r\n");
    }
-   memset(&format,0,sizeof(CHARFORMAT2));
-   format.cbSize = sizeof(CHARFORMAT2);
+   memset(&format,0,sizeof(format));
+   format.cbSize = sizeof(format);
    set_style(style,&format);
 
    SendMessage(write_tab->text, EM_SETSEL, EDITCHATVIEWTEXT_LIMIT, EDITCHATVIEWTEXT_LIMIT);

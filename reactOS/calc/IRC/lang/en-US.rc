@@ -5,15 +5,15 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOG 20, 20, 130, 100
+IDD_ABOUTBOX DIALOG 20, 20, 230, 100
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU | DS_CENTER | DS_SETFONT
 CAPTION "About µIRC"
 FONT 8, "MS Sans Serif"
 BEGIN
     ICON            IDI_IRC,IDC_STATIC,12,12,21,20,SS_REALSIZEIMAGE
-    LTEXT           "µIRC(C) 2009-2010 http://code.google.com/p/microirc",IDC_STATIC,7,38,116,20,SS_NOPREFIX
-    LTEXT           "This program is licenced under the GPL version 2.",IDC_STATIC,7,60,116,19
-    LTEXT           "For details see COPYING.txt.",IDC_STATIC,7,85,116,8
+    LTEXT           "µIRC(C) 2009-2010 http://code.google.com/p/microirc",IDC_STATIC,7,38,200,20,SS_NOPREFIX
+    LTEXT           "This program is licenced under the GPL version 2.",IDC_STATIC,7,60,200,19
+    LTEXT           "For details see COPYING.txt.",IDC_STATIC,7,85,200,8
 END
 
 IDD_INPUTBOX DIALOG  0, 0, 122, 50
@@ -199,12 +199,12 @@ BEGIN
     IDS_MSG4                     "New Profile"
     IDS_MSG5                     "Profiles"
     IDS_MSG6                     "Selected"
-    IDS_MSG7                     " Profile Manager"
+    IDS_MSG7                     "Profile Manager"
 
     IDS_ERROR_MSG1               "Host is invalid."
     IDS_ERROR_MSG2               "Port is invalid."
     IDS_ERROR_MSG3               "User is invalid."
-    IDS_ERROR_MSG4               "Name is invalid. "
+    IDS_ERROR_MSG4               "Name is invalid."
     IDS_ERROR_MSG5               "Nick is invalid."
     IDS_ERROR_MSG6               "Auto-join Delay is invalid."
     IDS_ERROR_MSG7               "Reconnect Retries is invalid."

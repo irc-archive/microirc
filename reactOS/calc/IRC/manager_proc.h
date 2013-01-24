@@ -1,5 +1,5 @@
 /*
-* manager.h
+* manager_proc.h
 *
 * This file contains functions to use by manager.
 *

@@ -1,5 +1,5 @@
 /*
-* client.h
+* client_proc.h
 *
 * This file contains functions to use by client.
 *
@@ -221,10 +221,12 @@ void *receiverThreadProc(void *window_handle){
                   break;
                }
                if(strstri(recv_buffer_ptr[4],client.irc.nick)!=NULL){
-                  if(client.config.sounds!=0)
+                  if(client.config.sounds!=0){
                      PlaySound(client.sound_alert,NULL,SND_ASYNC|SND_FILENAME);
-                  if(client.config.led_number>=0)
+                  }
+                  if(client.config.led_number>=0){
                      //activate_led();
+                  }
                   if(GetForegroundWindow()!=hWnd){
                      /*SHNOTIFICATIONDATA sn;
                      memset(&sn, 0, sizeof(SHNOTIFICATIONDATA));

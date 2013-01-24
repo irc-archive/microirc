@@ -1,5 +1,5 @@
 /*
-* dialogs_functions.h
+* proc_functions.h
 *
 * This file contains the code used on resource dialogs.
 *
@@ -38,14 +38,14 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
    switch(uMsg){
       case WM_VSCROLL:{
          RECT window_size;
-         memset(&window_size,0,sizeof(RECT));
+         memset(&window_size,0,sizeof(window_size));
          window_size.bottom=SCROLL_PREFERENCES_HEIGHT;
          MapDialogRect(hDlg,&window_size);
          int dialog_height = window_size.bottom;
 
          SCROLLINFO info;
-         memset(&info,0,sizeof(SCROLLINFO));
-         info.cbSize = sizeof(SCROLLINFO);
+         memset(&info,0,sizeof(info));
+         info.cbSize = sizeof(info);
          info.fMask = SIF_POS|SIF_TRACKPOS;
          GetScrollInfo(hDlg,SB_VERT,&info);
          switch(LOWORD(wParam)){

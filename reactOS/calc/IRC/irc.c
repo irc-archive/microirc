@@ -1,7 +1,7 @@
 /*
-* irc.cpp
+* irc.c
 *
-* This file contains an irc client gui implementation with ircprotocol lib.
+* This file contains an irc client gui implementation.
 *
 * Copyright(C) 2009-2010, Diogo Reis <diogoandre12@gmail.com>
 * Copyright(C) 2010-2010, José Pedroso <josedpedroso@gmail.com>
@@ -35,6 +35,11 @@ int WINAPI WinMain2(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLi
     if(LoadLibrary(L"Msftedit.dll") < 0){
         return 0;
     }
+    
+    memset(&config, 0, sizeof(config));
+    memset(&resize, 0, sizeof(resize));
+    memset(&client, 0, sizeof(client));
+    memset(&manager, 0, sizeof(manager));
     
 #ifdef CLIENT_ONLY
     lpCmdLine = IRC_CONST_DEFAULT;
