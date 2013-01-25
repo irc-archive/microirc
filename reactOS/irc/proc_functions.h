@@ -36,7 +36,7 @@ INT_PTR CALLBACK AboutProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam){
 
 INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam){
    switch(uMsg){
-      case WM_VSCROLL:{
+      /*case WM_VSCROLL:{
          RECT window_size;
          memset(&window_size,0,sizeof(window_size));
          window_size.bottom=SCROLL_PREFERENCES_HEIGHT;
@@ -90,11 +90,33 @@ INT_PTR CALLBACK PreferencesProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
             }
          }
          return TRUE;
-      }
+      }*/
       case WM_INITDIALOG:{
-         SetScrollRange(hDlg,SB_VERT,SCROLL_PREFERENCES_MIN_POSITIONS,SCROLL_PREFERENCES_MAX_POSITIONS,TRUE);
-         UpdateWindow(hDlg);
+         //SetScrollRange(hDlg,SB_VERT,SCROLL_PREFERENCES_MIN_POSITIONS,SCROLL_PREFERENCES_MAX_POSITIONS,TRUE);
+         //UpdateWindow(hDlg);
+    
+            wchar_t **lululu = (wchar_t**)lParam;
+         if(wcslen(lululu[0]) > 2){
 
+            HRSRC       hrsrc;
+            HGLOBAL     hglobal;
+            hrsrc = FindResource(NULL, MAKEINTRESOURCE(IDT_TAB1), RT_DIALOG);
+if(hrsrc != NULL){
+            hglobal = LoadResource(NULL, hrsrc);
+if(hglobal != NULL){
+            //HWND subDlgHwnd = 
+            wchar_t *lalalala[2]={L"",lululu[1]};
+            CreateDialogIndirectParam(config.h_instance, (LPCDLGTEMPLATE)hglobal, hDlg, PreferencesProc, (LPARAM)lalalala); 
+            //SetWindowPos(subDlgHwnd, HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE); 
+           MessageBox(NULL,L"LOL",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+
+         }
+         }
+         }
+         MessageBox(NULL,L"LOL1",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+
+         
+         
          wchar_t **parameters = (wchar_t**)lParam;//"MANAGER" or "CLIENT", profile
          iniparser_t iniparser;
          if(iniparser_init(&iniparser)!=0){

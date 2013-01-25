@@ -123,6 +123,49 @@
 #define IDS_ERROR_MSG14                 10043
 #define IDS_ERROR_MSG15                 10044
 
+
+
+
+
+
+
+
+
+
+
+#define IDT_TAB1                                1500
+#define IDT_TAB2                                1501
+#define IDT_TAB3                                1502
+#define IDT_TAB4                                1503
+#define IDC_EDIT24                              1504
+#define IDC_TABULATOR                           1505
+#define IDC_EDIT21                              1506
+#define IDC_EDIT22                              1507
+#define IDC_EDIT23                              1508
+#define IDC_EDIT30                              1509
+#define IDC_EDIT31                              1510
+#define IDC_EDIT32                              1511
+#define IDC_EDIT33                              1512
+#define IDC_EDIT34                              1513
+#define IDC_EDIT35                              1514
+#define IDC_EDIT36                              1515
+#define IDC_EDIT37                              1516
+#define IDC_EDIT25                              1517
+#define IDC_EDIT38                              1518
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED

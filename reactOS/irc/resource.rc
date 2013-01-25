@@ -64,6 +64,6 @@ END
 #ifdef LANGUAGE_EN_US
     #include "lang/en-US.rc"
 #endif
-#ifdef LANGUAGE_PT_PT
+/*#ifdef LANGUAGE_PT_PT
     #include "lang/pt-PT.rc"
-#endif
+#endif*/
