@@ -67,7 +67,9 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                iniparser_destroy(&iniparser);
 
                wchar_t *parameters[2]={IRC_CONST_MANAGER,wprofile_name};
-               if(!DialogBoxParam(config.h_instance, MAKEINTRESOURCE(IDD_PREFERENCES), hWnd, PreferencesProc, (LPARAM)parameters)){
+               //if(!DialogBoxParam(config.h_instance, MAKEINTRESOURCE(IDD_PREFERENCES), hWnd, PreferencesProc, (LPARAM)parameters)){
+               if(!OpenPreferencesDialog(hWnd, (LPARAM)parameters)){
+                   MessageBox(NULL,L"WORKS",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
                   checkbox_delete(manager.connect_size-1);
                }
                break;
@@ -80,7 +82,8 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                for(i=0;i<s_index;i++){
                   Button_GetText(manager.connect_handles[d_index[i]],wprofile_name,IRC_SIZE_SMALL);
                   wchar_t *parameters[2]={IRC_CONST_MANAGER,wprofile_name};
-                  DialogBoxParam(config.h_instance, MAKEINTRESOURCE(IDD_PREFERENCES), hWnd, PreferencesProc, (LPARAM)parameters);
+                  //DialogBoxParam(config.h_instance, MAKEINTRESOURCE(IDD_PREFERENCES), hWnd, PreferencesProc, (LPARAM)parameters);
+                  OpenPreferencesDialog(hWnd, (LPARAM)parameters);
                }
                break;
             }

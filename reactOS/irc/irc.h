@@ -17,6 +17,7 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <richedit.h>
+#include <Prsht.h>
 
 #include "resource.h"
 

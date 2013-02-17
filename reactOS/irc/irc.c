@@ -36,6 +36,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLi
         return 0;
     }
     
+    InitCommonControls();
+    
     memset(&config, 0, sizeof(config));
     memset(&resize, 0, sizeof(resize));
     memset(&client, 0, sizeof(client));

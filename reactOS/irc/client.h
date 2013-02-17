@@ -200,7 +200,8 @@ LRESULT CALLBACK WindowProcClient(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
             }
             case IDM_OPTIONS_PREFERENCES:{
                wchar_t *parameters[2]={IRC_CONST_CLIENT,client.profile};
-               DialogBoxParam(config.h_instance, (LPCTSTR)IDD_PREFERENCES, hWnd, PreferencesProc, (LPARAM)parameters);
+               //DialogBoxParam(config.h_instance, (LPCTSTR)IDD_PREFERENCES, hWnd, PreferencesProc, (LPARAM)parameters);
+               OpenPreferencesDialog(hWnd, (LPARAM)parameters);
                break;
             }
             case IDM_OPTIONS_OPENPRIVATE:{

@@ -61,6 +61,8 @@ END
 // Load extra resources by Language
 //
 
+CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "irc.exe.manifest"
+
 #ifdef LANGUAGE_EN_US
     #include "lang/en-US.rc"
 #endif
