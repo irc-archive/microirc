@@ -36,13 +36,91 @@ INT_PTR CALLBACK AboutProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam){
 
 INT_PTR CALLBACK PreferencesProcPage0(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch(uMsg){
+      case WM_NOTIFY:{
+        LPPSHNOTIFY lppsn = (LPPSHNOTIFY) lParam;
+        NMHDR nmhdr = lppsn->hdr;
+        //if(nmhdr.code == PSN_KILLACTIVE){
+        //    MessageBox(NULL,L"killactive",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+        //}
+        if(nmhdr.code == PSN_APPLY){
+            MessageBox(NULL,L"apply",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+            
+            
+         PROPSHEETPAGE* params = (PROPSHEETPAGE*)lppsn->lParam;
+
+         void **pointers = (void**)params->lParam;
+         //wchar_t *parameters[2] = {pointers[1], pointers[2]}; //"MANAGER" or "CLIENT", profile
+         iniparser_t *iniparser = pointers[0];
+            
+            
+            wchar_t type[IRC_SIZE_SMALL];
+            wchar_t profile[IRC_SIZE_SMALL];
+            char host[IRCPROTOCOL_SIZE_SMALL];
+            char port[IRCPROTOCOL_SIZE_SMALL];
+            char pass[IRCPROTOCOL_SIZE_SMALL];
+            char user[IRCPROTOCOL_SIZE_SMALL];
+            char name[IRCPROTOCOL_SIZE_SMALL];
+            char nick[IRCPROTOCOL_SIZE_SMALL];
+            int connect_on_startup;
+            int reconnect_retries;
+
+            gettext_towstr(hDlg,IDC_EDIT0,type,IRC_SIZE_SMALL);
+            gettext_towstr(hDlg,IDC_EDIT1,profile,IRC_SIZE_SMALL);
+            gettext_tostr(hDlg, IDC_EDIT2, host, IRCPROTOCOL_SIZE_SMALL);
+            gettext_tostr(hDlg, IDC_EDIT3, port, IRCPROTOCOL_SIZE_SMALL);
+            gettext_tostr(hDlg, IDC_EDIT4, pass, IRCPROTOCOL_SIZE_SMALL);
+            gettext_tostr(hDlg, IDC_EDIT5, user, IRCPROTOCOL_SIZE_SMALL);
+            gettext_tostr(hDlg, IDC_EDIT6, name, IRCPROTOCOL_SIZE_SMALL);
+            gettext_tostr(hDlg, IDC_EDIT7, nick, IRCPROTOCOL_SIZE_MEDIUM);
+            connect_on_startup = getint_fromcheck(hDlg,IDC_CHECK1);
+            reconnect_retries = gettext_toint(hDlg,IDC_EDIT11);
+
+            if(strlen(host)<=0){
+               MessageBox(hDlg,MAKEINTSTR(IDS_ERROR_MSG1),NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               break;
+            }
+            if(strlen(port)<=0){
+               MessageBox(hDlg,MAKEINTSTR(IDS_ERROR_MSG2),NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               break;
+            }
+            if(strlen(user)<=0){
+               MessageBox(hDlg,MAKEINTSTR(IDS_ERROR_MSG3),NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               break;
+            }
+            if(strlen(name)<=0){
+               MessageBox(hDlg,MAKEINTSTR(IDS_ERROR_MSG4),NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               break;
+            }
+            if(strlen(nick)<=0){
+               MessageBox(hDlg,MAKEINTSTR(IDS_ERROR_MSG5),NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               break;
+            }
+            if(reconnect_retries < 0){
+               MessageBox(hDlg,MAKEINTSTR(IDS_ERROR_MSG7),NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+               break;
+            }
+
+            iniparser_setstring(iniparser, IRC_CONF_SERVER, IRC_CONF_HOST, host);
+            iniparser_setstring(iniparser, IRC_CONF_SERVER, IRC_CONF_PORT, port);
+            iniparser_setstring(iniparser, IRC_CONF_SERVER, IRC_CONF_PASS, pass);
+            iniparser_setstring(iniparser, IRC_CONF_CLIENT, IRC_CONF_USER, user);
+            iniparser_setstring(iniparser, IRC_CONF_CLIENT, IRC_CONF_NAME, name);
+            iniparser_setstring(iniparser, IRC_CONF_CLIENT, IRC_CONF_NICK, nick);
+            iniparser_setint(iniparser, IRC_CONF_CONNECTION, IRC_CONF_STARTUP, connect_on_startup);
+            iniparser_setint(iniparser, IRC_CONF_CONNECTION, IRC_CONF_RETRIES, reconnect_retries);
+            if(wcscmp(type,IRC_CONST_CLIENT)==0){
+               client.config.connect_on_startup = connect_on_startup;
+               client.config.reconnect_retries = reconnect_retries;
+            }
+        }
+        break;
+      }
       case WM_INITDIALOG:{
          PROPSHEETPAGE* params = (PROPSHEETPAGE*)lParam;
-         void **miparm = (void**)params->lParam;//"MANAGER" or "CLIENT", profile
 
-         wchar_t *parameters[2] = {miparm[2], miparm[3]};
-
-         iniparser_t *iniparser = miparm[0];
+         void **pointers = (void**)params->lParam;
+         wchar_t *parameters[2] = {pointers[1], pointers[2]}; //"MANAGER" or "CLIENT", profile
+         iniparser_t *iniparser = pointers[0];
 
          settext_fromwstr(hDlg,IDC_EDIT0,parameters[0]);
          settext_fromwstr(hDlg,IDC_EDIT1,parameters[1]);
@@ -59,6 +137,7 @@ INT_PTR CALLBACK PreferencesProcPage0(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
             setcheck_fromint(hDlg,IDC_CHECK1,client.config.connect_on_startup);
             settext_fromint(hDlg,IDC_EDIT11,client.config.reconnect_retries);
          }
+         break;
       }
     }
     return FALSE;
@@ -66,52 +145,6 @@ INT_PTR CALLBACK PreferencesProcPage0(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
 
 INT_PTR CALLBACK PreferencesProcPage1(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch(uMsg){
-      case WM_INITDIALOG:{
-         PROPSHEETPAGE* params = (PROPSHEETPAGE*)lParam;
-         void **miparm = (void**)params->lParam;//"MANAGER" or "CLIENT", profile
-
-         //wchar_t *parameters[2] = {miparm[2], miparm[3]};
-
-         iniparser_t *iniparser = miparm[0];
-         
-         settext_fromstr(hDlg,IDC_EDIT8,iniparser_getstring(iniparser, IRC_CONF_CLIENT, IRC_CONF_PERFORM, IRC_CONF_PERFORM_VAL));
-         settext_fromstr(hDlg,IDC_EDIT9,iniparser_getstring(iniparser, IRC_CONF_AUTOJOIN, IRC_CONF_CHANNELS, IRC_CONF_CHANNELS_VAL));
-         settext_fromint(hDlg,IDC_EDIT10,iniparser_getint(iniparser, IRC_CONF_AUTOJOIN, IRC_CONF_DELAY, IRC_CONF_DELAY_VAL));
-      }
-    }
-    return FALSE;
-}
-
-INT_PTR CALLBACK PreferencesProcPage2(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-    switch(uMsg){
-      case WM_INITDIALOG:{
-         PROPSHEETPAGE* params = (PROPSHEETPAGE*)lParam;
-         void **miparm = (void**)params->lParam;//"MANAGER" or "CLIENT", profile
-
-         wchar_t *parameters[2] = {miparm[2], miparm[3]};
-
-         iniparser_t *iniparser = miparm[0];
-         
-         if(wcscmp(parameters[0],IRC_CONST_MANAGER)==0){
-            settext_fromstr(hDlg,IDC_EDIT12,iniparser_getstring(iniparser, IRC_CONF_MESSAGES, IRC_CONF_PART, IRC_CONF_PART_VAL));
-            settext_fromstr(hDlg,IDC_EDIT13,iniparser_getstring(iniparser, IRC_CONF_MESSAGES, IRC_CONF_KICK, IRC_CONF_KICK_VAL));
-            settext_fromstr(hDlg,IDC_EDIT14,iniparser_getstring(iniparser, IRC_CONF_MESSAGES, IRC_CONF_QUIT, IRC_CONF_QUIT_VAL));
-         }else if(wcscmp(parameters[0],IRC_CONST_CLIENT)==0){
-            settext_fromstr(hDlg,IDC_EDIT12,client.config.part);
-            settext_fromstr(hDlg,IDC_EDIT13,client.config.kick);
-            settext_fromstr(hDlg,IDC_EDIT14,client.config.quit);
-         }
-      }
-    }
-    return FALSE;
-}
-
-INT_PTR CALLBACK PreferencesProcPage3(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-   switch(uMsg){
-      case WM_DESTROY:{
-        MessageBox(NULL,L"gravou",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
-            return FALSE;
-      }
       case WM_NOTIFY:{
         LPPSHNOTIFY lppsn = (LPPSHNOTIFY) lParam;
         NMHDR nmhdr = lppsn->hdr;
@@ -125,12 +158,78 @@ INT_PTR CALLBACK PreferencesProcPage3(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
       }
       case WM_INITDIALOG:{
          PROPSHEETPAGE* params = (PROPSHEETPAGE*)lParam;
-         void **miparm = (void**)params->lParam;//"MANAGER" or "CLIENT", profile
 
-         wchar_t *parameters[2] = {miparm[2], miparm[3]};
+         void **pointers = (void**)params->lParam;
+         iniparser_t *iniparser = pointers[0];
 
-         iniparser_t *iniparser = miparm[0];
-         
+         settext_fromstr(hDlg,IDC_EDIT8,iniparser_getstring(iniparser, IRC_CONF_CLIENT, IRC_CONF_PERFORM, IRC_CONF_PERFORM_VAL));
+         settext_fromstr(hDlg,IDC_EDIT9,iniparser_getstring(iniparser, IRC_CONF_AUTOJOIN, IRC_CONF_CHANNELS, IRC_CONF_CHANNELS_VAL));
+         settext_fromint(hDlg,IDC_EDIT10,iniparser_getint(iniparser, IRC_CONF_AUTOJOIN, IRC_CONF_DELAY, IRC_CONF_DELAY_VAL));
+         break;
+      }
+    }
+    return FALSE;
+}
+
+INT_PTR CALLBACK PreferencesProcPage2(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+    switch(uMsg){
+      case WM_NOTIFY:{
+        LPPSHNOTIFY lppsn = (LPPSHNOTIFY) lParam;
+        NMHDR nmhdr = lppsn->hdr;
+        //if(nmhdr.code == PSN_KILLACTIVE){
+        //    MessageBox(NULL,L"killactive",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+        //}
+        if(nmhdr.code == PSN_APPLY){
+            MessageBox(NULL,L"apply",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+        }
+        break;
+      }
+      case WM_INITDIALOG:{
+         PROPSHEETPAGE* params = (PROPSHEETPAGE*)lParam;
+
+         void **pointers = (void**)params->lParam;
+         wchar_t *parameters[2] = {pointers[1], pointers[2]}; //"MANAGER" or "CLIENT", profile
+         iniparser_t *iniparser = pointers[0];
+
+         if(wcscmp(parameters[0],IRC_CONST_MANAGER)==0){
+            settext_fromstr(hDlg,IDC_EDIT12,iniparser_getstring(iniparser, IRC_CONF_MESSAGES, IRC_CONF_PART, IRC_CONF_PART_VAL));
+            settext_fromstr(hDlg,IDC_EDIT13,iniparser_getstring(iniparser, IRC_CONF_MESSAGES, IRC_CONF_KICK, IRC_CONF_KICK_VAL));
+            settext_fromstr(hDlg,IDC_EDIT14,iniparser_getstring(iniparser, IRC_CONF_MESSAGES, IRC_CONF_QUIT, IRC_CONF_QUIT_VAL));
+         }else if(wcscmp(parameters[0],IRC_CONST_CLIENT)==0){
+            settext_fromstr(hDlg,IDC_EDIT12,client.config.part);
+            settext_fromstr(hDlg,IDC_EDIT13,client.config.kick);
+            settext_fromstr(hDlg,IDC_EDIT14,client.config.quit);
+         }
+         break;
+      }
+    }
+    return FALSE;
+}
+
+INT_PTR CALLBACK PreferencesProcPage3(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+   switch(uMsg){
+      /*case WM_DESTROY:{
+        MessageBox(NULL,L"gravou",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+            return FALSE;
+      }*/
+      case WM_NOTIFY:{
+        LPPSHNOTIFY lppsn = (LPPSHNOTIFY) lParam;
+        NMHDR nmhdr = lppsn->hdr;
+        //if(nmhdr.code == PSN_KILLACTIVE){
+        //    MessageBox(NULL,L"killactive",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+        //}
+        if(nmhdr.code == PSN_APPLY){
+            MessageBox(NULL,L"apply",NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
+        }
+        break;
+      }
+      case WM_INITDIALOG:{
+         PROPSHEETPAGE* params = (PROPSHEETPAGE*)lParam;
+
+         void **pointers = (void**)params->lParam;
+         wchar_t *parameters[2] = {pointers[1], pointers[2]}; //"MANAGER" or "CLIENT", profile
+         iniparser_t *iniparser = pointers[0];
+
          if(wcscmp(parameters[0],IRC_CONST_MANAGER)==0){
             setcombo_fromint(hDlg,IDC_COMBO1,iniparser_getint(iniparser, IRC_CONF_MISCELLANEOUS, IRC_CONF_ENCODING, IRC_CONF_ENCODING_VAL));
             settext_fromint(hDlg,IDC_EDIT15,iniparser_getint(iniparser, IRC_CONF_MISCELLANEOUS, IRC_CONF_BUBBLE, IRC_CONF_BUBBLE_VAL));
@@ -148,7 +247,7 @@ INT_PTR CALLBACK PreferencesProcPage3(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
             settext_fromint(hDlg,IDC_EDIT16,client.config.led_number);
             settext_fromint(hDlg,IDC_EDIT17,client.config.led_interval);
          }
-
+         break;
       }
    }
    return FALSE;
@@ -247,9 +346,10 @@ INT_PTR WINAPI OpenPreferencesDialog(HWND hWndParent, LPARAM dwInitParam) {
         return FALSE;
     }
 
+    void *pointers[3] = {(void*)&iniparser, parameters[0], parameters[1]};
+
     PROPSHEETPAGE psp[4];
 
-    void *page0[4] = {(void*)&iniparser, L"0", parameters[0], parameters[1]};
     psp[0].dwSize      = sizeof(PROPSHEETPAGE);
     psp[0].dwFlags     = PSP_USEICONID | PSP_USETITLE; //PSP_USECALLBACK
     psp[0].hInstance   = config.h_instance;
@@ -257,10 +357,9 @@ INT_PTR WINAPI OpenPreferencesDialog(HWND hWndParent, LPARAM dwInitParam) {
     psp[0].pszIcon     = NULL; //MAKEINTRESOURCE(IDI_FONT);
     psp[0].pfnDlgProc  = PreferencesProcPage0;
     psp[0].pszTitle    = L"0";
-    psp[0].lParam      = (LPARAM)page0;
+    psp[0].lParam      = (LPARAM)pointers;
     psp[0].pfnCallback = NULL;
 
-    wchar_t *page1[4] = {(void*)&iniparser, L"1", parameters[0], parameters[1]};
     psp[1].dwSize      = sizeof(PROPSHEETPAGE);
     psp[1].dwFlags     = PSP_USEICONID | PSP_USETITLE; //PSP_USECALLBACK
     psp[1].hInstance   = config.h_instance;
@@ -268,10 +367,9 @@ INT_PTR WINAPI OpenPreferencesDialog(HWND hWndParent, LPARAM dwInitParam) {
     psp[1].pszIcon     = NULL; //MAKEINTRESOURCE(IDI_BORDER);
     psp[1].pfnDlgProc  = PreferencesProcPage1;
     psp[1].pszTitle    = L"1";
-    psp[1].lParam      = (LPARAM)page1;
+    psp[1].lParam      = (LPARAM)pointers;
     psp[1].pfnCallback = NULL;
 
-    wchar_t *page2[4] = {(void*)&iniparser, L"2", parameters[0], parameters[1]};
     psp[2].dwSize      = sizeof(PROPSHEETPAGE);
     psp[2].dwFlags     = PSP_USEICONID | PSP_USETITLE; //PSP_USECALLBACK
     psp[2].hInstance   = config.h_instance;
@@ -279,10 +377,9 @@ INT_PTR WINAPI OpenPreferencesDialog(HWND hWndParent, LPARAM dwInitParam) {
     psp[2].pszIcon     = NULL; //MAKEINTRESOURCE(IDI_BORDER);
     psp[2].pfnDlgProc  = PreferencesProcPage2;
     psp[2].pszTitle    = L"2";
-    psp[2].lParam      = (LPARAM)page2;
+    psp[2].lParam      = (LPARAM)pointers;
     psp[2].pfnCallback = NULL;
 
-    wchar_t *page3[4] = {(void*)&iniparser, L"3", parameters[0], parameters[1]};
     psp[3].dwSize      = sizeof(PROPSHEETPAGE);
     psp[3].dwFlags     = PSP_USEICONID | PSP_USETITLE; //PSP_USECALLBACK
     psp[3].hInstance   = config.h_instance;
@@ -290,7 +387,7 @@ INT_PTR WINAPI OpenPreferencesDialog(HWND hWndParent, LPARAM dwInitParam) {
     psp[3].pszIcon     = NULL; //MAKEINTRESOURCE(IDI_BORDER);
     psp[3].pfnDlgProc  = PreferencesProcPage3;
     psp[3].pszTitle    = L"3";
-    psp[3].lParam      = (LPARAM)page3;
+    psp[3].lParam      = (LPARAM)pointers;
     psp[3].pfnCallback = NULL; 
 
     PROPSHEETHEADER psh;
