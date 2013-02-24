@@ -53,7 +53,7 @@
 #define IDM_EDIT                        622
 
 //Dialogs
-#define IDC_EDIT0                       999
+//#define IDC_EDIT0                       999
 #define IDC_EDIT1                       1000
 #define IDC_EDIT2                       1001
 #define IDC_EDIT3                       1002

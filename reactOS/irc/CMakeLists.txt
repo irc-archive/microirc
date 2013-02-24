@@ -13,7 +13,7 @@ add_executable(irc
 )
 
 set_module_type(irc win32gui UNICODE)
-add_importlibs(irc advapi32 user32 gdi32 msvcrt kernel32 ws2_32 winmm comctl32 shell32)
+add_importlibs(irc advapi32 user32 gdi32 msvcrt kernel32 ws2_32 winmm comctl32 shell32 comdlg32)
 if(MSVC)
     add_importlibs(irc ntdll)
 endif()
