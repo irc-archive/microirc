@@ -71,9 +71,7 @@ typedef struct config_t{
     wchar_t window_title[IRC_SIZE_SMALL];
     wchar_t module_path[IRC_SIZE_SMALL];
     HMENU menu_bar_handle;
-    
-    int text_color;
-    int background_color;
+
     unsigned int LOG_PIXELS_X;
     unsigned int LOG_PIXELS_Y;
 }config_t;
@@ -89,6 +87,15 @@ typedef struct ircconfig_t{
     int sounds;
     int led_number;
     int led_interval;
+    int background_color;
+    int font_color;
+    int join_color;
+    int nickchange_color;
+    int topicchange_color;
+    int mode_color;
+    int part_color;
+    int kick_color;
+    int quit_color;
 }ircconfig_t;
 
 typedef struct guiclient_t{

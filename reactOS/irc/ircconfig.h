@@ -16,6 +16,7 @@
 #define IRC_CONF_CONNECTION "connection"
 #define IRC_CONF_MESSAGES "messages"
 #define IRC_CONF_MISCELLANEOUS "miscellaneous"
+#define IRC_CONF_COLORS "colors"
 
 /* Server */
 #define IRC_CONF_HOST "host"
@@ -67,7 +68,27 @@
 #define IRC_CONF_LEDINTERVAL "led_interval"
 #define IRC_CONF_LEDINTERVAL_VAL 500
 
-int ircconfig_init(ircconfig_t *ircconfig, int connect_on_startup, int reconnect_retries, char *part, char *kick, char *quit, int encoding, int bubble, int sounds, int led_number, int led_interval){
+/* Colors */
+#define IRC_CONF_BACKGROUND_COLOR "background"
+#define IRC_CONF_BACKGROUND_COLOR_VAL 1
+#define IRC_CONF_FONT_COLOR "font"
+#define IRC_CONF_FONT_COLOR_VAL 1
+#define IRC_CONF_JOIN_COLOR "join"
+#define IRC_CONF_JOIN_COLOR_VAL 1
+#define IRC_CONF_NICKCHANGE_COLOR "nickchange"
+#define IRC_CONF_NICKCHANGE_COLOR_VAL 1
+#define IRC_CONF_TOPICCHANGE_COLOR "topicchange"
+#define IRC_CONF_TOPICCHANGE_COLOR_VAL 1
+#define IRC_CONF_MODE_COLOR "mode"
+#define IRC_CONF_MODE_COLOR_VAL 1
+#define IRC_CONF_PART_COLOR "part"
+#define IRC_CONF_PART_COLOR_VAL 1
+#define IRC_CONF_KICK_COLOR "kick"
+#define IRC_CONF_KICK_COLOR_VAL 1
+#define IRC_CONF_QUIT_COLOR "quit"
+#define IRC_CONF_QUIT_COLOR_VAL 1
+
+int ircconfig_init(ircconfig_t *ircconfig, int connect_on_startup, int reconnect_retries, char *part, char *kick, char *quit, int encoding, int bubble, int sounds, int led_number, int led_interval, int background_color, int topicchange_color, int font_color, int join_color, int nickchange_color, int mode_color, int part_color, int kick_color, int quit_color){
    memset(ircconfig,0,sizeof(ircconfig_t));
    if(reconnect_retries<0 || bubble<0 || led_interval<0){
       return -1;
@@ -82,6 +103,15 @@ int ircconfig_init(ircconfig_t *ircconfig, int connect_on_startup, int reconnect
    ircconfig->sounds = sounds;
    ircconfig->led_number = led_number;
    ircconfig->led_interval = led_interval;
+   ircconfig->background_color = background_color;
+   ircconfig->font_color = font_color;
+   ircconfig->join_color = join_color;
+   ircconfig->nickchange_color = nickchange_color;
+   ircconfig->topicchange_color = topicchange_color;
+   ircconfig->mode_color = mode_color;
+   ircconfig->part_color = part_color;
+   ircconfig->kick_color = kick_color;
+   ircconfig->quit_color = quit_color;
    return 0;
 }
 
@@ -122,6 +152,15 @@ int irc_config_init(irc_t *irc, ircconfig_t *ircconfig, wchar_t *filepath){
    int sounds;
    int led_number;
    int led_interval;
+    int background_color;
+    int font_color;
+    int join_color;
+    int nickchange_color;
+    int topicchange_color;
+    int mode_color;
+    int part_color;
+    int kick_color;
+    int quit_color;
 
    strncpy0(host,iniparser_getstring(&iniparser, IRC_CONF_SERVER, IRC_CONF_HOST, IRC_CONF_HOST_VAL),IRCPROTOCOL_SIZE_SMALL);
    strncpy0(port,iniparser_getstring(&iniparser, IRC_CONF_SERVER, IRC_CONF_PORT, IRC_CONF_PORT_VAL),IRCPROTOCOL_SIZE_SMALL);
@@ -147,6 +186,16 @@ int irc_config_init(irc_t *irc, ircconfig_t *ircconfig, wchar_t *filepath){
    sounds = iniparser_getint(&iniparser, IRC_CONF_MISCELLANEOUS, IRC_CONF_SOUNDS, IRC_CONF_SOUNDS_VAL);
    led_number = iniparser_getint(&iniparser, IRC_CONF_MISCELLANEOUS, IRC_CONF_LEDNUMBER, IRC_CONF_LEDNUMBER_VAL);
    led_interval = iniparser_getint(&iniparser, IRC_CONF_MISCELLANEOUS, IRC_CONF_LEDINTERVAL, IRC_CONF_LEDINTERVAL_VAL);
+   
+    background_color = iniparser_getint(&iniparser, IRC_CONF_COLORS, IRC_CONF_BACKGROUND_COLOR_VAL, IRC_CONF_LEDINTERVAL_VAL);
+    font_color = iniparser_getint(&iniparser, IRC_CONF_COLORS, IRC_CONF_LEDINTERVAL, IRC_CONF_LEDINTERVAL_VAL);
+    join_color = iniparser_getint(&iniparser, IRC_CONF_COLORS, IRC_CONF_LEDINTERVAL, IRC_CONF_LEDINTERVAL_VAL);
+    nickchange_color = iniparser_getint(&iniparser, IRC_CONF_COLORS, IRC_CONF_LEDINTERVAL, IRC_CONF_LEDINTERVAL_VAL);
+    topicchange_color = iniparser_getint(&iniparser, IRC_CONF_COLORS, IRC_CONF_LEDINTERVAL, IRC_CONF_LEDINTERVAL_VAL);
+    mode_color = iniparser_getint(&iniparser, IRC_CONF_COLORS, IRC_CONF_LEDINTERVAL, IRC_CONF_LEDINTERVAL_VAL);
+    part_color = iniparser_getint(&iniparser, IRC_CONF_COLORS, IRC_CONF_LEDINTERVAL, IRC_CONF_LEDINTERVAL_VAL);
+    kick_color = iniparser_getint(&iniparser, IRC_CONF_COLORS, IRC_CONF_LEDINTERVAL, IRC_CONF_LEDINTERVAL_VAL);
+    quit_color = iniparser_getint(&iniparser, IRC_CONF_COLORS, IRC_CONF_LEDINTERVAL, IRC_CONF_LEDINTERVAL_VAL);
    
    iniparser_destroy(&iniparser);
    if(irc_init(irc,host,port,pass,user,name,nick,perform,channels,delay)!=0){

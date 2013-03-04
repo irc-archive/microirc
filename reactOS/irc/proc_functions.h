@@ -34,6 +34,27 @@ INT_PTR CALLBACK AboutProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam){
    return FALSE;
 }
 
+INT_PTR WINAPI OpenColorsDialog(HWND hWndParent, COLORREF def) {
+    CHOOSECOLOR color;
+    memset(&color,0,sizeof(color));
+
+    COLORREF cRef[] = { RGB(0, 0, 0), RGB(255, 0, 0), RGB(255, 255, 0), RGB(0, 0, 128),
+                        RGB(255, 255, 255), RGB(0, 255, 255), RGB(0, 0, 255),
+                        RGB(255, 0, 255), RGB(0, 255, 0), RGB(128, 0, 0),
+                        RGB(128, 128, 128), RGB(0, 128, 128), RGB(128, 0, 128),
+                        RGB(0, 128, 0), RGB(255, 128, 0), RGB(192, 192, 192) };
+    color.lpCustColors = cRef;
+    color.lStructSize = sizeof(color);
+    color.hwndOwner = hWndParent;
+    color.Flags = CC_FULLOPEN;
+
+    if(ChooseColor(&color)){
+        return color.rgbResult;
+    }else{
+        return def;
+    }
+}
+
 INT_PTR CALLBACK PreferencesProcPage1(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     static void **pointers = NULL;
     switch(uMsg){
@@ -135,6 +156,10 @@ INT_PTR CALLBACK PreferencesProcPage1(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
     }
     return FALSE;
 }
+
+        COLORREF res = OpenColorsDialog(hDlg, RGB(255,255,255));
+         HWND dlgitem = GetDlgItem(hDlg,IDC_EDIT31);
+         SendMessage(dlgitem,EM_SETBKGNDCOLOR,0,res);
 
 INT_PTR CALLBACK PreferencesProcPage2(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     static void **pointers = NULL;
@@ -317,33 +342,11 @@ INT_PTR CALLBACK PreferencesProcPage4(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
             settext_fromint(hDlg,IDC_EDIT17,client.config.led_interval);
          }
          break;
+         
       }
    }
    return FALSE;
 }
-
-//    OpenColorsDialog(hWndParent, RGB(0,0,0));
-INT_PTR WINAPI OpenColorsDialog(HWND hWndParent, COLORREF def) {
-    CHOOSECOLOR color;
-    memset(&color,0,sizeof(color));
-
-    COLORREF cRef[] = { RGB(0, 0, 0), RGB(255, 0, 0), RGB(255, 255, 0), RGB(0, 0, 128),
-                        RGB(255, 255, 255), RGB(0, 255, 255), RGB(0, 0, 255),
-                        RGB(255, 0, 255), RGB(0, 255, 0), RGB(128, 0, 0),
-                        RGB(128, 128, 128), RGB(0, 128, 128), RGB(128, 0, 128),
-                        RGB(0, 128, 0), RGB(255, 128, 0), RGB(192, 192, 192) };
-    color.lpCustColors = cRef;
-    color.lStructSize = sizeof(color);
-    color.hwndOwner = hWndParent;
-    color.Flags = CC_FULLOPEN;
-
-    if(ChooseColor(&color)){
-        return color.rgbResult;
-    }else{
-        return def;
-    }
-}
-
 
 INT_PTR WINAPI OpenPreferencesDialog(HWND hWndParent, LPARAM dwInitParam) {
     wchar_t **parameters = (wchar_t**)dwInitParam;
@@ -364,40 +367,40 @@ INT_PTR WINAPI OpenPreferencesDialog(HWND hWndParent, LPARAM dwInitParam) {
     memset(&psp,0,sizeof(psp));
 
     psp[0].dwSize      = sizeof(PROPSHEETPAGE);
-    psp[0].dwFlags     = PSP_USEICONID | PSP_USETITLE; //PSP_USECALLBACK
+    psp[0].dwFlags     = PSP_USEICONID | PSP_USETITLE;
     psp[0].hInstance   = config.h_instance;
     psp[0].pszTemplate = MAKEINTRESOURCE(IDT_TAB1);
-    psp[0].pszIcon     = NULL; //MAKEINTRESOURCE(IDI_FONT);
+    psp[0].pszIcon     = NULL;
     psp[0].pfnDlgProc  = PreferencesProcPage1;
     psp[0].pszTitle    = L"Server and ID";
     psp[0].lParam      = (LPARAM)pointers;
     psp[0].pfnCallback = NULL;
 
     psp[1].dwSize      = sizeof(PROPSHEETPAGE);
-    psp[1].dwFlags     = PSP_USEICONID | PSP_USETITLE; //PSP_USECALLBACK
+    psp[1].dwFlags     = PSP_USEICONID | PSP_USETITLE;
     psp[1].hInstance   = config.h_instance;
     psp[1].pszTemplate = MAKEINTRESOURCE(IDT_TAB2);
-    psp[1].pszIcon     = NULL; //MAKEINTRESOURCE(IDI_BORDER);
+    psp[1].pszIcon     = NULL;
     psp[1].pfnDlgProc  = PreferencesProcPage2;
     psp[1].pszTitle    = L"Perform";
     psp[1].lParam      = (LPARAM)pointers;
     psp[1].pfnCallback = NULL;
 
     psp[2].dwSize      = sizeof(PROPSHEETPAGE);
-    psp[2].dwFlags     = PSP_USEICONID | PSP_USETITLE; //PSP_USECALLBACK
+    psp[2].dwFlags     = PSP_USEICONID | PSP_USETITLE;
     psp[2].hInstance   = config.h_instance;
     psp[2].pszTemplate = MAKEINTRESOURCE(IDT_TAB3);
-    psp[2].pszIcon     = NULL; //MAKEINTRESOURCE(IDI_BORDER);
+    psp[2].pszIcon     = NULL;
     psp[2].pfnDlgProc  = PreferencesProcPage3;
     psp[2].pszTitle    = L"Messages";
     psp[2].lParam      = (LPARAM)pointers;
     psp[2].pfnCallback = NULL;
 
     psp[3].dwSize      = sizeof(PROPSHEETPAGE);
-    psp[3].dwFlags     = PSP_USEICONID | PSP_USETITLE; //PSP_USECALLBACK
+    psp[3].dwFlags     = PSP_USEICONID | PSP_USETITLE;
     psp[3].hInstance   = config.h_instance;
     psp[3].pszTemplate = MAKEINTRESOURCE(IDT_TAB4);
-    psp[3].pszIcon     = NULL; //MAKEINTRESOURCE(IDI_BORDER);
+    psp[3].pszIcon     = NULL;
     psp[3].pfnDlgProc  = PreferencesProcPage4;
     psp[3].pszTitle    = L"Colors and Misc";
     psp[3].lParam      = (LPARAM)pointers;
@@ -410,12 +413,13 @@ INT_PTR WINAPI OpenPreferencesDialog(HWND hWndParent, LPARAM dwInitParam) {
     psh.dwFlags     = PSH_USEICONID | PSH_PROPSHEETPAGE | PSH_NOAPPLYNOW | PSH_NOCONTEXTHELP | PSH_PROPTITLE | DS_CENTER;
     psh.hwndParent  = hWndParent;
     psh.hInstance   = config.h_instance;
-    psh.pszIcon     = NULL; //MAKEINTRESOURCE(IDI_CELL_PROPERTIES);
+    psh.pszIcon     = NULL;
     psh.pszCaption  = parameters[1];
     psh.nPages      = sizeof(psp) / sizeof(PROPSHEETPAGE);
     psh.nStartPage  = 0;
     psh.ppsp        = (LPCPROPSHEETPAGE) &psp;
 
+    // PSP_USECALLBACK, PSH_USECALLBACK, MAKEINTRESOURCE(IDI_BORDER);
     int result = PropertySheet(&psh);
     if(result > 0){
         if(winiparser_store(&iniparser,parameters[1])!=0){
