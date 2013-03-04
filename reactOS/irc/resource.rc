@@ -1,4 +1,5 @@
 #include <windows.h>
+#include <richedit.h>
 
 #include "resource.h"
 

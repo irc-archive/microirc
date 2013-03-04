@@ -322,7 +322,7 @@ INT_PTR CALLBACK PreferencesProcPage4(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
    return FALSE;
 }
 
-
+//    OpenColorsDialog(hWndParent, RGB(0,0,0));
 INT_PTR WINAPI OpenColorsDialog(HWND hWndParent, COLORREF def) {
     CHOOSECOLOR color;
     memset(&color,0,sizeof(color));
@@ -416,8 +416,6 @@ INT_PTR WINAPI OpenPreferencesDialog(HWND hWndParent, LPARAM dwInitParam) {
     psh.nStartPage  = 0;
     psh.ppsp        = (LPCPROPSHEETPAGE) &psp;
 
-    OpenColorsDialog(hWndParent, RGB(0,0,0));
-    
     int result = PropertySheet(&psh);
     if(result > 0){
         if(winiparser_store(&iniparser,parameters[1])!=0){
