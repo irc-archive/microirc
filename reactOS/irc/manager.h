@@ -60,6 +60,16 @@ LRESULT CALLBACK WindowProcManager(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                iniparser_setint(&iniparser, IRC_CONF_MISCELLANEOUS, IRC_CONF_SOUNDS, IRC_CONF_SOUNDS_VAL);
                iniparser_setint(&iniparser, IRC_CONF_MISCELLANEOUS, IRC_CONF_LEDNUMBER, IRC_CONF_LEDNUMBER_VAL);
                iniparser_setint(&iniparser, IRC_CONF_MISCELLANEOUS, IRC_CONF_LEDINTERVAL, IRC_CONF_LEDINTERVAL_VAL);
+                iniparser_setint(&iniparser, IRC_CONF_COLORS, IRC_CONF_BACKGROUND_COLOR, IRC_CONF_BACKGROUND_COLOR_VAL);
+                iniparser_setint(&iniparser, IRC_CONF_COLORS, IRC_CONF_FONT_COLOR, IRC_CONF_FONT_COLOR_VAL);
+                iniparser_setint(&iniparser, IRC_CONF_COLORS, IRC_CONF_JOIN_COLOR, IRC_CONF_JOIN_COLOR_VAL);
+                iniparser_setint(&iniparser, IRC_CONF_COLORS, IRC_CONF_NICKCHANGE_COLOR, IRC_CONF_NICKCHANGE_COLOR_VAL);
+                iniparser_setint(&iniparser, IRC_CONF_COLORS, IRC_CONF_TOPICCHANGE_COLOR, IRC_CONF_TOPICCHANGE_COLOR_VAL);
+                iniparser_setint(&iniparser, IRC_CONF_COLORS, IRC_CONF_MODE_COLOR, IRC_CONF_MODE_COLOR_VAL);
+                iniparser_setint(&iniparser, IRC_CONF_COLORS, IRC_CONF_PART_COLOR, IRC_CONF_PART_COLOR_VAL);
+                iniparser_setint(&iniparser, IRC_CONF_COLORS, IRC_CONF_KICK_COLOR, IRC_CONF_KICK_COLOR_VAL);
+                iniparser_setint(&iniparser, IRC_CONF_COLORS, IRC_CONF_QUIT_COLOR, IRC_CONF_QUIT_COLOR_VAL);
+
                if(winiparser_store(&iniparser,wprofile_name)!=0){
                   iniparser_destroy(&iniparser);
                   break;

@@ -27,7 +27,7 @@ typedef struct style_text_t{
 void set_style(style_text_t *style, CHARFORMAT2 *format){
    if(style==NULL){
       format->dwMask = CFM_COLOR;
-      format->crTextColor = config.text_color;
+      format->crTextColor = client.config.font_color;
    }else{
       format->dwMask = CFM_COLOR;
       format->crTextColor = style->color;
@@ -157,7 +157,7 @@ int tab_create(HWND hWnd, HWND tab_control, wchar_t *tab_name, TAB_TYPE type){
    SendMessage(new_tab->text,EM_AUTOURLDETECT,TRUE,0);
    SendMessage(new_tab->text,EM_SETEVENTMASK,0,ENM_LINK);
    SendMessage(new_tab->text,EM_EXLIMITTEXT,0,EDITCHATVIEWTEXT_LIMIT);
-   SendMessage(new_tab->text,EM_SETBKGNDCOLOR,0,config.background_color);
+   SendMessage(new_tab->text,EM_SETBKGNDCOLOR,0,client.config.background_color);
    tab_index = SendMessage(tab_control,TCM_GETITEMCOUNT,0,0);
    if(tab_insert_index(tab_control,tab_index,tab_name,new_tab)==-1){
       DestroyWindow(new_tab->text);

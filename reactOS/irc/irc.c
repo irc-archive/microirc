@@ -51,8 +51,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLi
     config.h_instance = hInstance;
     LoadString(hInstance, IDS_WNDCLASS_IRC, config.window_class, IRC_SIZE_SMALL);
     LoadString(hInstance, IDS_APP_TITLE, config.window_title, IRC_SIZE_SMALL);
-    config.background_color = 0x00FFFFFF;
-    config.text_color = 0x00000000;
     if(GetModuleFileName(NULL,config.module_path,IRC_SIZE_SMALL)<=0){
         return 0;
     }

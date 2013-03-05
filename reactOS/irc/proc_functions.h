@@ -55,6 +55,19 @@ INT_PTR WINAPI OpenColorsDialog(HWND hWndParent, COLORREF def) {
     }
 }
 
+WNDPROC old_ColorEditProc;
+LRESULT CALLBACK ColorEditProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
+   switch (uMsg){
+      case WM_LBUTTONUP:{
+         COLORREF res = OpenColorsDialog(hWnd, RGB(255,255,255));
+         //HWND dlgitem = GetDlgItem(hDlg,IDC_EDIT30);
+         SendMessage(hWnd,EM_SETBKGNDCOLOR,0,res);
+         break;
+      }
+   }
+   return CallWindowProc(old_ColorEditProc, hWnd, uMsg, wParam, lParam);
+}
+
 INT_PTR CALLBACK PreferencesProcPage1(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     static void **pointers = NULL;
     switch(uMsg){
@@ -157,10 +170,19 @@ INT_PTR CALLBACK PreferencesProcPage1(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
     return FALSE;
 }
 
+/*
         COLORREF res = OpenColorsDialog(hDlg, RGB(255,255,255));
          HWND dlgitem = GetDlgItem(hDlg,IDC_EDIT31);
          SendMessage(dlgitem,EM_SETBKGNDCOLOR,0,res);
 
+
+         HWND edit = GetDlgItem(hDlg,IDC_EDIT30);
+         old_ColorEditProc = (WNDPROC)GetWindowLong(edit,GWL_WNDPROC);
+         SetWindowLong(edit,GWL_WNDPROC,(LONG)ColorEditProc);
+
+
+  
+*/  
 INT_PTR CALLBACK PreferencesProcPage2(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     static void **pointers = NULL;
     switch(uMsg){
@@ -341,6 +363,11 @@ INT_PTR CALLBACK PreferencesProcPage4(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
             settext_fromint(hDlg,IDC_EDIT16,client.config.led_number);
             settext_fromint(hDlg,IDC_EDIT17,client.config.led_interval);
          }
+         
+         HWND edit = GetDlgItem(hDlg,IDC_EDIT30);
+         old_ColorEditProc = (WNDPROC)GetWindowLong(edit,GWL_WNDPROC);
+         SetWindowLong(edit,GWL_WNDPROC,(LONG)ColorEditProc);
+         
          break;
          
       }
