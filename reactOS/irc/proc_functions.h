@@ -301,11 +301,31 @@ INT_PTR CALLBACK PreferencesProcPage4(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
             int led_number;
             int led_interval;
 
+            int background_color;
+            int font_color;
+            int join_color;
+            int nickchange_color;
+            int topicchange_color;
+            int mode_color;
+            int part_color;
+            int kick_color;
+            int quit_color;
+
             encoding = getint_fromcombo(hDlg,IDC_COMBO1);
             bubble = gettext_toint(hDlg,IDC_EDIT15);
             sounds = getint_fromcheck(hDlg,IDC_CHECK2);
             led_number = gettext_toint(hDlg,IDC_EDIT16);
             led_interval = gettext_toint(hDlg,IDC_EDIT17);
+
+            background_color = getcolor_fromrich(hDlg,IDC_EDIT30);
+            font_color = getcolor_fromrich(hDlg,IDC_EDIT31);
+            join_color = getcolor_fromrich(hDlg,IDC_EDIT32);
+            nickchange_color = getcolor_fromrich(hDlg,IDC_EDIT33);
+            topicchange_color = getcolor_fromrich(hDlg,IDC_EDIT34);
+            mode_color = getcolor_fromrich(hDlg,IDC_EDIT35);
+            part_color = getcolor_fromrich(hDlg,IDC_EDIT36);
+            kick_color = getcolor_fromrich(hDlg,IDC_EDIT37);
+            quit_color = getcolor_fromrich(hDlg,IDC_EDIT38);
 
             if(bubble < 0){
                MessageBox(hDlg,MAKEINTSTR(IDS_ERROR_MSG8),NULL,MB_ICONHAND|MB_APPLMODAL|MB_SETFOREGROUND);
@@ -323,6 +343,17 @@ INT_PTR CALLBACK PreferencesProcPage4(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
             iniparser_setint(iniparser, IRC_CONF_MISCELLANEOUS, IRC_CONF_SOUNDS, sounds);
             iniparser_setint(iniparser, IRC_CONF_MISCELLANEOUS, IRC_CONF_LEDNUMBER, led_number);
             iniparser_setint(iniparser, IRC_CONF_MISCELLANEOUS, IRC_CONF_LEDINTERVAL, led_interval);
+
+             iniparser_setint(iniparser, IRC_CONF_COLORS, IRC_CONF_BACKGROUND_COLOR, background_color);
+             iniparser_setint(iniparser, IRC_CONF_COLORS, IRC_CONF_FONT_COLOR, font_color);
+             iniparser_setint(iniparser, IRC_CONF_COLORS, IRC_CONF_JOIN_COLOR, join_color);
+             iniparser_setint(iniparser, IRC_CONF_COLORS, IRC_CONF_NICKCHANGE_COLOR, nickchange_color);
+             iniparser_setint(iniparser, IRC_CONF_COLORS, IRC_CONF_TOPICCHANGE_COLOR, topicchange_color);
+             iniparser_setint(iniparser, IRC_CONF_COLORS, IRC_CONF_MODE_COLOR, mode_color);
+             iniparser_setint(iniparser, IRC_CONF_COLORS, IRC_CONF_PART_COLOR, part_color);
+             iniparser_setint(iniparser, IRC_CONF_COLORS, IRC_CONF_KICK_COLOR, kick_color);
+             iniparser_setint(iniparser, IRC_CONF_COLORS, IRC_CONF_QUIT_COLOR, quit_color);
+
             if(wcscmp(parameters,IRC_CONST_CLIENT)==0){
                if(encoding!=0){
                   client.config.encoding=CP_UTF8;
@@ -333,7 +364,18 @@ INT_PTR CALLBACK PreferencesProcPage4(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
                client.config.sounds=sounds;
                client.config.led_number=led_number;
                client.config.led_interval=led_interval;
+
+                client.config.background_color=background_color;
+                client.config.font_color=font_color;
+                client.config.join_color=join_color;
+                client.config.nickchange_color=nickchange_color;
+                client.config.topicchange_color=topicchange_color;
+                client.config.mode_color=mode_color;
+                client.config.part_color=part_color;
+                client.config.kick_color=kick_color;
+                client.config.quit_color=quit_color;
             }
+            
             SetWindowLong(hDlg, DWL_MSGRESULT, PSNRET_NOERROR);
             return TRUE;
         }
@@ -352,6 +394,16 @@ INT_PTR CALLBACK PreferencesProcPage4(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
             setcheck_fromint(hDlg,IDC_CHECK2,iniparser_getint(iniparser, IRC_CONF_MISCELLANEOUS, IRC_CONF_SOUNDS, IRC_CONF_SOUNDS_VAL));
             settext_fromint(hDlg,IDC_EDIT16,iniparser_getint(iniparser, IRC_CONF_MISCELLANEOUS, IRC_CONF_LEDNUMBER, IRC_CONF_LEDNUMBER_VAL));
             settext_fromint(hDlg,IDC_EDIT17,iniparser_getint(iniparser, IRC_CONF_MISCELLANEOUS, IRC_CONF_LEDINTERVAL, IRC_CONF_LEDINTERVAL_VAL));
+
+             setcolor_fromrich(hDlg,IDC_EDIT30,iniparser_getint(iniparser, IRC_CONF_COLORS, IRC_CONF_BACKGROUND_COLOR, IRC_CONF_BACKGROUND_COLOR_VAL));
+             setcolor_fromrich(hDlg,IDC_EDIT31,iniparser_getint(iniparser, IRC_CONF_COLORS, IRC_CONF_FONT_COLOR, IRC_CONF_FONT_COLOR_VAL));
+             setcolor_fromrich(hDlg,IDC_EDIT32,iniparser_getint(iniparser, IRC_CONF_COLORS, IRC_CONF_JOIN_COLOR, IRC_CONF_JOIN_COLOR_VAL));
+             setcolor_fromrich(hDlg,IDC_EDIT33,iniparser_getint(iniparser, IRC_CONF_COLORS, IRC_CONF_NICKCHANGE_COLOR, IRC_CONF_NICKCHANGE_COLOR_VAL));
+             setcolor_fromrich(hDlg,IDC_EDIT34,iniparser_getint(iniparser, IRC_CONF_COLORS, IRC_CONF_TOPICCHANGE_COLOR, IRC_CONF_TOPICCHANGE_COLOR_VAL));
+             setcolor_fromrich(hDlg,IDC_EDIT35,iniparser_getint(iniparser, IRC_CONF_COLORS, IRC_CONF_MODE_COLOR, IRC_CONF_MODE_COLOR_VAL));
+             setcolor_fromrich(hDlg,IDC_EDIT36,iniparser_getint(iniparser, IRC_CONF_COLORS, IRC_CONF_PART_COLOR, IRC_CONF_PART_COLOR_VAL));
+             setcolor_fromrich(hDlg,IDC_EDIT37,iniparser_getint(iniparser, IRC_CONF_COLORS, IRC_CONF_KICK_COLOR, IRC_CONF_KICK_COLOR_VAL));
+             setcolor_fromrich(hDlg,IDC_EDIT38,iniparser_getint(iniparser, IRC_CONF_COLORS, IRC_CONF_QUIT_COLOR, IRC_CONF_QUIT_COLOR_VAL));
          }else if(wcscmp(parameters,IRC_CONST_CLIENT)==0){
             if(client.config.encoding==CP_UTF8){
                setcombo_fromint(hDlg,IDC_COMBO1,1);
@@ -362,14 +414,47 @@ INT_PTR CALLBACK PreferencesProcPage4(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
             setcheck_fromint(hDlg,IDC_CHECK2,client.config.sounds);
             settext_fromint(hDlg,IDC_EDIT16,client.config.led_number);
             settext_fromint(hDlg,IDC_EDIT17,client.config.led_interval);
+
+             setcolor_fromrich(hDlg,IDC_EDIT30,client.config.background_color);
+             setcolor_fromrich(hDlg,IDC_EDIT31,client.config.font_color);
+             setcolor_fromrich(hDlg,IDC_EDIT32,client.config.join_color);
+             setcolor_fromrich(hDlg,IDC_EDIT33,client.config.nickchange_color);
+             setcolor_fromrich(hDlg,IDC_EDIT34,client.config.topicchange_color);
+             setcolor_fromrich(hDlg,IDC_EDIT35,client.config.mode_color);
+             setcolor_fromrich(hDlg,IDC_EDIT36,client.config.part_color);
+             setcolor_fromrich(hDlg,IDC_EDIT37,client.config.kick_color);
+             setcolor_fromrich(hDlg,IDC_EDIT38,client.config.quit_color);
          }
          
          HWND edit = GetDlgItem(hDlg,IDC_EDIT30);
          old_ColorEditProc = (WNDPROC)GetWindowLong(edit,GWL_WNDPROC);
          SetWindowLong(edit,GWL_WNDPROC,(LONG)ColorEditProc);
          
-         break;
+         edit = GetDlgItem(hDlg,IDC_EDIT31);
+         SetWindowLong(edit,GWL_WNDPROC,(LONG)ColorEditProc);
          
+         edit = GetDlgItem(hDlg,IDC_EDIT32);
+         SetWindowLong(edit,GWL_WNDPROC,(LONG)ColorEditProc);
+         
+         edit = GetDlgItem(hDlg,IDC_EDIT33);
+         SetWindowLong(edit,GWL_WNDPROC,(LONG)ColorEditProc);
+         
+         edit = GetDlgItem(hDlg,IDC_EDIT34);
+         SetWindowLong(edit,GWL_WNDPROC,(LONG)ColorEditProc);
+         
+         edit = GetDlgItem(hDlg,IDC_EDIT35);
+         SetWindowLong(edit,GWL_WNDPROC,(LONG)ColorEditProc);
+         
+         edit = GetDlgItem(hDlg,IDC_EDIT36);
+         SetWindowLong(edit,GWL_WNDPROC,(LONG)ColorEditProc);
+         
+         edit = GetDlgItem(hDlg,IDC_EDIT37);
+         SetWindowLong(edit,GWL_WNDPROC,(LONG)ColorEditProc);
+         
+         edit = GetDlgItem(hDlg,IDC_EDIT38);
+         SetWindowLong(edit,GWL_WNDPROC,(LONG)ColorEditProc);
+         
+         break;
       }
    }
    return FALSE;

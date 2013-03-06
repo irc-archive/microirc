@@ -70,23 +70,23 @@
 
 /* Colors */
 #define IRC_CONF_BACKGROUND_COLOR "background"
-#define IRC_CONF_BACKGROUND_COLOR_VAL 0xFFFFFFFF
+#define IRC_CONF_BACKGROUND_COLOR_VAL RGB(255,255,255)
 #define IRC_CONF_FONT_COLOR "font"
-#define IRC_CONF_FONT_COLOR_VAL 0xFFFFFFFF
+#define IRC_CONF_FONT_COLOR_VAL RGB(255,255,255)
 #define IRC_CONF_JOIN_COLOR "join"
-#define IRC_CONF_JOIN_COLOR_VAL 0xFFFFFFFF
+#define IRC_CONF_JOIN_COLOR_VAL RGB(255,255,255)
 #define IRC_CONF_NICKCHANGE_COLOR "nickchange"
-#define IRC_CONF_NICKCHANGE_COLOR_VAL 0xFFFFFFFF
+#define IRC_CONF_NICKCHANGE_COLOR_VAL RGB(255,255,255)
 #define IRC_CONF_TOPICCHANGE_COLOR "topicchange"
-#define IRC_CONF_TOPICCHANGE_COLOR_VAL 0xFFFFFFFF
+#define IRC_CONF_TOPICCHANGE_COLOR_VAL RGB(255,255,255)
 #define IRC_CONF_MODE_COLOR "mode"
-#define IRC_CONF_MODE_COLOR_VAL 0xFFFFFFFF
+#define IRC_CONF_MODE_COLOR_VAL RGB(255,255,255)
 #define IRC_CONF_PART_COLOR "part"
-#define IRC_CONF_PART_COLOR_VAL 0xFFFFFFFF
+#define IRC_CONF_PART_COLOR_VAL RGB(255,255,255)
 #define IRC_CONF_KICK_COLOR "kick"
-#define IRC_CONF_KICK_COLOR_VAL 0xFFFFFFFF
+#define IRC_CONF_KICK_COLOR_VAL RGB(255,255,255)
 #define IRC_CONF_QUIT_COLOR "quit"
-#define IRC_CONF_QUIT_COLOR_VAL 0xFFFFFFFF
+#define IRC_CONF_QUIT_COLOR_VAL RGB(255,255,255)
 
 int ircconfig_init(ircconfig_t *ircconfig, int connect_on_startup, int reconnect_retries, char *part, char *kick, char *quit, int encoding, int bubble, int sounds, int led_number, int led_interval, int background_color, int topicchange_color, int font_color, int join_color, int nickchange_color, int mode_color, int part_color, int kick_color, int quit_color){
    memset(ircconfig,0,sizeof(ircconfig_t));
@@ -285,4 +285,14 @@ int getint_fromcheck(HWND hDlg, int control){
    }else{
       return 0;
    }
+}
+
+void setcolor_fromrich(HWND hDlg, int control, COLORREF color){
+    HWND rich = GetDlgItem(hDlg,control);
+    SendMessage(rich,EM_SETBKGNDCOLOR,0,color);
+}
+
+COLORREF getcolor_fromrich(HWND hDlg, int control){
+    HWND rich = GetDlgItem(hDlg,control);
+    return SendMessage(rich,EM_SETBKGNDCOLOR,1,0);
 }
