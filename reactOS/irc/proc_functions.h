@@ -55,17 +55,19 @@ INT_PTR WINAPI OpenColorsDialog(HWND hWndParent, COLORREF def) {
     }
 }
 
-WNDPROC old_ColorEditProc;
-LRESULT CALLBACK ColorEditProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
+LRESULT CALLBACK ColorEditProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData){
    switch (uMsg){
       case WM_LBUTTONUP:{
-         COLORREF res = OpenColorsDialog(hWnd, RGB(255,255,255));
-         //HWND dlgitem = GetDlgItem(hDlg,IDC_EDIT30);
-         SendMessage(hWnd,EM_SETBKGNDCOLOR,0,res);
+         COLORREF res = OpenColorsDialog(hWnd, 0xFFFFFFFF);
+         if(res != 0xFFFFFFFF){
+            SendMessage(hWnd,EM_SETBKGNDCOLOR,0,res);
+         }
+         HWND hWndParent = GetParent(hWnd);
+         SetFocus(hWndParent);
          break;
       }
    }
-   return CallWindowProc(old_ColorEditProc, hWnd, uMsg, wParam, lParam);
+   return DefSubclassProc(hWnd, uMsg, wParam, lParam);
 }
 
 INT_PTR CALLBACK PreferencesProcPage1(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -170,19 +172,6 @@ INT_PTR CALLBACK PreferencesProcPage1(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
     return FALSE;
 }
 
-/*
-        COLORREF res = OpenColorsDialog(hDlg, RGB(255,255,255));
-         HWND dlgitem = GetDlgItem(hDlg,IDC_EDIT31);
-         SendMessage(dlgitem,EM_SETBKGNDCOLOR,0,res);
-
-
-         HWND edit = GetDlgItem(hDlg,IDC_EDIT30);
-         old_ColorEditProc = (WNDPROC)GetWindowLong(edit,GWL_WNDPROC);
-         SetWindowLong(edit,GWL_WNDPROC,(LONG)ColorEditProc);
-
-
-  
-*/  
 INT_PTR CALLBACK PreferencesProcPage2(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     static void **pointers = NULL;
     switch(uMsg){
@@ -426,34 +415,24 @@ INT_PTR CALLBACK PreferencesProcPage4(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
              setcolor_fromrich(hDlg,IDC_EDIT38,client.config.quit_color);
          }
          
-         HWND edit = GetDlgItem(hDlg,IDC_EDIT30);
-         old_ColorEditProc = (WNDPROC)GetWindowLong(edit,GWL_WNDPROC);
-         SetWindowLong(edit,GWL_WNDPROC,(LONG)ColorEditProc);
-         
-         edit = GetDlgItem(hDlg,IDC_EDIT31);
-         SetWindowLong(edit,GWL_WNDPROC,(LONG)ColorEditProc);
-         
-         edit = GetDlgItem(hDlg,IDC_EDIT32);
-         SetWindowLong(edit,GWL_WNDPROC,(LONG)ColorEditProc);
-         
-         edit = GetDlgItem(hDlg,IDC_EDIT33);
-         SetWindowLong(edit,GWL_WNDPROC,(LONG)ColorEditProc);
-         
-         edit = GetDlgItem(hDlg,IDC_EDIT34);
-         SetWindowLong(edit,GWL_WNDPROC,(LONG)ColorEditProc);
-         
-         edit = GetDlgItem(hDlg,IDC_EDIT35);
-         SetWindowLong(edit,GWL_WNDPROC,(LONG)ColorEditProc);
-         
-         edit = GetDlgItem(hDlg,IDC_EDIT36);
-         SetWindowLong(edit,GWL_WNDPROC,(LONG)ColorEditProc);
-         
-         edit = GetDlgItem(hDlg,IDC_EDIT37);
-         SetWindowLong(edit,GWL_WNDPROC,(LONG)ColorEditProc);
-         
-         edit = GetDlgItem(hDlg,IDC_EDIT38);
-         SetWindowLong(edit,GWL_WNDPROC,(LONG)ColorEditProc);
-         
+         HWND rich30 = GetDlgItem(hDlg,IDC_EDIT30);
+         SetWindowSubclass(rich30, ColorEditProc, IDC_EDIT30, 0);
+         HWND rich31 = GetDlgItem(hDlg,IDC_EDIT31);
+         SetWindowSubclass(rich31, ColorEditProc, IDC_EDIT31, 0);
+         HWND rich32 = GetDlgItem(hDlg,IDC_EDIT32);
+         SetWindowSubclass(rich32, ColorEditProc, IDC_EDIT32, 0);
+         HWND rich33 = GetDlgItem(hDlg,IDC_EDIT33);
+         SetWindowSubclass(rich33, ColorEditProc, IDC_EDIT33, 0);
+         HWND rich34 = GetDlgItem(hDlg,IDC_EDIT34);
+         SetWindowSubclass(rich34, ColorEditProc, IDC_EDIT34, 0);
+         HWND rich35 = GetDlgItem(hDlg,IDC_EDIT35);
+         SetWindowSubclass(rich35, ColorEditProc, IDC_EDIT35, 0);
+         HWND rich36 = GetDlgItem(hDlg,IDC_EDIT36);
+         SetWindowSubclass(rich36, ColorEditProc, IDC_EDIT36, 0);
+         HWND rich37 = GetDlgItem(hDlg,IDC_EDIT37);
+         SetWindowSubclass(rich37, ColorEditProc, IDC_EDIT37, 0);
+         HWND rich38 = GetDlgItem(hDlg,IDC_EDIT38);
+         SetWindowSubclass(rich38, ColorEditProc, IDC_EDIT38, 0);
          break;
       }
    }

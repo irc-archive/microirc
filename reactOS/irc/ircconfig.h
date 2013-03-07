@@ -88,7 +88,7 @@
 #define IRC_CONF_QUIT_COLOR "quit"
 #define IRC_CONF_QUIT_COLOR_VAL RGB(255,255,255)
 
-int ircconfig_init(ircconfig_t *ircconfig, int connect_on_startup, int reconnect_retries, char *part, char *kick, char *quit, int encoding, int bubble, int sounds, int led_number, int led_interval, int background_color, int topicchange_color, int font_color, int join_color, int nickchange_color, int mode_color, int part_color, int kick_color, int quit_color){
+int ircconfig_init(ircconfig_t *ircconfig, int connect_on_startup, int reconnect_retries, char *part, char *kick, char *quit, int encoding, int bubble, int sounds, int led_number, int led_interval, int background_color, int font_color, int join_color, int nickchange_color, int topicchange_color, int mode_color, int part_color, int kick_color, int quit_color){
    memset(ircconfig,0,sizeof(ircconfig_t));
    if(reconnect_retries<0 || bubble<0 || led_interval<0){
       return -1;
