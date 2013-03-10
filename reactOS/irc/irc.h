@@ -93,6 +93,7 @@ typedef struct ircconfig_t{
     int nickchange_color;
     int topicchange_color;
     int mode_color;
+    int notice_color;
     int part_color;
     int kick_color;
     int quit_color;

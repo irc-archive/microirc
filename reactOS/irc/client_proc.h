@@ -179,7 +179,7 @@ void *receiverThreadProc(void *window_handle){
                   }else{
                      swprintf(wresult,L"%s %s %s %s",recv_buffer[0],MAKEINTSTR(IDS_PART_MSG1),recv_buffer[2],recv_buffer[3]);
                   }
-                  style_text_t style = {0,RGB(0,0,255)};
+                  style_text_t style = {0,client.config.mode_color};
                   write_text_name(client.tabcontrol_chatview_handle,recv_buffer[1],wresult,&style,TSTRUE);
                }else if(recv_buffer_size<7){
                   char *modes = recv_buffer_ptr[4];
@@ -196,7 +196,7 @@ void *receiverThreadProc(void *window_handle){
                   }else{
                      swprintf(wresult,L"%s %s %s %s",recv_buffer[0],MAKEINTSTR(IDS_PART_MSG1),recv_buffer[4],recv_buffer[5]);
                   }
-                  style_text_t style = {0,RGB(0,0,255)};
+                  style_text_t style = {0,client.config.mode_color};
                   write_text_name(client.tabcontrol_chatview_handle,recv_buffer[3],wresult,&style,TSTRUE);
                }
                break;
@@ -247,13 +247,13 @@ void *receiverThreadProc(void *window_handle){
                style_text_t *pstyle = NULL;
                if(recv_result==RECV_CTCP){
                   swprintf(wresult,L"%s %s",recv_buffer[0],recv_buffer[4]);
-                  style.color = RGB(192,192,0);
+                  style.color = client.config.notice_color;
                   pstyle = &style;
                }else if(recv_result==RECV_PRIVMSG){
                   swprintf(wresult,L"%s: %s",recv_buffer[0],recv_buffer[4]);
                }else if(recv_result==RECV_NOTICE){
                   swprintf(wresult,L"%s: %s",recv_buffer[0],recv_buffer[4]);
-                  style.color = RGB(0,255,255);
+                  style.color = client.config.notice_color;
                   pstyle = &style;
                }
                if(irc_validate_channel(&client.irc,recv_buffer_ptr[3])==0){
@@ -277,7 +277,7 @@ void *receiverThreadProc(void *window_handle){
                   SendMessage(hWnd,WM_CREATE_TAB,CHAT,(LPARAM)recv_buffer[3]);
                }else{
                   swprintf(wresult,L"%s %s",recv_buffer[0],MAKEINTSTR(IDS_PART_MSG2));
-                  style_text_t style = {0,RGB(0,128,128)};
+                  style_text_t style = {0,client.config.join_color};
                   write_text_name(client.tabcontrol_chatview_handle,recv_buffer[3],wresult,&style,TSTRUE);
                   write_nick_name(client.tabcontrol_chatview_handle,recv_buffer[3],recv_buffer[0],APPEND);
                }
@@ -295,7 +295,7 @@ void *receiverThreadProc(void *window_handle){
                }else{
                   swprintf(wresult,L"%s %s %s (%s)",recv_buffer[4],MAKEINTSTR(IDS_PART_MSG3),recv_buffer[0],recv_buffer[5]);
                }
-               style_text_t style = {0,RGB(128,128,128)};
+               style_text_t style = {0,client.config.kick_color};
                write_text_name(client.tabcontrol_chatview_handle,recv_buffer[3],wresult,&style,TSTRUE);
                write_nick_name(client.tabcontrol_chatview_handle,recv_buffer[3],recv_buffer[4],REMOVE);
                break;
@@ -305,7 +305,7 @@ void *receiverThreadProc(void *window_handle){
                   break;
                }
                swprintf(wresult,L"%s %s -> %s",MAKEINTSTR(IDS_PART_MSG4),recv_buffer[0],recv_buffer[3]);
-               style_text_t style = {0,RGB(128,0,128)};
+               style_text_t style = {0,client.config.nickchange_color};
                tab_change_nick(client.tabcontrol_chatview_handle,recv_buffer[0],recv_buffer[3],wresult,&style,TSTRUE);
                break;
             }
@@ -325,7 +325,7 @@ void *receiverThreadProc(void *window_handle){
                   break;
                }
                swprintf(wresult,L"%s %s %s %s",recv_buffer[0],MAKEINTSTR(IDS_PART_MSG1),recv_buffer[2],recv_buffer[1]);
-               style_text_t style = {0,RGB(0,0,255)};
+               style_text_t style = {0,client.config.mode_color};
                write_text_name(client.tabcontrol_chatview_handle,IRC_CONST_STATUS,wresult,&style,TSTRUE);
                break;
             }
@@ -334,7 +334,7 @@ void *receiverThreadProc(void *window_handle){
                   break;
                }
                swprintf(wresult,MAKEINTSTR(IDS_PART_MSG5));
-               style_text_t style = {0,RGB(255,0,255)};
+               style_text_t style = {0,client.config.nickchange_color};
                write_text_current(client.tabcontrol_chatview_handle,wresult,&style,TSTRUE);
                break;
             }
@@ -350,7 +350,7 @@ void *receiverThreadProc(void *window_handle){
                }else{
                   swprintf(wresult,L"%s %s (%s)",recv_buffer[0],MAKEINTSTR(IDS_PART_MSG6),recv_buffer[4]);
                }
-               style_text_t style = {0,RGB(128,0,0)};
+               style_text_t style = {0,client.config.part_color};
                write_text_name(client.tabcontrol_chatview_handle,recv_buffer[3],wresult,&style,TSTRUE);
                write_nick_name(client.tabcontrol_chatview_handle,recv_buffer[3],recv_buffer[0],REMOVE);
                break;
@@ -376,7 +376,7 @@ void *receiverThreadProc(void *window_handle){
                }else{
                   swprintf(wresult,L"%s %s (%s)",recv_buffer[0],MAKEINTSTR(IDS_PART_MSG7),recv_buffer[3]);
                }
-               style_text_t style = {0,RGB(255,0,0)};
+               style_text_t style = {0,client.config.quit_color};
                tab_quit(client.tabcontrol_chatview_handle,recv_buffer[0],wresult,&style,TSTRUE);
                break;
             }
@@ -385,7 +385,7 @@ void *receiverThreadProc(void *window_handle){
                   break;
                }
                swprintf(wresult,L"%s '%s'",MAKEINTSTR(IDS_PART_MSG8),recv_buffer[3]);
-               style_text_t style = {0,RGB(0,128,0)};
+               style_text_t style = {0,client.config.topicchange_color};
                write_text_name(client.tabcontrol_chatview_handle,recv_buffer[2],wresult,&style,TSFALSE);
                break;
             }
@@ -394,7 +394,7 @@ void *receiverThreadProc(void *window_handle){
                   break;
                }
                swprintf(wresult,L"%s %s %s '%s'",MAKEINTSTR(IDS_PART_MSG9),recv_buffer[0],MAKEINTSTR(IDS_PART_MSG9),recv_buffer[4]);
-               style_text_t style = {0,RGB(0,255,0)};
+               style_text_t style = {0,client.config.topicchange_color};
                write_text_name(client.tabcontrol_chatview_handle,recv_buffer[3],wresult,&style,TSFALSE);
                break;
             }

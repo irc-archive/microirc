@@ -38,7 +38,7 @@
 
 /* Autojoin */
 #define IRC_CONF_CHANNELS "channels"
-#define IRC_CONF_CHANNELS_VAL "#microrc"
+#define IRC_CONF_CHANNELS_VAL "#microirc"
 #define IRC_CONF_DELAY "delay"
 #define IRC_CONF_DELAY_VAL 5000
 
@@ -70,25 +70,27 @@
 
 /* Colors */
 #define IRC_CONF_BACKGROUND_COLOR "background"
-#define IRC_CONF_BACKGROUND_COLOR_VAL RGB(255,255,255)
+#define IRC_CONF_BACKGROUND_COLOR_VAL RGB(0,0,0)
 #define IRC_CONF_FONT_COLOR "font"
 #define IRC_CONF_FONT_COLOR_VAL RGB(255,255,255)
 #define IRC_CONF_JOIN_COLOR "join"
-#define IRC_CONF_JOIN_COLOR_VAL RGB(255,255,255)
+#define IRC_CONF_JOIN_COLOR_VAL RGB(0,128,64)
 #define IRC_CONF_NICKCHANGE_COLOR "nickchange"
-#define IRC_CONF_NICKCHANGE_COLOR_VAL RGB(255,255,255)
+#define IRC_CONF_NICKCHANGE_COLOR_VAL RGB(128,0,255)
 #define IRC_CONF_TOPICCHANGE_COLOR "topicchange"
-#define IRC_CONF_TOPICCHANGE_COLOR_VAL RGB(255,255,255)
+#define IRC_CONF_TOPICCHANGE_COLOR_VAL RGB(255,128,64)
 #define IRC_CONF_MODE_COLOR "mode"
-#define IRC_CONF_MODE_COLOR_VAL RGB(255,255,255)
+#define IRC_CONF_MODE_COLOR_VAL RGB(192,192,192)
+#define IRC_CONF_NOTICE_COLOR "notice"
+#define IRC_CONF_NOTICE_COLOR_VAL RGB(255,255,0)
 #define IRC_CONF_PART_COLOR "part"
-#define IRC_CONF_PART_COLOR_VAL RGB(255,255,255)
+#define IRC_CONF_PART_COLOR_VAL RGB(0,64,128)
 #define IRC_CONF_KICK_COLOR "kick"
-#define IRC_CONF_KICK_COLOR_VAL RGB(255,255,255)
+#define IRC_CONF_KICK_COLOR_VAL RGB(255,0,0)
 #define IRC_CONF_QUIT_COLOR "quit"
-#define IRC_CONF_QUIT_COLOR_VAL RGB(255,255,255)
+#define IRC_CONF_QUIT_COLOR_VAL RGB(255,0,0)
 
-int ircconfig_init(ircconfig_t *ircconfig, int connect_on_startup, int reconnect_retries, char *part, char *kick, char *quit, int encoding, int bubble, int sounds, int led_number, int led_interval, int background_color, int font_color, int join_color, int nickchange_color, int topicchange_color, int mode_color, int part_color, int kick_color, int quit_color){
+int ircconfig_init(ircconfig_t *ircconfig, int connect_on_startup, int reconnect_retries, char *part, char *kick, char *quit, int encoding, int bubble, int sounds, int led_number, int led_interval, int background_color, int font_color, int join_color, int nickchange_color, int topicchange_color, int mode_color, int notice_color, int part_color, int kick_color, int quit_color){
    memset(ircconfig,0,sizeof(ircconfig_t));
    if(reconnect_retries<0 || bubble<0 || led_interval<0){
       return -1;
@@ -109,6 +111,7 @@ int ircconfig_init(ircconfig_t *ircconfig, int connect_on_startup, int reconnect
    ircconfig->nickchange_color = nickchange_color;
    ircconfig->topicchange_color = topicchange_color;
    ircconfig->mode_color = mode_color;
+   ircconfig->notice_color = notice_color;
    ircconfig->part_color = part_color;
    ircconfig->kick_color = kick_color;
    ircconfig->quit_color = quit_color;
@@ -158,6 +161,7 @@ int irc_config_init(irc_t *irc, ircconfig_t *ircconfig, wchar_t *filepath){
     int nickchange_color;
     int topicchange_color;
     int mode_color;
+    int notice_color;
     int part_color;
     int kick_color;
     int quit_color;
@@ -192,6 +196,7 @@ int irc_config_init(irc_t *irc, ircconfig_t *ircconfig, wchar_t *filepath){
     nickchange_color = iniparser_getint(&iniparser, IRC_CONF_COLORS, IRC_CONF_NICKCHANGE_COLOR, IRC_CONF_NICKCHANGE_COLOR_VAL);
     topicchange_color = iniparser_getint(&iniparser, IRC_CONF_COLORS, IRC_CONF_TOPICCHANGE_COLOR, IRC_CONF_TOPICCHANGE_COLOR_VAL);
     mode_color = iniparser_getint(&iniparser, IRC_CONF_COLORS, IRC_CONF_MODE_COLOR, IRC_CONF_MODE_COLOR_VAL);
+    notice_color = iniparser_getint(&iniparser, IRC_CONF_COLORS, IRC_CONF_NOTICE_COLOR, IRC_CONF_NOTICE_COLOR_VAL);
     part_color = iniparser_getint(&iniparser, IRC_CONF_COLORS, IRC_CONF_PART_COLOR, IRC_CONF_PART_COLOR_VAL);
     kick_color = iniparser_getint(&iniparser, IRC_CONF_COLORS, IRC_CONF_KICK_COLOR, IRC_CONF_KICK_COLOR_VAL);
     quit_color = iniparser_getint(&iniparser, IRC_CONF_COLORS, IRC_CONF_QUIT_COLOR, IRC_CONF_QUIT_COLOR_VAL);
@@ -200,7 +205,7 @@ int irc_config_init(irc_t *irc, ircconfig_t *ircconfig, wchar_t *filepath){
    if(irc_init(irc,host,port,pass,user,name,nick,perform,channels,delay)!=0){
       return -1;
    }
-   if(ircconfig_init(ircconfig,connect_on_startup,reconnect_retries,part,kick,quit,encoding,bubble,sounds,led_number,led_interval,background_color,font_color,join_color,nickchange_color,topicchange_color,mode_color,part_color,kick_color,quit_color)!=0){
+   if(ircconfig_init(ircconfig,connect_on_startup,reconnect_retries,part,kick,quit,encoding,bubble,sounds,led_number,led_interval,background_color,font_color,join_color,nickchange_color,topicchange_color,mode_color,notice_color,part_color,kick_color,quit_color)!=0){
       irc_destroy(irc);
       return -1;
    }

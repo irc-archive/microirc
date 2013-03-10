@@ -152,6 +152,7 @@
 #define IDC_EDIT37                              1516
 #define IDC_EDIT25                              1517
 #define IDC_EDIT38                              1518
+#define IDC_EDIT39                              1519
 
 
 

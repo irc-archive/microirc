@@ -107,9 +107,10 @@ FONT 8, "Ms Shell Dlg"
     LTEXT           "Nick change", IDC_STATIC, 20, 75, 40, 8, SS_LEFT
     LTEXT           "Topic change", IDC_STATIC, 20, 90, 40, 8, SS_LEFT
     LTEXT           "Mode", IDC_STATIC, 20, 105, 40, 8, SS_LEFT
-    LTEXT           "Part", IDC_STATIC, 20, 120, 40, 8, SS_LEFT
-    LTEXT           "Kick", IDC_STATIC, 20, 135, 40, 8, SS_LEFT
-    LTEXT           "Quit", IDC_STATIC, 20, 150, 40, 8, SS_LEFT
+    LTEXT           "Notice", IDC_STATIC, 20, 120, 40, 8, SS_LEFT
+    LTEXT           "Part", IDC_STATIC, 20, 135, 40, 8, SS_LEFT
+    LTEXT           "Kick", IDC_STATIC, 20, 150, 40, 8, SS_LEFT
+    LTEXT           "Quit", IDC_STATIC, 20, 165, 40, 8, SS_LEFT
 
     CONTROL         "", IDC_EDIT30, MSFTEDIT_CLASS, WS_BORDER | ES_READONLY, 90, 30, 20, 12
     CONTROL         "", IDC_EDIT31, MSFTEDIT_CLASS, WS_BORDER | ES_READONLY, 90, 45, 20, 12
@@ -120,6 +121,7 @@ FONT 8, "Ms Shell Dlg"
     CONTROL         "", IDC_EDIT36, MSFTEDIT_CLASS, WS_BORDER | ES_READONLY, 90, 120, 20, 12
     CONTROL         "", IDC_EDIT37, MSFTEDIT_CLASS, WS_BORDER | ES_READONLY, 90, 135, 20, 12
     CONTROL         "", IDC_EDIT38, MSFTEDIT_CLASS, WS_BORDER | ES_READONLY, 90, 150, 20, 12
+    CONTROL         "", IDC_EDIT39, MSFTEDIT_CLASS, WS_BORDER | ES_READONLY, 90, 165, 20, 12
 
     LTEXT           "Encoding", IDC_STATIC, 240, 30, 40, 8, SS_LEFT
     LTEXT           "Sounds", IDC_STATIC, 240, 45, 40, 8, SS_LEFT
