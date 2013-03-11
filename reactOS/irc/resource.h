@@ -64,9 +64,9 @@
 #define IDC_EDIT12                      1011
 #define IDC_EDIT13                      1012
 #define IDC_EDIT14                      1013
-#define IDC_EDIT15                      1014
-#define IDC_EDIT16                      1015
-#define IDC_EDIT17                      1016
+#define IDC_EDIT15                      1014 //bubble
+#define IDC_EDIT16                      1015 //led number
+#define IDC_EDIT17                      1016 //led interval
 #define IDC_CHECK1                      1028
 #define IDC_CHECK2                      1029
 #define IDC_COMBO1                      1030
@@ -127,11 +127,13 @@
 #define IDT_TAB2                                1501
 #define IDT_TAB3                                1502
 #define IDT_TAB4                                1503
-#define IDC_EDIT24                              1504
+
 #define IDC_TABULATOR                           1505
 #define IDC_EDIT21                              1506
 #define IDC_EDIT22                              1507
 #define IDC_EDIT23                              1508
+#define IDC_EDIT24                              1504
+#define IDC_EDIT25                              1517
 #define IDC_EDIT30                              1509
 #define IDC_EDIT31                              1510
 #define IDC_EDIT32                              1511
@@ -140,7 +142,6 @@
 #define IDC_EDIT35                              1514
 #define IDC_EDIT36                              1515
 #define IDC_EDIT37                              1516
-#define IDC_EDIT25                              1517
 #define IDC_EDIT38                              1518
 #define IDC_EDIT39                              1519
 
