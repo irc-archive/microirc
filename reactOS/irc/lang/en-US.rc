@@ -241,6 +241,10 @@ BEGIN
     IDS_MSG5                     "Profiles"
     IDS_MSG6                     "Selected"
     IDS_MSG7                     "Profile Manager"
+    IDS_MSG8                     "Server and ID"
+    IDS_MSG9                     "Perform"
+    IDS_MSG10                    "Messages"
+    IDS_MSG11                    "Colors and Misc"
 
     IDS_ERROR_MSG1               "Host is invalid."
     IDS_ERROR_MSG2               "Port is invalid."

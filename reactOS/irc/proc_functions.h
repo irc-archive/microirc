@@ -38,11 +38,7 @@ INT_PTR WINAPI OpenColorsDialog(HWND hWndParent, COLORREF def) {
     CHOOSECOLOR color;
     memset(&color,0,sizeof(color));
 
-    COLORREF cRef[] = { RGB(0, 0, 0), RGB(255, 0, 0), RGB(255, 255, 0), RGB(0, 0, 128),
-                        RGB(255, 255, 255), RGB(0, 255, 255), RGB(0, 0, 255),
-                        RGB(255, 0, 255), RGB(0, 255, 0), RGB(128, 0, 0),
-                        RGB(128, 128, 128), RGB(0, 128, 128), RGB(128, 0, 128),
-                        RGB(0, 128, 0), RGB(255, 128, 0), RGB(192, 192, 192) };
+    COLORREF cRef[] = { IRC_CONF_16_DEFAULT_COLORS };
     color.lpCustColors = cRef;
     color.lStructSize = sizeof(color);
     color.hwndOwner = hWndParent;
@@ -58,8 +54,8 @@ INT_PTR WINAPI OpenColorsDialog(HWND hWndParent, COLORREF def) {
 LRESULT CALLBACK ColorEditProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData){
    switch (uMsg){
       case WM_LBUTTONUP:{
-         COLORREF res = OpenColorsDialog(hWnd, 0xFFFFFFFF);
-         if(res != 0xFFFFFFFF){
+         COLORREF res = OpenColorsDialog(hWnd, IRC_CONF_NO_COLOR);
+         if(res != IRC_CONF_NO_COLOR){
             SendMessage(hWnd,EM_SETBKGNDCOLOR,0,res);
          }
          HWND hWndParent = GetParent(hWnd);
@@ -465,43 +461,47 @@ INT_PTR WINAPI OpenPreferencesDialog(HWND hWndParent, LPARAM dwInitParam) {
     PROPSHEETPAGE psp[4];
     memset(&psp,0,sizeof(psp));
 
+    wchar_t title1[IRC_SIZE_SMALL];
     psp[0].dwSize      = sizeof(PROPSHEETPAGE);
     psp[0].dwFlags     = PSP_USEICONID | PSP_USETITLE;
     psp[0].hInstance   = config.h_instance;
     psp[0].pszTemplate = MAKEINTRESOURCE(IDT_TAB1);
     psp[0].pszIcon     = NULL;
     psp[0].pfnDlgProc  = PreferencesProcPage1;
-    psp[0].pszTitle    = L"Server and ID";
+    psp[0].pszTitle    = MAKEINTSTRD(IDS_MSG8, title1);
     psp[0].lParam      = (LPARAM)pointers;
     psp[0].pfnCallback = NULL;
 
+    wchar_t title2[IRC_SIZE_SMALL];
     psp[1].dwSize      = sizeof(PROPSHEETPAGE);
     psp[1].dwFlags     = PSP_USEICONID | PSP_USETITLE;
     psp[1].hInstance   = config.h_instance;
     psp[1].pszTemplate = MAKEINTRESOURCE(IDT_TAB2);
     psp[1].pszIcon     = NULL;
     psp[1].pfnDlgProc  = PreferencesProcPage2;
-    psp[1].pszTitle    = L"Perform";
+    psp[1].pszTitle    = MAKEINTSTRD(IDS_MSG9, title2);
     psp[1].lParam      = (LPARAM)pointers;
     psp[1].pfnCallback = NULL;
 
+    wchar_t title3[IRC_SIZE_SMALL];
     psp[2].dwSize      = sizeof(PROPSHEETPAGE);
     psp[2].dwFlags     = PSP_USEICONID | PSP_USETITLE;
     psp[2].hInstance   = config.h_instance;
     psp[2].pszTemplate = MAKEINTRESOURCE(IDT_TAB3);
     psp[2].pszIcon     = NULL;
     psp[2].pfnDlgProc  = PreferencesProcPage3;
-    psp[2].pszTitle    = L"Messages";
+    psp[2].pszTitle    = MAKEINTSTRD(IDS_MSG10, title3);
     psp[2].lParam      = (LPARAM)pointers;
     psp[2].pfnCallback = NULL;
 
+    wchar_t title4[IRC_SIZE_SMALL];
     psp[3].dwSize      = sizeof(PROPSHEETPAGE);
     psp[3].dwFlags     = PSP_USEICONID | PSP_USETITLE;
     psp[3].hInstance   = config.h_instance;
     psp[3].pszTemplate = MAKEINTRESOURCE(IDT_TAB4);
     psp[3].pszIcon     = NULL;
     psp[3].pfnDlgProc  = PreferencesProcPage4;
-    psp[3].pszTitle    = L"Colors and Misc";
+    psp[3].pszTitle    = MAKEINTSTRD(IDS_MSG11, title4);
     psp[3].lParam      = (LPARAM)pointers;
     psp[3].pfnCallback = NULL; 
 

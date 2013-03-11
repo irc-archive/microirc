@@ -11,9 +11,6 @@
 // Icons
 #define IDI_IRC                         101
 
-//#define IDC_SIP1                        102
-//#define IDC_SIP2                        103
-
 // Accelarators
 #define IDC_IRC                         104
 
@@ -53,7 +50,6 @@
 #define IDM_EDIT                        622
 
 //Dialogs
-//#define IDC_EDIT0                       999
 #define IDC_EDIT1                       1000
 #define IDC_EDIT2                       1001
 #define IDC_EDIT3                       1002
@@ -106,6 +102,10 @@
 #define IDS_MSG5                        10027
 #define IDS_MSG6                        10028
 #define IDS_MSG7                        10029
+#define IDS_MSG8                        10050
+#define IDS_MSG9                        10051
+#define IDS_MSG10                       10052
+#define IDS_MSG11                       10053
 
 #define IDS_ERROR_MSG1                  10030
 #define IDS_ERROR_MSG2                  10031
@@ -122,16 +122,6 @@
 #define IDS_ERROR_MSG13                 10042
 #define IDS_ERROR_MSG14                 10043
 #define IDS_ERROR_MSG15                 10044
-
-
-
-
-
-
-
-
-
-
 
 #define IDT_TAB1                                1500
 #define IDT_TAB2                                1501
@@ -153,19 +143,6 @@
 #define IDC_EDIT25                              1517
 #define IDC_EDIT38                              1518
 #define IDC_EDIT39                              1519
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // Next default values for new objects
 // 

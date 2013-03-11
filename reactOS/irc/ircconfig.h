@@ -69,6 +69,13 @@
 #define IRC_CONF_LEDINTERVAL_VAL 500
 
 /* Colors */
+#define IRC_CONF_NO_COLOR 0xFFFFFFFF
+#define IRC_CONF_16_DEFAULT_COLORS  RGB(0, 0, 0), \
+    RGB(255, 0, 0), RGB(255, 255, 0), RGB(0, 0, 128), \
+    RGB(255, 255, 255), RGB(0, 255, 255), RGB(0, 0, 255), \
+    RGB(255, 0, 255), RGB(0, 255, 0), RGB(128, 0, 0), \
+    RGB(128, 128, 128), RGB(0, 128, 128), RGB(128, 0, 128), \
+    RGB(0, 128, 0), RGB(255, 128, 0), RGB(192, 192, 192)
 #define IRC_CONF_BACKGROUND_COLOR "background"
 #define IRC_CONF_BACKGROUND_COLOR_VAL RGB(0,0,0)
 #define IRC_CONF_FONT_COLOR "font"

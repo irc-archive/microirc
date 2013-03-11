@@ -52,6 +52,13 @@ wchar_t* MAKEINTSTR(unsigned int index){
     return buffer;
 }
 
+wchar_t* MAKEINTSTRD(unsigned int index, wchar_t *buffer){
+    if(LoadString(config.h_instance, index, buffer, IRC_SIZE_SMALL)<=0){
+        wcscpy(buffer, L"");
+    }
+    return buffer;
+}
+
 char *alias_tokens(char *str, char character, int n_tokens, char **d_tokens, int *s_tokens){
    int in = 0;
    while(*str!=CHAR_TERMINATOR){
