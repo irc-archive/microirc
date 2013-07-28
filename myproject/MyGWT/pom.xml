@@ -36,14 +36,12 @@
 		</plugins>
 	</build>
 
-<!-- 	<dependencies> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>com.smartgwt</groupId> -->
-<!-- 			<artifactId>smartgwt</artifactId> -->
-<!-- 			<version>4.0</version> -->
-<!-- 			<scope>system</scope> -->
-<!-- 			<systemPath>${basedir}/lib/smartgwt.jar</systemPath> -->
-<!-- 		</dependency> -->
-<!-- 	</dependencies> -->
+	<dependencies>
+		<dependency>
+			<groupId>com.smartgwt</groupId>
+			<artifactId>smartgwt</artifactId>
+			<version>2.4</version>
+		</dependency>
+	</dependencies>
 
 </project>
