@@ -1,0 +1,29 @@
+Manifest-Version: 1.0
+Export-Package: org.apache.felix.bundlerepository;uses:="org.osgi.fram
+ ework";version="2.0"
+Bundle-Url: http://felix.apache.org/site/downloads.cgi
+Built-By: mcculls
+Tool: Bnd-1.15.0
+Bundle-Name: Apache Felix Bundle Repository
+Created-By: Apache Maven Bundle Plugin
+Export-Service: org.apache.felix.bundlerepository.RepositoryAdmin,org.
+ osgi.service.obr.RepositoryAdmin
+Bundle-Vendor: The Apache Software Foundation
+DynamicImport-Package: org.apache.felix.shell
+Bundle-Source: http://felix.apache.org/site/downloads.cgi
+Build-Jdk: 1.6.0_24
+Bundle-Version: 1.6.6
+Bnd-LastModified: 1309866817010
+Bundle-ManifestVersion: 2
+Bundle-Activator: org.apache.felix.bundlerepository.impl.Activator
+Bundle-License: http://www.apache.org/licenses/LICENSE-2.0.txt
+Bundle-Description: Bundle repository service.
+Bundle-DocURL: http://felix.apache.org/site/apache-felix-osgi-bundle-r
+ epository.html
+Bundle-SymbolicName: org.apache.felix.bundlerepository
+Import-Package: javax.xml.stream;resolution:=optional,org.apache.felix
+ .bundlerepository;version="[2.0,3)",org.osgi.framework;version="[1.4,
+ 2)",org.osgi.service.log;resolution:=optional;version="[1.3,2)",org.o
+ sgi.service.obr;resolution:=optional;version="[1.0,2)",org.osgi.servi
+ ce.url;version="[1.0,2)"
+

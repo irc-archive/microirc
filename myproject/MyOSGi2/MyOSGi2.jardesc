@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="WINDOWS-1250" standalone="no"?>
+<jardesc>
+    <jar path="MyOSGi2/target/MyOSGi2-1.0.0.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/MyOSGi2/eqmspecificJar.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="false" manifestLocation="/MyOSGi2/META-INF/MANIFEST.MF" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
+        <file path="/MyOSGi2/.classpath"/>
+        <folder path="/MyOSGi2/META-INF"/>
+        <file path="/MyOSGi2/build.properties"/>
+        <file path="/MyOSGi2/.project"/>
+        <javaElement handleIdentifier="=MyOSGi2/src"/>
+        <file path="/MyOSGi2/designRoot"/>
+    </selectedElements>
+</jardesc>
