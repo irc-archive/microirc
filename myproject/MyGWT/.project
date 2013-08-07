@@ -36,11 +36,6 @@
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-			<name>com.google.appengine.eclipse.core.enhancerbuilder</name>
-			<arguments>
-			</arguments>
-		</buildCommand>
-		<buildCommand>
 			<name>com.google.appengine.eclipse.core.gaeProjectChangeNotifier</name>
 			<arguments>
 			</arguments>
@@ -52,6 +47,11 @@
 		</buildCommand>
 		<buildCommand>
 			<name>com.google.gwt.eclipse.core.gwtProjectValidator</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
+			<name>com.google.appengine.eclipse.core.enhancerbuilder</name>
 			<arguments>
 			</arguments>
 		</buildCommand>
