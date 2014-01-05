@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd" >
+<hibernate-mapping>
+	<class name="model.UserPersonalized" table="UserPersonalized">
+		<id name="ID" type="int">
+			<generator class="increment" />
+		</id>
+		<property name="firstName" column="FName" type="string" />
+		<property name="lastName" column="LName" type="string" />
+	</class>
+</hibernate-mapping>

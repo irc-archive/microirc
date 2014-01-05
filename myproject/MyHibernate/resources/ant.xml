@@ -1,0 +1,68 @@
+<project name="MyHibernate" default="dist" basedir=".">
+	<description>
+		simple example build file
+	</description>
+	<!-- set global properties for this build -->
+	<property name="src" location="src" />
+	<property name="build" location="build" />
+	<property name="dist" location="dist" />
+
+	<path id="class.path">
+		<pathelement path="${classpath}" />
+		<pathelement
+			path="C:/Users/Diogo/.m2/repository/org/hibernate/hibernate-core/4.3.0.Final/hibernate-core-4.3.0.Final.jar" />
+		<pathelement
+			path="C:\Users\Diogo\.m2\repository\org\hibernate\common\hibernate-commons-annotations\4.0.4.Final\hibernate-commons-annotations-4.0.4.Final.jar" />
+		<pathelement
+			path="C:\Users\Diogo\.m2\repository\dom4j\dom4j\1.6.1\dom4j-1.6.1.jar" />
+				<pathelement
+			path="C:\Users\Diogo\.m2\repository\org\jboss\logging\jboss-logging\3.1.3.GA\jboss-logging-3.1.3.GA.jar" />
+				<pathelement
+			path="C:\Users\Diogo\.m2\repository\org\jboss\logging\jboss-logging-annotations\1.2.0.Beta1\jboss-logging-annotations-1.2.0.Beta1.jar" />
+						<pathelement
+			path="C:\Users\Diogo\.m2\repository\org\jboss\spec\javax\transaction\jboss-transaction-api_1.2_spec\1.0.0.Final\jboss-transaction-api_1.2_spec-1.0.0.Final.jar" />
+						<pathelement
+			path="C:\Users\Diogo\.m2\repository\org\hibernate\ejb3-persistence\3.3.2.Beta1\ejb3-persistence-3.3.2.Beta1.jar" />
+						<pathelement
+			path="C:\Users\Diogo\.m2\repository\org\hibernate\javax\persistence\hibernate-jpa-2.1-api\1.0.0.Final\hibernate-jpa-2.1-api-1.0.0.Final.jar" />
+						<pathelement
+			path="D:\Program Files\squirrel-sql-3.5.0\lib\mysql_connector_java_5.1.26_bin.jar" />
+		
+	</path>
+
+	<target name="schemaexport">
+		<taskdef name="schemaexport" classname="org.hibernate.tool.hbm2ddl.SchemaExportTask"
+			classpathref="class.path" />
+
+		<schemaexport properties="hibernate.properties" quiet="no"
+			text="no" drop="no" delimiter=";" output="schema-export.sql">
+			<fileset dir="">
+				<include name="**/*.hbm.xml" />
+			</fileset>
+		</schemaexport>
+	</target>
+
+	<target name="schemaupdate">
+		<taskdef name="schemaupdate" classname="org.hibernate.tool.hbm2ddl.SchemaUpdateTask"
+			classpathref="class.path" />
+
+		<schemaupdate properties="hibernate.properties" quiet="no">
+			<fileset dir="">
+				<include name="**/*.hbm.xml" />
+			</fileset>
+		</schemaupdate>
+	</target>
+
+	<target name="schemavalidate">
+		<taskdef name="schemavalidator" classname="org.hibernate.tool.hbm2ddl.SchemaValidatorTask"
+			classpathref="class.path" />
+
+		<schemavalidator properties="hibernate.properties">
+			<fileset dir="">
+				<include name="**/*.hbm.xml" />
+			</fileset>
+		</schemavalidator>
+	</target>
+
+
+</project>
