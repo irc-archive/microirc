@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"></meta>
+<title>Insert title here</title>
+</head>
+<body>
+	<f:view>
+<!-- 		<h:panelGroup rendered="#{temperatureConvertor.initial!=true}"> -->
+		<f:loadBundle basename="four.test.langs.euro.messagesen" var="msg" />
+<!-- 		</h:panelGroup> -->
+		
+		<h:form>
+			<h:panelGrid columns="3">
+				<h:panelGrid columns="2">
+					<h:outputLabel value="#{msg.left}"></h:outputLabel>
+					<h:outputLabel id="left" value="#{cardController.card.left}"></h:outputLabel>
+
+					<h:outputLabel value="#{msg.right}"></h:outputLabel>
+					<h:outputLabel id="right" value="#{cardController.card.right}">
+					</h:outputLabel>
+
+					<h:outputLabel value="#{msg.result}"></h:outputLabel>
+					<h:inputText id="result" value="#{cardController.result}"></h:inputText>
+				</h:panelGrid>
+
+			</h:panelGrid>
+			<h:commandButton action="#{cardController.checkResult}" value="#{msg.show}"></h:commandButton>
+			<h:commandButton action="#{cardController.next}" value="#{msg.next}" type="submit"></h:commandButton>
+			<h:messages layout="table"></h:messages>
+			
+			<h:panelGroup binding="#{cardController.resultPanel}" rendered="false">
+				<h:message for="result"></h:message>
+			</h:panelGroup>
+		</h:form>
+	</f:view>
+</body>
+</html>

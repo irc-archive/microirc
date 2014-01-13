@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faces-config xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd"
+	version="2.2">
+<!-- 	OLD NAVIGATION@not working -->
+	<navigation-rule>
+		<from-view-id>third/home.xhtml</from-view-id>
+		<navigation-case>
+			<from-action>#{testController.getPage1}</from-action>
+			<from-outcome>success</from-outcome>
+			<to-view-id>third/page1.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-action>#{testController.getPage2}</from-action>
+			<from-outcome>failed</from-outcome>
+			<to-view-id>third/page2.xhtml</to-view-id>
+		</navigation-case>
+	</navigation-rule>
+	
+<!-- 	<managed-bean> -->
+<!-- 		<managed-bean-name>cardController</managed-bean-name> -->
+<!-- 		<managed-bean-class>four.test.CardController</managed-bean-class> -->
+<!-- 		<managed-bean-scope>session</managed-bean-scope> -->
+<!-- 		<managed-property> -->
+<!-- 			<property-name>card</property-name> -->
+<!-- 			<property-class>four.test.Card</property-class> -->
+<!-- 			<value>#{card}</value> -->
+<!-- 		</managed-property> -->
+<!-- 	</managed-bean> -->
+<!-- 	<managed-bean> -->
+<!-- 		<managed-bean-name>card</managed-bean-name> -->
+<!-- 		<managed-bean-class>four.test.Card</managed-bean-class> -->
+<!-- 		<managed-bean-scope>none</managed-bean-scope> -->
+<!-- 	</managed-bean> -->
+
+	<managed-bean>
+		<managed-bean-name>manualHelloBean</managed-bean-name>
+		<managed-bean-class>first.test.ManualHelloBean</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+
+</faces-config>
