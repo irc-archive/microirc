@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.0+" codebase="http://localhost/app/" href="http://localhost/app/myapplet.jnlp">
+	<information>
+		<title>myapplet</title>
+		<vendor>myapplet</vendor>
+    </information>
+	<resources>
+		<!-- Application Resources -->
+		<j2se version="1.7+" href="http://java.sun.com/products/autodl/j2se" />
+		<jar href="myapplet.jar" main="true" />
+	</resources>
+	<applet-desc name="myapplet" main-class="mypackage.MyApplet" width="300" height="300"></applet-desc>
+	<update check="background"/>
+</jnlp>
